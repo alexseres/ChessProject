@@ -4,10 +4,7 @@ using System.Text;
 
 namespace ChessProject.Models
 {
-    public struct Positions
+    public class Queen : BasePiece
     {
-        public int Column { get; set; }
-        public string Row { get; set; }
-
     }
 }
