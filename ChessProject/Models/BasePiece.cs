@@ -8,9 +8,10 @@ namespace ChessProject.Models
     public abstract class BasePiece : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public string Name { get; set; }
-
         
+        public bool IsKnockedOut { get; set; }
+
+         
 
     }
 }
