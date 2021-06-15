@@ -10,8 +10,10 @@ namespace ChessProject.Commands
         public Action<T> _execute;
         public Predicate<T> _canExecute;
 
+        public RelayCommand(Action<T> execute, bool v) : this(execute, null) { }
         public RelayCommand(Action<T> execute, Predicate<T> canExecute)
         {
+            if (execute == null) throw new ArgumentNullException();
             _execute = execute;
             _canExecute = canExecute;
         }
@@ -20,12 +22,20 @@ namespace ChessProject.Commands
 
         public bool CanExecute(object parameter)
         {
-            throw new NotImplementedException();
+            return _canExecute == null ? true : _canExecute((T)parameter);
         }
 
-        public void Execute(object parameter)
+        public void Execute(object parameter) => _execute((T)parameter);
+
+        public void RaiseWhenCanExecuteChanged()
         {
-            throw new NotImplementedException();
+            var handler = CanExecuteChanged;
+            if(handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
+
+
     }
 }
