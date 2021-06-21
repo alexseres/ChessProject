@@ -7,7 +7,7 @@ namespace ChessProject.Models
     public struct Positions
     {
         public string Column { get; set; }
-        public int Row { get; set; }
+        public string Row { get; set; }
 
     }
 }

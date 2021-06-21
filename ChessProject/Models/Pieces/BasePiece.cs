@@ -28,6 +28,7 @@ namespace ChessProject.Models
         }
         #endregion
 
+        public string Name { get; set; }
         public Positions Positions { get; set; }
         public Positions InitPositions { get; set; }
         public bool IsKnockedOut { get; set; }

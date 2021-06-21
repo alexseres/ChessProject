@@ -8,6 +8,8 @@ namespace ChessProject.Models
     public class Side
     {
         public string Name { get; set; }
+
+        public string SidePosition { get; set; }
         public ObservableCollection<BasePiece> Pieces {get;set;}
     }
 }

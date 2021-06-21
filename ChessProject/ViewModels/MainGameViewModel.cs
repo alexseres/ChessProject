@@ -17,5 +17,7 @@ namespace ChessProject.ViewModels
             BlackSide = SideInitializer.InitializeSide("Black");
             WhiteSide = SideInitializer.InitializeSide("White");
         }
+
+
     }
 }
