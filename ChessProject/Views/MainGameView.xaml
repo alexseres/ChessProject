@@ -7,6 +7,40 @@
         mc:Ignorable="d"
         Title="MainGameView" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70*"/>
+            <ColumnDefinition Width="30*"/>
+        </Grid.ColumnDefinitions>
+        <Grid x:Name="Table"
+              Grid.Column="0"
+              Background="AliceBlue"
+              Margin="5,5,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="11*" x:Name="Columns"/>
+                <ColumnDefinition Width="11*" x:Name="AColumn"/>
+                <ColumnDefinition Width="11*" x:Name="BColumn"/>
+                <ColumnDefinition Width="11*" x:Name="CColumn"/>
+                <ColumnDefinition Width="11*" x:Name="DColumn"/>
+                <ColumnDefinition Width="11*" x:Name="EColumn"/>
+                <ColumnDefinition Width="11*" x:Name="FColumn"/>
+                <ColumnDefinition Width="11*" x:Name="GColumn"/>
+                <ColumnDefinition Width="11*" x:Name="HColumn"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="11*" x:Name="Rows"/>
+                <RowDefinition Height="11*" x:Name="FirstRow"/>
+                <RowDefinition Height="11*" x:Name="SecondRow"/>
+                <RowDefinition Height="11*" x:Name="ThirdRow"/>
+                <RowDefinition Height="11*" x:Name="FourthRow"/>
+                <RowDefinition Height="11*" x:Name="FifthRow"/>
+                <RowDefinition Height="11*" x:Name="SixthRow"/>
+                <RowDefinition Height="11*" x:Name="SeventhRow"/>
+                <RowDefinition Height="11*" x:Name="EighthRow"/>
+            </Grid.RowDefinitions>
+        </Grid>
         
+        <Grid x:Name="ChatWindow" Grid.Column="1" Background="Gray">
+            
+        </Grid>
     </Grid>
 </Window>
