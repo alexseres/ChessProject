@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChessProject.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -17,9 +18,12 @@ namespace ChessProject.Views
     /// </summary>
     public partial class MainGameView : Window
     {
+        public MainGameViewModel _vm;
         public MainGameView()
         {
             InitializeComponent();
+            _vm = new MainGameViewModel();
+            this.DataContext = _vm;
         }
     }
 }

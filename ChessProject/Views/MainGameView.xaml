@@ -38,7 +38,7 @@
                 <RowDefinition Height="11*" x:Name="EighthRow"/>
             </Grid.RowDefinitions>
         </Grid>
-        
+
         <Grid x:Name="ChatWindow" Grid.Column="1" Background="Gray">
             
         </Grid>
