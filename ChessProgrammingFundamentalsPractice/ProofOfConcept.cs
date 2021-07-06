@@ -32,7 +32,19 @@ namespace ChessProgrammingFundamentalsPractice
 
         public void PrintBoard(string board)
         {
-
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < board.Length; i++)
+            {
+                if (i % 8 == 0 && i != 0)
+                {
+                    string row = new string(sb.ToString().Reverse().ToArray());
+                    Console.WriteLine(row);
+                    sb.Clear();
+                }
+                sb.Append(board[i]);
+            }
+            var finalRow = new string(sb.ToString().Reverse().ToArray());
+            Console.WriteLine(finalRow);
             
         }
 
