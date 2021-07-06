@@ -9,13 +9,13 @@ namespace ChessProject.ViewModels
 {
     public class MainGameViewModel
     {
+        
         public Side BlackSide { get; set; }
         public Side WhiteSide { get; set; }
-
         public MainGameViewModel()
         {
-            BlackSide = SideInitializer.InitializeSide("Black");
-            WhiteSide = SideInitializer.InitializeSide("White");
+            BlackSide = Initializers.CreatePieces("Black", "upside");
+            WhiteSide = Initializers.CreatePieces("White", "downside");
         }
 
 

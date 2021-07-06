@@ -11,7 +11,7 @@ namespace ChessProject.Services
     /// dont need to mention why I implemented without writing wow many pieces we need from each
     /// Also it is hardcoded because the basic formation of chess always constant, never changes
     /// </summary>
-    public static class SideInitializer
+    public static class Initializers
     {
         public static Side CreatePieces(string sideName, string sidePosition)
         {
