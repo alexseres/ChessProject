@@ -41,8 +41,16 @@ namespace ChessProgrammingFundamentalsPractice
         {
             while (true)
             {
-            
+                
             }
+        }
+
+        public int AskUserInput()
+        {
+            Console.WriteLine("Enter position");
+            string result = Console.ReadLine();
+            int converteToInt = Int16.Parse(result);
+            return converteToInt;
         }
 
         public void PrintBoard(string board)
