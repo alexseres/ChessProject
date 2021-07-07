@@ -8,8 +8,10 @@ namespace ChessProgrammingFundamentalsPractice
     public class ProofOfConcept
     {
         public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
+        
         public ulong WhitePieces = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
         public ulong WhiteRooks = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000_0001;
+        
         public ulong WhiteKnights = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0100_0010;
         public ulong WhiteBishops = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0100;
         public ulong WhiteQueen = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000;
@@ -23,11 +25,24 @@ namespace ChessProgrammingFundamentalsPractice
         public ulong BlackKing = 0b_0000_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
         public ulong BlackPawns = 0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
 
+        public Player player1;
+        public Player player2;
+        
 
         public List<(string, ulong)> AddLetterIndicatorToPieces = new List<(string, ulong)>();
 
         public ProofOfConcept()
         {
+            player1 = Player.Black;
+            player2 = Player.White;
+        }
+
+        public void PlayGame()
+        {
+            while (true)
+            {
+            
+            }
         }
 
         public void PrintBoard(string board)
