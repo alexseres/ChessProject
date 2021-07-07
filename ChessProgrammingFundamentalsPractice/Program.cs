@@ -39,8 +39,7 @@ namespace ChessProgrammingFundamentalsPractice
         static void Main(string[] args)
         {
             ProofOfConcept proofOfConcept = new ProofOfConcept();
-            var board = proofOfConcept.CreateStringOfBoard();
-            proofOfConcept.PrintBoard(board);
+
             
         }
     }

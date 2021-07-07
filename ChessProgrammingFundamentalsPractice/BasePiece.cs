@@ -6,7 +6,7 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public abstract class BasePiece
     {
-        public ulong Positins { get; set; }
+        public ulong Positions { get; set; }
         public string Name { get; set; }
     }
 }
