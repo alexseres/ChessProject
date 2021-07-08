@@ -6,5 +6,14 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Queen : BasePiece
     {
+        public override void Move(int pos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SegregateToTheChoosenPiece()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

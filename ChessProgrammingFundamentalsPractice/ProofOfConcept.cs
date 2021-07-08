@@ -58,6 +58,7 @@ namespace ChessProgrammingFundamentalsPractice
                 }
             }
         }
+        
 
         public BasePiece GrabAndExtractPiece(Player player, int pos)
         {
@@ -71,16 +72,24 @@ namespace ChessProgrammingFundamentalsPractice
                     return player[i];
                 }
             }
-
             return null;
         }
 
+
+
+        public int WhereToGo()
+        {
+            Console.WriteLine("Enter position to where you wanna move the piece");
+            string result = Console.ReadLine();
+            int convertToInt = Int16.Parse(result) - 1;
+            return convertToInt;
+        }
         public int ChoosePiece()
         {
             Console.WriteLine("Enter position to choose piece");
             string result = Console.ReadLine();
-            int converteToInt = Int16.Parse(result) - 1;
-            return converteToInt;
+            int convertToInt = Int16.Parse(result) - 1;
+            return convertToInt;
         }
 
         #region Print and Create Board

@@ -9,5 +9,9 @@ namespace ChessProgrammingFundamentalsPractice
         public ulong Positions { get; set; }
         public string Name { get; set; }
         public string BoardName { get; set; }
+
+        public abstract void Move(int pos);
+
+        public abstract void SegregateToTheChoosenPiece();
     }
 }

@@ -15,11 +15,13 @@ namespace ChessProgrammingFundamentalsPractice
         public Bishops Bishops { get; set; } = new Bishops();
         public Queen Queen { get; set; } = new Queen();
         public King King { get; set; } = new King();
-        public Pawns Pawns { get; set; } = new Pawns();
+        public Pawns Pawns { get; set; }
 
+        List<BasePiece> PiecesList;
         public Player(ColorSide color, ulong[] positions, string[] namesOfPiecesOnPrintedBoard)
         {
             Color = color;
+            PawnInitializer(color);
             Pieces = positions[0];
             Rooks.Positions = positions[1];
             Knights.Positions = positions[2];
@@ -33,9 +35,22 @@ namespace ChessProgrammingFundamentalsPractice
 
         }
 
+        public void PawnInitializer(ColorSide color)
+        {
 
-        #region IndexersRelated
-        List<BasePiece> PiecesList;
+            if(color == ColorSide.Black)
+            {
+                int route = -8;
+                Pawns = new Pawns(route);
+            }
+            else
+            {
+                int route = 8;
+                Pawns = new Pawns(route);
+            }
+        }
+
+        
 
         private void InitPieces(string[] names)
         {
@@ -51,6 +66,6 @@ namespace ChessProgrammingFundamentalsPractice
         }
 
         public int Length => PiecesList.Count;
-        #endregion
+        
     }
 }
