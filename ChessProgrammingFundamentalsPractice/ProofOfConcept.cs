@@ -47,43 +47,28 @@ namespace ChessProgrammingFundamentalsPractice
                 if (isWhiteAtTurn)
                 {
                     int pos = ChoosePiece();
-                    BasePiece choosenPiece = WhiteTurn(pos);
+                    BasePiece choosenWhitePiece = GrabAndExtractPiece(Player2, pos);
                     isWhiteAtTurn = false;
                 }
                 else
                 {
                     int pos = ChoosePiece();
-                    BlackTurn(pos);
+                    BasePiece choosenBlackPiece = GrabAndExtractPiece(Player1, pos);
                     isWhiteAtTurn = true;
                 }
             }
         }
 
-        public BasePiece WhiteTurn(int pos)
+        public BasePiece GrabAndExtractPiece(Player player, int pos)
         {
             ulong mask = (ulong)1 << pos;
             Console.WriteLine(Convert.ToString((long)mask, toBase:2).PadLeft(64,'0'));
-            for (int i = 0;i < Player2.Length; i++)
+            for (int i = 0;i < player.Length; i++)
             {
                 Console.WriteLine(Convert.ToString((long)Player2[i].Positions, toBase:2).PadLeft(64,'0'));
-                if((Player2.Pieces & (mask & Player2[i].Positions)) > 0)
+                if((player.Pieces & (mask & player[i].Positions)) > 0)
                 {
-                    return Player2[i];
-                }
-            }
-
-            return null;
-        }
-
-        public BasePiece BlackTurn(int pos)
-        {
-            ulong mask = (ulong)1 << pos;
-            Console.WriteLine(Convert.ToString((long)mask, toBase: 2).PadLeft(64, '0'));
-            for (int i = 0; i < Player1.Length; i++)
-            {
-                if ((Player1.Pieces & (mask & Player1[i].Positions)) > 0)
-                {
-                    return Player1[i];
+                    return player[i];
                 }
             }
 
