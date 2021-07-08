@@ -46,29 +46,51 @@ namespace ChessProgrammingFundamentalsPractice
             {
                 if (isWhiteAtTurn)
                 {
-                    int pos = ChoosePiece();
+                    int choosenNum = ChoosePiece();
+                    ulong pos = (ulong)1 << choosenNum;
                     BasePiece choosenWhitePiece = GrabAndExtractPiece(Player2, pos);
+                    //basically just checks if the given pos is piece 
+                    if (choosenWhitePiece is null) continue;
+                    Process(Player2, choosenWhitePiece, pos);
                     isWhiteAtTurn = false;
                 }
                 else
                 {
                     int pos = ChoosePiece();
-                    BasePiece choosenBlackPiece = GrabAndExtractPiece(Player1, pos);
-                    isWhiteAtTurn = true;
+                    //BasePiece choosenBlackPiece = GrabAndExtractPiece(Player1, pos);
+                    //isWhiteAtTurn = true;
                 }
             }
         }
         
-
-        public BasePiece GrabAndExtractPiece(Player player, int pos)
+        public void Process(Player player ,BasePiece piece,  ulong pos)
         {
-            ulong mask = (ulong)1 << pos;
-            Console.WriteLine(Convert.ToString((long)mask, toBase:2).PadLeft(64,'0'));
+            Player opponent = OpponentCreater(player);
+
+        }
+
+        public Player OpponentCreater(Player player)
+        {
+            if(player == Player1)
+            {
+                return Player2;
+            }
+            else
+            {
+                return Player1;
+            }
+        }
+
+
+        public BasePiece GrabAndExtractPiece(Player player, ulong pos)
+        {
+            
+            Console.WriteLine(Convert.ToString((long)pos, toBase:2).PadLeft(64,'0'));
             for (int i = 0;i < player.Length; i++)
             {
                 Console.WriteLine(Convert.ToString((long)Player2[i].Positions, toBase:2).PadLeft(64,'0'));
-                if((player.Pieces & (mask & player[i].Positions)) > 0)
-                {
+                if ((player.Pieces & (pos & player[i].Positions)) > 0)
+                { 
                     return player[i];
                 }
             }

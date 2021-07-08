@@ -13,5 +13,6 @@ namespace ChessProgrammingFundamentalsPractice
         public abstract void Move(int pos);
 
         public abstract void SegregateToTheChoosenPiece();
+        public abstract void Search();
     }
 }

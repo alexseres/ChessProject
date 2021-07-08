@@ -6,15 +6,16 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Pawns : BasePiece
     {
-        public readonly int Route;
-        public Pawns(int route)
+        public readonly int RouteToMove;
+        public readonly int RouteToAttack;
+        public Pawns(int routeToMove, int RouteToAttack)
         {
-            Route = route;
+            
         }
 
         public override void Move(int pos)
         {
-            if()        
+                 
         }
 
         public void Attack()
@@ -23,7 +24,14 @@ namespace ChessProgrammingFundamentalsPractice
         }
         public override void SegregateToTheChoosenPiece()
         {
-            throw new NotImplementedException();
+            
         }
+
+        public override void Search()
+        {
+            
+        }
+
+        p
     }
 }
