@@ -29,60 +29,61 @@ namespace ChessProgrammingFundamentalsPractice
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000 };
 
         public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
-        
-
-        
-        public void InitializePlayer(Player player)
-        {
-            switch (player.Color)
-            {
-                case ColorSide.Black:
-                    player.Pieces = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-                    player.Rooks.Positions = 0b_1000_0001_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-                    player.Knights.Positions = 0b_0010_0100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-                    player.Bishops.Positions = 0b_0100_0010_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-                    player.Queen.Positions = 0b_0001_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-                    player.King.Positions = 0b_0000_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-                    player.Pawns.Positions = 0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-                    break;
-                case ColorSide.White:
-                    player.Pieces = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
-                    player.Rooks.Positions = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000_0001;
-                    player.Knights.Positions = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0100_0010;
-                    player.Bishops.Positions = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0100;
-                    player.Queen.Positions = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000;
-                    player.King.Positions = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001_0000;
-                    player.Pawns.Positions = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000;
-                    break;
-            }
-        }
-
+  
         public ProofOfConcept()
         {
             Player1 = new Player(ColorSide.Black, BlackInitPositions, BlackPrintedBoardNames);
             Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames);
-            InitializePlayer(Player1);
-            InitializePlayer(Player2);
-            string board = CreateStringOfBoard(Player1, Player2);
+            string board = CreateStringOfBoard();
             PrintBoard(board);
         }
 
         public void PlayGame()
         {
-            while (true)
+            bool isWhiteAtTurn = true;
+            while(true)
             {
-                      
+                if (isWhiteAtTurn)
+                {
+                    ulong pos = AskUserInput();
+                    isWhiteAtTurn = false;
+                }
+                else
+                {
+                    ulong pos = AskUserInput();
+                    isWhiteAtTurn = true;
+                }
+
             }
         }
 
-        public int AskUserInput()
+        public void WhiteTurn(ulong pos)
+        {
+
+
+            for(int i = 0;i < Player2.Length; i++)
+            {
+                if((Player2.Pieces & (pos & Player2[i].Positions)) > 0)
+                {
+
+                }
+/           }
+        }
+
+        public void BlackTurn(int pos)
+        {
+
+        }
+
+        public ulong AskUserInput()
         {
             Console.WriteLine("Enter position");
             string result = Console.ReadLine();
-            int converteToInt = Int16.Parse(result);
+            ulong converteToInt = (ulong)Int64.Parse(result);
             return converteToInt;
         }
 
+        #region Print and Create Board
         public void PrintBoard(string board)
         {
             StringBuilder sb = new StringBuilder();
@@ -101,23 +102,23 @@ namespace ChessProgrammingFundamentalsPractice
             
         }
 
-        public string CreateStringOfBoard(Player player1, Player player2)
+        public string CreateStringOfBoard()
         {
-            var mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             StringBuilder sb = new StringBuilder();
             for(int i = 0;i< 64;i++)
             {
                 bool IsSquareOccupied = false;
                 for(int j = 0; j < 6; j++)
                 {
-                    if((player1[j].Item2 & (mask & BoardWithAllMember)) > 0)
+                    if((Player1[j].Positions & (mask & BoardWithAllMember)) > 0)
                     {
-                        sb.Append(player1[j].Item1);
+                        sb.Append(Player1[j].BoardName);
                         IsSquareOccupied = true;
                     }
-                    else if ((player2[j].Item2 & (mask & BoardWithAllMember)) > 0)
+                    else if ((Player2[j].Positions & (mask & BoardWithAllMember)) > 0)
                     {
-                        sb.Append(player2[j].Item1);
+                        sb.Append(Player2[j].BoardName);
                         IsSquareOccupied = true;
                     }
                 }
@@ -131,65 +132,6 @@ namespace ChessProgrammingFundamentalsPractice
             Console.WriteLine(sb.ToString());
             return sb.ToString();
         }
+        #endregion
     }
 }
-
-                //Console.WriteLine(tupl.Item1);
-                //Console.WriteLine(Convert.ToString((long)BoardWithAllMember, toBase: 2).PadLeft(64, '0'));
-                //Console.WriteLine(Convert.ToString((long)tupl.Item2, toBase: 2).PadLeft(64,'0'));
-                //Console.WriteLine(Convert.ToString((long)(tupl.Item2 & BoardWithAllMember), toBase:2).PadLeft(64, '0')); 
-
-
-                //if((BlackRooks & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("R");
-                //}
-                //else if ((BlackKnights & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("K");
-                //}
-                //else if ((BlackBishops & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("B");
-                //}
-                //else if ((BlackQueen & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("Q");
-                //}
-                //else if ((BlackKing & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("N");
-                //}
-                //else if ((BlackPawns & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("P");
-                //}
-                //else if ((WhiteRooks & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("A");
-                //}
-                //else if ((WhiteKnights & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("S");
-                //}
-                //else if ((WhiteBishops & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("D");
-                //}
-                //else if ((WhiteQueen & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("F");
-                //}
-                //else if ((WhiteKing & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("G");
-                //}
-                //else if ((WhitePawns & (mask & BoardWithAllMember)) > 0)
-                //{
-                //    sb.Append("H");
-                //}
-
-                //else
-                //{
-                //    sb.Append(".");
-                //}

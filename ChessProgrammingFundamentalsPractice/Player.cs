@@ -30,8 +30,7 @@ namespace ChessProgrammingFundamentalsPractice
 
 
             PiecesList = new List<BasePiece>() { Rooks, Knights, Bishops, Queen, King, Pawns };
-            NamesOfPiecesOnPrintedBoard = namesOfPiecesOnPrintedBoard;
-            InitPiecesPosAndNames();
+            InitPieces(namesOfPiecesOnPrintedBoard);
 
         }
 
@@ -39,24 +38,20 @@ namespace ChessProgrammingFundamentalsPractice
         #region IndexersRelated
         List<BasePiece> PiecesList;
 
-        readonly (string, ulong)[] PiecesPositinsAndNames = new (string, ulong)[6];
-        public string[] NamesOfPiecesOnPrintedBoard { get; set; }
-
-
-        private void InitPiecesPosAndNames()
+        private void InitPieces(string[] names)
         {
             for(int i = 0;i < PiecesList.Count; i++)
             {
-                PiecesPositinsAndNames[i] = (NamesOfPiecesOnPrintedBoard[i], PiecesList[i].Positions);
+                PiecesList[i].BoardName = names[i];
             }
         }
 
-        public (string, ulong) this[int index]
+        public BasePiece this[int index]
         {
-            get => PiecesPositinsAndNames[index];
+            get => PiecesList[index];
         }
 
-        public int Length => PiecesPositinsAndNames.Length;
+        public int Length => PiecesList.Count;
         #endregion
     }
 }
