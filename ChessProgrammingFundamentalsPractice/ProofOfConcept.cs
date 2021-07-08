@@ -36,6 +36,7 @@ namespace ChessProgrammingFundamentalsPractice
             Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames);
             string board = CreateStringOfBoard();
             PrintBoard(board);
+            PlayGame();
         }
 
         public void PlayGame()
@@ -45,41 +46,55 @@ namespace ChessProgrammingFundamentalsPractice
             {
                 if (isWhiteAtTurn)
                 {
-                    ulong pos = AskUserInput();
+                    int pos = ChoosePiece();
+                    BasePiece choosenPiece = WhiteTurn(pos);
                     isWhiteAtTurn = false;
                 }
                 else
                 {
-                    ulong pos = AskUserInput();
+                    int pos = ChoosePiece();
+                    BlackTurn(pos);
                     isWhiteAtTurn = true;
                 }
-
             }
         }
 
-        public void WhiteTurn(ulong pos)
+        public BasePiece WhiteTurn(int pos)
         {
-
-
-            for(int i = 0;i < Player2.Length; i++)
+            ulong mask = (ulong)1 << pos;
+            Console.WriteLine(Convert.ToString((long)mask, toBase:2).PadLeft(64,'0'));
+            for (int i = 0;i < Player2.Length; i++)
             {
-                if((Player2.Pieces & (pos & Player2[i].Positions)) > 0)
+                Console.WriteLine(Convert.ToString((long)Player2[i].Positions, toBase:2).PadLeft(64,'0'));
+                if((Player2.Pieces & (mask & Player2[i].Positions)) > 0)
                 {
-
+                    return Player2[i];
                 }
-/           }
+            }
+
+            return null;
         }
 
-        public void BlackTurn(int pos)
+        public BasePiece BlackTurn(int pos)
         {
+            ulong mask = (ulong)1 << pos;
+            Console.WriteLine(Convert.ToString((long)mask, toBase: 2).PadLeft(64, '0'));
+            for (int i = 0; i < Player1.Length; i++)
+            {
+                if ((Player1.Pieces & (mask & Player1[i].Positions)) > 0)
+                {
+                    return Player1[i];
+                }
+            }
 
+            return null;
         }
 
-        public ulong AskUserInput()
+        public int ChoosePiece()
         {
-            Console.WriteLine("Enter position");
+            Console.WriteLine("Enter position to choose piece");
             string result = Console.ReadLine();
-            ulong converteToInt = (ulong)Int64.Parse(result);
+            int converteToInt = Int16.Parse(result) - 1;
             return converteToInt;
         }
 

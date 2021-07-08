@@ -28,7 +28,6 @@ namespace ChessProgrammingFundamentalsPractice
             King.Positions = positions[5];
             Pawns.Positions = positions[6];
 
-
             PiecesList = new List<BasePiece>() { Rooks, Knights, Bishops, Queen, King, Pawns };
             InitPieces(namesOfPiecesOnPrintedBoard);
 
