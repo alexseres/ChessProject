@@ -10,9 +10,15 @@ namespace ChessProgrammingFundamentalsPractice
         public string Name { get; set; }
         public string BoardName { get; set; }
 
+        public ColorSide Color { get; set; }
+
+        public BasePiece(ColorSide color)
+        {
+            Color = color;
+        }
+
         public abstract void Move(int pos);
 
-        public abstract void SegregateToTheChoosenPiece();
-        public abstract void Search();
+        public abstract ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions);
     }
 }

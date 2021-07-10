@@ -66,8 +66,10 @@ namespace ChessProgrammingFundamentalsPractice
         public void Process(Player player ,BasePiece piece,  ulong pos)
         {
             Player opponent = OpponentCreater(player);
-
+            
         }
+
+
 
         public Player OpponentCreater(Player player)
         {
