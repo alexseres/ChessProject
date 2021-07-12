@@ -21,19 +21,10 @@ namespace ChessProgrammingFundamentalsPractice
             MaskOfDoubleMove = color == ColorSide.Black ? (ulong)0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000 : 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000; 
         }
          
-        public override void Move(ulong currentPosition, ulong opportunities, ulong decidedMovePos)
-        {
-            if((opportunities & decidedMovePos) > 0)
-            {
-
-                Positions = (~currentPosition & Positions) | decidedMovePos;
-            }
-            return Positions;
-        }
 
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
-            if ((currentPosition & Positions) > 0) throw new Exception("selected positions not in the current positions");
+            if ((currentPosition & Positions) < 0) throw new Exception("selected positions not in the current positions");
 
             if(this.Color == ColorSide.Black)
             {
@@ -52,41 +43,41 @@ namespace ChessProgrammingFundamentalsPractice
                 ulong movedPositions = (currentPosition << MovingDirection) | movedFirstPositions;
                 ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
                 
-                #region prints
-                PrintBoard(Convert.ToString((long)currentPosition, toBase: 2).PadLeft(64, '0'));
-                Console.WriteLine(" ");
-                PrintBoard(Convert.ToString((long)opponentPositionAtBoard, toBase: 2).PadLeft(64, '0'));
-                Console.WriteLine(" ");
-                PrintBoard(Convert.ToString((long)attackPositions, toBase: 2).PadLeft(64, '0'));
-                Console.WriteLine(" ");
-                PrintBoard(Convert.ToString((long)movedFirstPositions, toBase: 2).PadLeft(64, '0'));
-                Console.WriteLine(" ");
-                PrintBoard(Convert.ToString((long)movedPositions, toBase: 2).PadLeft(64, '0'));
-                Console.WriteLine(" ");
-                PrintBoard(Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0'));
-                #endregion
+                //#region prints
+                //PrintBoard(Convert.ToString((long)currentPosition, toBase: 2).PadLeft(64, '0'));
+                //Console.WriteLine(" ");
+                //PrintBoard(Convert.ToString((long)opponentPositionAtBoard, toBase: 2).PadLeft(64, '0'));
+                //Console.WriteLine(" ");
+                //PrintBoard(Convert.ToString((long)attackPositions, toBase: 2).PadLeft(64, '0'));
+                //Console.WriteLine(" ");
+                //PrintBoard(Convert.ToString((long)movedFirstPositions, toBase: 2).PadLeft(64, '0'));
+                //Console.WriteLine(" ");
+                //PrintBoard(Convert.ToString((long)movedPositions, toBase: 2).PadLeft(64, '0'));
+                //Console.WriteLine(" ");
+                //PrintBoard(Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0'));
+                //#endregion
                 return opportunities;
             }
 
 
         }
 
-        public void PrintBoard(string board)
-        {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < board.Length; i++)
-            {
-                if (i % 8 == 0 && i != 0)
-                {
-                    string row = new string(sb.ToString());
-                    Console.WriteLine(row);
-                    sb.Clear();
-                }
-                sb.Append(board[i]);
-            }
-            var finalRow = new string(sb.ToString());
-            Console.WriteLine(finalRow);
+        //public void PrintBoard(string board)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    for (int i = 0; i < board.Length; i++)
+        //    {
+        //        if (i % 8 == 0 && i != 0)
+        //        {
+        //            string row = new string(sb.ToString());
+        //            Console.WriteLine(row);
+        //            sb.Clear();
+        //        }
+        //        sb.Append(board[i]);
+        //    }
+        //    var finalRow = new string(sb.ToString());
+        //    Console.WriteLine(finalRow);
 
-        }
+        //}
     }
 }

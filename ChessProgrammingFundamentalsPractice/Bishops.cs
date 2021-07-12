@@ -6,10 +6,7 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Bishops : BasePiece
     {
-        public override void Move(int pos)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public Bishops(ColorSide color, ulong positions) : base(color, positions)
         {

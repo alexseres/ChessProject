@@ -18,7 +18,22 @@ namespace ChessProgrammingFundamentalsPractice
             Positions = positions;
         }
 
-        public abstract void Move(ulong currentPosition, ulong opportunities, ulong decidedMovePos);
+
+        public void UpdatePositionWhenMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos)
+        {
+            if ((opportunities & decidedMovePos) > 0)
+            {
+                Positions = (~currentPosition & Positions) | decidedMovePos;
+            }
+        }
+
+        public void UpdatePositionWhenBeingAttacked(ulong attackedPosition)
+        {
+            if((attackedPosition & Positions) > 0)
+            {
+                Positions = (Positions & ~attackedPosition);
+            }
+        }
 
         public abstract ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions);
     }

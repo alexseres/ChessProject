@@ -11,10 +11,6 @@ namespace ChessProgrammingFundamentalsPractice
         {
 
         }
-        public override void Move(int pos)
-        {
-            throw new NotImplementedException();
-        }
 
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
