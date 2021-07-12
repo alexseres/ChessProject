@@ -12,12 +12,13 @@ namespace ChessProgrammingFundamentalsPractice
 
         public ColorSide Color { get; set; }
 
-        public BasePiece(ColorSide color)
+        public BasePiece(ColorSide color, ulong positions)
         {
             Color = color;
+            Positions = positions;
         }
 
-        public abstract void Move(int pos);
+        public abstract void Move(ulong currentPosition, ulong opportunities, ulong decidedMovePos);
 
         public abstract ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions);
     }

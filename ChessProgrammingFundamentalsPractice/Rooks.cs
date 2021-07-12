@@ -6,7 +6,7 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Rooks : BasePiece
     {
-        public Rooks(ColorSide color) : base(color)
+        public Rooks(ColorSide color, ulong positions) : base(color, positions)
         {
 
         }

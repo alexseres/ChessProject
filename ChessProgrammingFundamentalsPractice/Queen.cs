@@ -7,7 +7,7 @@ namespace ChessProgrammingFundamentalsPractice
     public class Queen : BasePiece
     {
 
-        public Queen(ColorSide color) : base(color)
+        public Queen(ColorSide color, ulong positions) : base(color, positions)
         {
 
         }

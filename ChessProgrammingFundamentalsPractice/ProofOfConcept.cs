@@ -11,13 +11,13 @@ namespace ChessProgrammingFundamentalsPractice
         public readonly Player Player2;
 
         public string[] BlackPrintedBoardNames = new string[6] { "R", "K", "B", "Q", "N", "P" };
-        public ulong[] BlackInitPositions = new ulong[7] { 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
+        public ulong[] BlackInitPositions = new ulong[7] { 0b_1111_1111_1011_1111_0000_0000_0000_0000_0000_0000_0000_0010_0000_0000_0000_0000,
                                                            0b_1000_0001_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
                                                             0b_0100_0010_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
                                                             0b_0010_0100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
                                                             0b_0001_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
                                                             0b_0000_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
-                                                            0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000};
+                                                            0b_0000_0000_1011_1111_0000_0000_0000_0000_0000_0000_0000_0010_0000_0000_0000_0000};
 
         public string[] WhitePrintedBoardNames = new string[6] { "A", "S", "D", "F", "G", "H" };
         public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111,
@@ -28,7 +28,7 @@ namespace ChessProgrammingFundamentalsPractice
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001_0000,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000 };
 
-        public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
+        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_0000_0000_0000_0000_0010_1111_1111_1111_1111;
   
         public ProofOfConcept()
         {
@@ -63,12 +63,23 @@ namespace ChessProgrammingFundamentalsPractice
             }
         }
         
-        public void Process(Player player ,BasePiece piece,  ulong pos)
+        public void Process(Player player ,BasePiece piece,  ulong currentPiecePosition)
         {
             Player opponent = OpponentCreater(player);
+            ulong opportunities = piece.Search(currentPiecePosition, BoardWithAllMember, opponent.Pieces, player.Pieces);
+            string opportunitiesToString = Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0');
+            PrintBoard(opportunitiesToString);
+
+            int choosenPositionToMove = WhereToGo();
+            
             
         }
 
+        public bool HasAttacked(int pos, ulong opponentPositions)
+        {
+            ulong convertedPos = (ulong)1 << pos;
+            return (convertedPos & opponentPositions) > 0 ? true : false;
+        }
 
 
         public Player OpponentCreater(Player player)
@@ -92,7 +103,8 @@ namespace ChessProgrammingFundamentalsPractice
             {
                 Console.WriteLine(Convert.ToString((long)Player2[i].Positions, toBase:2).PadLeft(64,'0'));
                 if ((player.Pieces & (pos & player[i].Positions)) > 0)
-                { 
+                {
+                    Console.WriteLine(" ");
                     return player[i];
                 }
             }
@@ -124,13 +136,13 @@ namespace ChessProgrammingFundamentalsPractice
             {
                 if (i % 8 == 0 && i != 0)
                 {
-                    string row = new string(sb.ToString().Reverse().ToArray());
+                    string row = new string(sb.ToString());
                     Console.WriteLine(row);
                     sb.Clear();
                 }
                 sb.Append(board[i]);
             }
-            var finalRow = new string(sb.ToString().Reverse().ToArray());
+            var finalRow = new string(sb.ToString());
             Console.WriteLine(finalRow);
             
         }

@@ -22,30 +22,12 @@ namespace ChessProgrammingFundamentalsPractice
         {
             Color = color;
             Pieces = positions[0];
-            Rooks = new Rooks(color)
-            {
-                Positions = positions[1]
-            };
-            Knights = new Knights(color)
-            {
-                Positions = positions[2]
-            };
-            Bishops = new Bishops(color)
-            {
-                Positions = positions[3]
-            };
-            Queen = new Queen(color)
-            {
-                Positions = positions[4]
-            };
-            King = new King(color)
-            {
-                Positions = positions[5]
-            };
-            Pawns = new Pawns(color)
-            {
-                Positions = positions[6]
-            };
+            Rooks = new Rooks(color, positions[1]);
+            Knights = new Knights(color, positions[2]);
+            Bishops = new Bishops(color, positions[3]);
+            Queen = new Queen(color, positions[4]);
+            King = new King(color, positions[5]);
+            Pawns = new Pawns(color, positions[6]);
 
             PiecesList = new List<BasePiece>() { Rooks, Knights, Bishops, Queen, King, Pawns };
             InitPieces(namesOfPiecesOnPrintedBoard);

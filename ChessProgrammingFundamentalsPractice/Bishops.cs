@@ -11,7 +11,7 @@ namespace ChessProgrammingFundamentalsPractice
             throw new NotImplementedException();
         }
 
-        public Bishops(ColorSide color) : base(color)
+        public Bishops(ColorSide color, ulong positions) : base(color, positions)
         {
 
         }

@@ -6,7 +6,7 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Knights : BasePiece
     {
-        public Knights(ColorSide color) : base(color)
+        public Knights(ColorSide color, ulong positions) : base(color, positions)
         {
 
         }

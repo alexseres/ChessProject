@@ -7,7 +7,7 @@ namespace ChessProgrammingFundamentalsPractice
     public class King : BasePiece
     {
 
-        public King(ColorSide color): base(color)
+        public King(ColorSide color, ulong positions): base(color, positions)
         {
 
         }
