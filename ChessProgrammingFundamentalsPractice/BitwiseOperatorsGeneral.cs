@@ -320,14 +320,14 @@ namespace ChessProgrammingFundamentalsPractice
 
         public static int bitScanReverseMS1B(ulong bitBoard)
         {
-            if (bitBoard == 0) throw new Exception();
+            if (bitBoard == 0) Console.WriteLine("cannot be zero");
             bitBoard |= bitBoard >> 1;
             bitBoard |= bitBoard >> 2;
             bitBoard |= bitBoard >> 4;
             bitBoard |= bitBoard >> 8;
             bitBoard |= bitBoard >> 16;
             bitBoard |= bitBoard >> 32;
-            var result =  Index64[(bitBoard * debruijn64) >> 58];
+            int result =  Index64[(bitBoard * debruijn64) >> 58];
             return result;
         }
         
