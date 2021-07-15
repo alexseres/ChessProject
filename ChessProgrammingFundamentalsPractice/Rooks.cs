@@ -7,9 +7,9 @@ namespace ChessProgrammingFundamentalsPractice
     public class Rooks : BasePiece
     {
         private const int NorthDirection = 8;
-        private const int EastDiretion = 1;
+        private const int EastDiretion = -1;
         private const int SouthDirection = -8;
-        private const int WestDirection = -1;
+        private const int WestDirection = 1;
 
         public Rooks(ColorSide color, ulong positions) : base(color, positions)
         {
@@ -20,10 +20,10 @@ namespace ChessProgrammingFundamentalsPractice
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
             int square = bitScanForwardLS1B(currentPosition);
-            ulong northAttack = GetPositiveRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, GetNorth, NorthDirection);
-            ulong eastAttack = GetPositiveRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, GetEast, EastDiretion);
-            ulong southAttack = GetNegativeRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, GetSouth, SouthDirection);
-            ulong westAttack = GetNegativeRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, GetWest, WestDirection);
+            ulong northAttack = GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, GetNorth,bitScanForwardLS1B, NorthDirection);
+            ulong eastAttack = GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, GetEast,bitScanReverseMS1B, EastDiretion);
+            ulong southAttack = GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, GetSouth, bitScanReverseMS1B, SouthDirection);
+            ulong westAttack = GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, GetWest,bitScanForwardLS1B, WestDirection);
             Printboard(Convert.ToString((long)northAttack, toBase: 2).PadLeft(64, '0'));
             Console.WriteLine(" ");
             Printboard(Convert.ToString((long)eastAttack, toBase: 2).PadLeft(64, '0'));
@@ -32,39 +32,29 @@ namespace ChessProgrammingFundamentalsPractice
             Console.WriteLine(" ");
             Printboard(Convert.ToString((long)westAttack, toBase: 2).PadLeft(64, '0'));
             Console.WriteLine(" ");
-            return northAttack ;
+            return northAttack ^ eastAttack ^ southAttack ^ westAttack;
         }
         
 
-        public ulong GetNegativeRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int, ulong> rayAttack, int direction)
+        public ulong GetRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int,ulong> rayAttack, Func<ulong,int> bitScan, int direction)
         {
             ulong attacks = rayAttack(square);
-            //Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
             ulong blocker = attacks & allPositionAtBoard;
-            if(blocker > 0)
-            {
-                square = bitScanReverseMS1B(blocker) + SetBitScanSubtracter(direction);
-                attacks = (attacks & ~rayAttack(square)) ;
-                
-            }
-            return attacks;
-        }
-
-        public ulong GetPositiveRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int,ulong> rayAttack, int direction)
-        {
-            ulong attacks = rayAttack(square);
-            //Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
-            //Console.WriteLine(" ");
-            ulong blocker = attacks & allPositionAtBoard;
-            //Printboard(Convert.ToString((long)blocker, toBase: 2).PadLeft(64, '0'));
-            //Console.WriteLine(" ");
             if (blocker > 0)
             {
-                //so we subtract 8 because in rayattacks it starts the count from the next line and excludes the current row
-                square = bitScanForwardLS1B(blocker) + SetBitScanSubtracter(direction);
-                attacks = attacks & ~rayAttack(square);
+                square = bitScan(blocker);
+                if((opponent & ((ulong)1 <<square)) > 0)
+                {
+                    //this includes the actual line
+                }
+                else
+                {
+                    //so we add direction because in rayattacks it starts the count from the next line and excludes the current row
+                    square += SetBitScanSubtracter(direction);
+
+                }
+                attacks = attacks ^ rayAttack(square) ;
             }
-            //Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
             return attacks;
         }
 
@@ -74,12 +64,12 @@ namespace ChessProgrammingFundamentalsPractice
             {
                 case 8: //North
                     return -8;
-                case 1: //East
+                case 1: //West
                     return -1;
                 case -8: //South
                     return 8;
-                case -1: //West
-                    return 1;
+                case -1: //East
+                    return -1;
                 default:
                     throw new Exception("wrong direction code");
             }

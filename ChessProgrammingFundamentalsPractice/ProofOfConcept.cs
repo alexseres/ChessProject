@@ -20,15 +20,15 @@ namespace ChessProgrammingFundamentalsPractice
                                                             0b_0000_0000_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000};
 
         public string[] WhitePrintedBoardNames = new string[6] { "A", "S", "D", "F", "G", "H" };
-        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0100_0000_1111_1111_0111_1111,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0100_0000_0000_0000_0000_0001,
+        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_1111_1111_1111_1111,
+                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0000_0000_1000_0001,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0100_0010,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0100,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001_0000,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000 };
 
-        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_0000_0000_0000_0100_1000_1111_1111_0111_1111;
+        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_0000_0000_0000_0100_1010_1111_1111_1111_1111;
   
         public ProofOfConcept()
         {
@@ -89,7 +89,6 @@ namespace ChessProgrammingFundamentalsPractice
             currentPlayer.Pieces = (currentPlayer.Pieces & ~currentPiece.Positions);
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, choosenPositionToMove);
             currentPlayer.Pieces = currentPlayer.Pieces ^ currentPiece.Positions;
-
             BoardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
         }
 
@@ -137,8 +136,6 @@ namespace ChessProgrammingFundamentalsPractice
             string result = Console.ReadLine();
             int convertToInt = Int16.Parse(result) - 1;
             ulong pos = (ulong)1 << convertToInt;
-            string b = Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0');
-            PrintBoard(b);
             return pos;
         }
         public ulong ChoosePiece()
@@ -147,9 +144,6 @@ namespace ChessProgrammingFundamentalsPractice
             string result = Console.ReadLine();
             int convertToInt = Int16.Parse(result) - 1;
             ulong pos = (ulong)1 << convertToInt;
-
-            string b = Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0');
-            PrintBoard(b);
             return pos;
         }
 
