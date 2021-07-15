@@ -9,6 +9,9 @@ namespace ChessProgrammingFundamentalsPractice
     {
         public readonly Player Player1;
         public readonly Player Player2;
+        public const string From = "Enter position to choose piece";
+        public const string To = "Enter position to choose piece";
+
 
         public string[] BlackPrintedBoardNames = new string[6] { "R", "K", "B", "Q", "N", "P" };
         public ulong[] BlackInitPositions = new ulong[7] { 0b_1111_1111_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000,
@@ -44,38 +47,62 @@ namespace ChessProgrammingFundamentalsPractice
             bool isWhiteAtTurn = true;
             while(true)
             {
-                ulong choosenPos = ChoosePiece();
+                ulong choosenPos = UserInput(From);
                 if (isWhiteAtTurn)
                 {
                     BasePiece choosenWhitePiece = GrabAndExtractPiece(Player2, choosenPos);
-                    Process(Player2, choosenWhitePiece, choosenPos);
-                    isWhiteAtTurn = false;
+                    bool response = Process(Player2, choosenWhitePiece, choosenPos);
+                    if (response == true)
+                    {
+                        isWhiteAtTurn = false;
+                    }
+                    else
+                    {
+                        isWhiteAtTurn = true;
+                    }
                 }
                 else
                 {
                     BasePiece choosenBlackPiece = GrabAndExtractPiece(Player1, choosenPos);
-                    Process(Player1, choosenBlackPiece, choosenPos);
-                    isWhiteAtTurn = true;
+                    bool response = Process(Player1, choosenBlackPiece, choosenPos);
+                    if(response == true)
+                    {
+                        isWhiteAtTurn = true; 
+                    }
+                    else
+                    {
+                        isWhiteAtTurn = false;
+                    }
                 }
             }
         }
         
-        public void Process(Player player ,BasePiece piece,  ulong currentPiecePosition)
+        public bool Process(Player player ,BasePiece piece,  ulong currentPiecePosition)
         {
             Player opponent = OpponentCreater(player);
             ulong opportunities = piece.Search(currentPiecePosition, BoardWithAllMember, opponent.Pieces, player.Pieces);
             string opportunitiesToString = Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0');
             Console.WriteLine("opportunities");
             PrintBoard(opportunitiesToString);
+            if (opportunities <= 0)
+            {
+                Console.WriteLine("you cannot move with this piece, choose another one");
+                return false;
+            }
 
-            ulong choosenPositionToMove = WhereToGo();
+            ulong choosenPositionToMove = UserInput(To);
+            if((choosenPositionToMove & opportunities) <= 0)
+            {
+                Console.WriteLine("You cannot move there because there is no opportunity there");
+                return false;
+            }
             bool attacked = HasAttacked(choosenPositionToMove, opponent.Pieces);
             UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, piece, opportunities, currentPiecePosition);
             
             Console.WriteLine("updated board");
             string updatedBoard = CreateStringOfBoard();
             PrintBoard(updatedBoard);
-            
+            return true;
         }
 
         public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, BasePiece currentPiece, ulong opportunities, ulong currentPosition)
@@ -130,22 +157,15 @@ namespace ChessProgrammingFundamentalsPractice
 
 
 
-        public ulong WhereToGo()
+        public ulong UserInput(string inp)
         {
-            Console.WriteLine("Enter position to where you wanna move the piece");
+            Console.WriteLine(inp);
             string result = Console.ReadLine();
             int convertToInt = Int16.Parse(result) - 1;
             ulong pos = (ulong)1 << convertToInt;
             return pos;
         }
-        public ulong ChoosePiece()
-        {
-            Console.WriteLine("Enter position to choose piece");
-            string result = Console.ReadLine();
-            int convertToInt = Int16.Parse(result) - 1;
-            ulong pos = (ulong)1 << convertToInt;
-            return pos;
-        }
+       
 
         #region Print and Create Board
         public void PrintBoard(string board)
