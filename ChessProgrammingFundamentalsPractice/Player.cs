@@ -22,7 +22,7 @@ namespace ChessProgrammingFundamentalsPractice
         {
             Color = color;
             Pieces = positions[0];
-            Rooks = new Rooks(color, positions[1]);
+            Rooks = new Rooks(color, positions[1], new BitScan(), new LongMovements());
             Knights = new Knights(color, positions[2]);
             Bishops = new Bishops(color, positions[3]);
             Queen = new Queen(color, positions[4]);
