@@ -4,11 +4,13 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
-    interface ILongMovements
+    public interface ILongMovements
     {
         ulong GetNorth(int square);
         ulong GetEast(int square);
         ulong GetSouth(int square);
         ulong GetWest(int square);
+        ulong GetWestNorth(int square);
+        ulong GetEastNorth(int square);
     }
 }

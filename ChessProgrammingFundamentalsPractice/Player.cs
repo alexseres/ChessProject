@@ -24,7 +24,7 @@ namespace ChessProgrammingFundamentalsPractice
             Pieces = positions[0];
             Rooks = new Rooks(color, positions[1], new BitScan(), new LongMovements());
             Knights = new Knights(color, positions[2]);
-            Bishops = new Bishops(color, positions[3]);
+            Bishops = new Bishops(color, positions[3], new BitScan(), new LongMovements());
             Queen = new Queen(color, positions[4]);
             King = new King(color, positions[5]);
             Pawns = new Pawns(color, positions[6]);

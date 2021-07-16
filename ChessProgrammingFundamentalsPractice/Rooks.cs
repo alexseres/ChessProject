@@ -6,8 +6,8 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Rooks : BasePiece
     {
-        private IBitScan BitScan { get; set; }
-        private ILongMovements Movements { get; set; }
+        public IBitScan BitScan { get; set; }
+        public ILongMovements Movements { get; set; }
         private const int NorthDirection = 8;
         private const int EastDiretion = -1;
         private const int SouthDirection = -8;
@@ -23,6 +23,8 @@ namespace ChessProgrammingFundamentalsPractice
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
             int square = BitScan.bitScanForwardLS1B(currentPosition);
+            ulong wnAttack = Movements.GetWestNorth(square);
+            ulong enAttack = Movements.GetEastNorth(square);
             ulong northAttack = GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetNorth,BitScan.bitScanForwardLS1B, NorthDirection);
             ulong eastAttack = GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEast, BitScan.bitScanReverseMS1B, EastDiretion);
             ulong southAttack = GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetSouth, BitScan.bitScanReverseMS1B, SouthDirection);
