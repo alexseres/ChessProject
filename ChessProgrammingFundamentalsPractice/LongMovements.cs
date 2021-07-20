@@ -33,8 +33,12 @@ namespace ChessProgrammingFundamentalsPractice
 
         public ulong GetWestNorth(int square)
         {
-            ulong final = 0;
             ulong pos = (ulong)1 << square;
+            if((pos & maskNotAColumn) == 0)
+            {
+                return 0;
+            }
+
             Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
             Console.WriteLine(" ");
             for(int i = square + 9; i < 64; i += 9)
@@ -55,8 +59,12 @@ namespace ChessProgrammingFundamentalsPractice
 
         public ulong GetEastNorth(int square)
         {
-            ulong final = 0;
             ulong pos = (ulong)1 << square;
+            if((pos & maskNotHColumn) == 0)
+            {
+                 return 0;
+            }
+
             Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
             Console.WriteLine(" ");
             for (int i = square + 7; i < 64; i += 7)
@@ -71,6 +79,50 @@ namespace ChessProgrammingFundamentalsPractice
                 Console.WriteLine(" ");
             }
             Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+            return pos;
+        }
+
+        public ulong GetSouthEast(int square)
+        {
+
+            ulong pos = (ulong)1 << square;
+            if ((pos & maskNotHColumn) == 0)
+            {
+                return 0;
+            }
+
+            for (int i = square - 9; i > 0; i -= 9)
+            {
+                if (((pos >> 9) & maskNotHColumn) == 0)
+                {
+                    pos = pos | (pos >> 9);
+                    break;
+                }
+                pos = pos | (pos >> 9);
+            }
+
+            return pos;
+        }
+
+        public ulong GetSouthWest(int square)
+        {
+
+            ulong pos = (ulong)1 << square;
+            if ((pos & maskNotAColumn) == 0)
+            {
+                return 0;
+            }
+
+            for (int i = square - 7; i > 0; i -= 9)
+            {
+                if (((pos >> 7) & maskNotAColumn) == 0)
+                {
+                    pos = pos | (pos >> 7);
+                    break;
+                }
+                pos = pos | (pos >> 7);
+            }
+
             return pos;
         }
 
