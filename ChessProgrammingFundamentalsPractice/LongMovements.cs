@@ -34,7 +34,8 @@ namespace ChessProgrammingFundamentalsPractice
         public ulong GetWestNorth(int square)
         {
             ulong pos = (ulong)1 << square;
-            if((pos & maskNotAColumn) == 0)
+            ulong initPos = pos;
+            if ((pos & maskNotAColumn) == 0)
             {
                 return 0;
             }
@@ -53,13 +54,14 @@ namespace ChessProgrammingFundamentalsPractice
                 Console.WriteLine(" ");
             }
             Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
-            return pos;
+            return pos & ~initPos;
 
         }
 
         public ulong GetEastNorth(int square)
         {
             ulong pos = (ulong)1 << square;
+            ulong initPos = pos;
             if((pos & maskNotHColumn) == 0)
             {
                  return 0;
@@ -79,13 +81,13 @@ namespace ChessProgrammingFundamentalsPractice
                 Console.WriteLine(" ");
             }
             Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
-            return pos;
+            return pos & ~initPos;
         }
 
-        public ulong GetSouthEast(int square)
+        public ulong GetEastSouth(int square)
         {
-
             ulong pos = (ulong)1 << square;
+            ulong initPos = pos;
             if ((pos & maskNotHColumn) == 0)
             {
                 return 0;
@@ -101,13 +103,13 @@ namespace ChessProgrammingFundamentalsPractice
                 pos = pos | (pos >> 9);
             }
 
-            return pos;
+            return pos & ~initPos;
         }
 
-        public ulong GetSouthWest(int square)
+        public ulong GetWestSouth(int square)
         {
-
             ulong pos = (ulong)1 << square;
+            ulong initPos = pos;
             if ((pos & maskNotAColumn) == 0)
             {
                 return 0;
@@ -123,7 +125,7 @@ namespace ChessProgrammingFundamentalsPractice
                 pos = pos | (pos >> 7);
             }
 
-            return pos;
+            return pos & ~initPos;
         }
 
         public void Printboard(string board)
@@ -143,5 +145,6 @@ namespace ChessProgrammingFundamentalsPractice
             Console.WriteLine(finalrow);
 
         }
+
     }
 }

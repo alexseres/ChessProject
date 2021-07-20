@@ -12,5 +12,10 @@ namespace ChessProgrammingFundamentalsPractice
         ulong GetWest(int square);
         ulong GetWestNorth(int square);
         ulong GetEastNorth(int square);
+
+        ulong GetWestSouth(int suqare);
+        ulong GetEastSouth(int square);
+        
+
     }
 }

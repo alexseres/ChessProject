@@ -23,20 +23,20 @@ namespace ChessProgrammingFundamentalsPractice
                                                             0b_0000_0000_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000};
 
         public string[] WhitePrintedBoardNames = new string[6] { "A", "S", "D", "F", "G", "H" };
-        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_1111_1111_1111_1111,
+        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0010_1111_1111_1111_1111,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0000_0000_1000_0001,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0100_0010,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0100,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000,
+                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_1000,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001_0000,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000 };
 
-        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_0000_0000_0000_0100_1010_1111_1111_1111_1111;
+        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_0000_1000_0000_0100_1010_1111_1111_1111_1111;
   
         public ProofOfConcept()
         {
-            Player1 = new Player(ColorSide.Black, BlackInitPositions, BlackPrintedBoardNames);
-            Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames);
+            Player1 = new Player(ColorSide.Black, BlackInitPositions, BlackPrintedBoardNames, new BitScan(), new LongMovements(), new RayAttack());
+            Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames, new BitScan(), new LongMovements(), new RayAttack());
             string board = CreateStringOfBoard();
             PrintBoard(board);
             PlayGame();
