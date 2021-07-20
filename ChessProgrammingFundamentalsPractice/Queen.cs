@@ -38,7 +38,7 @@ namespace ChessProgrammingFundamentalsPractice
             ulong westNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestNorth, BitScan.bitScanForwardLS1B, WestNorthDirection);
             ulong eastSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastSouth, BitScan.bitScanReverseMS1B, EastSouthDirection);
             ulong westSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestSouth, BitScan.bitScanReverseMS1B, WestSouthDirection);
-            return northAttack ^ eastAttack ^ southAttack ^ westAttack ^ eastNorthAttack ^ westAttack ^ eastSouthAttack ^ westSouthAttack;
+            return northAttack ^ eastAttack ^ southAttack ^ westAttack ^ eastNorthAttack ^ westNorthAttack ^ eastSouthAttack ^ westSouthAttack;
 
         }
     }
