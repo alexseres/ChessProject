@@ -52,7 +52,6 @@ namespace ChessProgrammingFundamentalsPractice
             }
             var finalrow = new string(sb.ToString());
             Console.WriteLine(finalrow);
-
         }
     }
 }

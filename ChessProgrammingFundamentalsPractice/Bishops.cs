@@ -8,7 +8,7 @@ namespace ChessProgrammingFundamentalsPractice
     {
         public ILongMovements Movements { get; set; }
         public IBitScan BitScan { get; set; }
-        public IRayAttack Attack { get; set; }
+        public IAttack Attack { get; set; }
 
         private const int EastNorthDirection = 7;
         private const int WestNorthDirection = 9;
@@ -16,7 +16,7 @@ namespace ChessProgrammingFundamentalsPractice
         private const int WestSouthDirection = -7;
 
 
-        public Bishops(ColorSide color, ulong positions, IBitScan bitScan, ILongMovements movements, IRayAttack attack) : base(color, positions)
+        public Bishops(ColorSide color, ulong positions, IBitScan bitScan, ILongMovements movements, IAttack attack) : base(color, positions)
         {
             Movements = movements;
             BitScan = bitScan;

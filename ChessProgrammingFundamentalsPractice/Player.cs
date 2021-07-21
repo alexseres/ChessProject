@@ -18,13 +18,13 @@ namespace ChessProgrammingFundamentalsPractice
         public Pawns Pawns { get; set; }
 
         List<BasePiece> PiecesList;
-        public Player(ColorSide color, ulong[] positions, string[] namesOfPiecesOnPrintedBoard, IBitScan bitscan, ILongMovements movements, IRayAttack rayAttack)
+        public Player(ColorSide color, ulong[] positions, string[] namesOfPiecesOnPrintedBoard, IBitScan bitscan, ILongMovements movements, IAttack rayAttack)
         {
             Color = color;
             Pieces = positions[0];
             Rooks = new Rooks(color, positions[1], bitscan, movements, rayAttack);
             Knights = new Knights(color, positions[2]);
-            Bishops = new Bishops(color, positions[3], bitscan, movements);
+            Bishops = new Bishops(color, positions[3], bitscan, movements, rayAttack);
             Queen = new Queen(color, positions[4], bitscan, movements, rayAttack);
             King = new King(color, positions[5]);
             Pawns = new Pawns(color, positions[6]);

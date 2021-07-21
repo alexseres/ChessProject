@@ -8,13 +8,13 @@ namespace ChessProgrammingFundamentalsPractice
     {
         public IBitScan BitScan { get; set; }
         public ILongMovements Movements { get; set; }
-        public IRayAttack Attack { get; set; }
+        public IAttack Attack { get; set; }
         private const int NorthDirection = 8;
         private const int EastDiretion = -1;
         private const int SouthDirection = -8;
         private const int WestDirection = 1;
 
-        public Rooks(ColorSide color, ulong positions, IBitScan bitScan, ILongMovements movements, IRayAttack attack) : base(color, positions)
+        public Rooks(ColorSide color, ulong positions, IBitScan bitScan, ILongMovements movements, IAttack attack) : base(color, positions)
         {
             BitScan = bitScan;
             Movements = movements;

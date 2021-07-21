@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
-    public class RayAttack : IRayAttack
+    public class Attack : IAttack
     {
         public ulong GetRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int, ulong> rayAttack, Func<ulong, int> bitScan, int direction)
         {
@@ -29,6 +29,11 @@ namespace ChessProgrammingFundamentalsPractice
                 attacks = attacks ^ rayAttack(square);
             }
             return attacks;
+        }
+
+        public ulong KnightAttacks(ulong allPositionAtBoard, ulong opponent, int square, int direction)
+        {
+            throw new NotImplementedException();
         }
 
         public void Printboard(string board)
