@@ -50,7 +50,8 @@ namespace ChessProgrammingFundamentalsPractice
                 ulong choosenPos = UserInput(From);
                 if (isWhiteAtTurn)
                 {
-                    BasePiece choosenWhitePiece = GrabAndExtractPiece(Player2, choosenPos);
+                    //BasePiece choosenWhitePiece = GrabAndExtractPiece(Player2, choosenPos);
+                    BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
                     bool response = Process(Player2, choosenWhitePiece, choosenPos);
                     if (response == true)
                     {
@@ -63,7 +64,9 @@ namespace ChessProgrammingFundamentalsPractice
                 }
                 else
                 {
-                    BasePiece choosenBlackPiece = GrabAndExtractPiece(Player1, choosenPos);
+                    //BasePiece choosenBlackPiece = GrabAndExtractPiece(Player1, choosenPos);
+                    PrintBoard(Convert.ToString((long)choosenPos, toBase: 2).PadLeft(64, '0'));
+                    BasePiece choosenBlackPiece = Player1.GrabAndExtractPiece(choosenPos);
                     bool response = Process(Player1, choosenBlackPiece, choosenPos);
                     if(response == true)
                     {
@@ -81,9 +84,7 @@ namespace ChessProgrammingFundamentalsPractice
         {
             Player opponent = OpponentCreater(player);
             ulong opportunities = piece.Search(currentPiecePosition, BoardWithAllMember, opponent.Pieces, player.Pieces);
-            string opportunitiesToString = Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0');
-            Console.WriteLine("opportunities");
-            PrintBoard(opportunitiesToString);
+            PrintBoard(Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0'));
             if (opportunities <= 0)
             {
                 Console.WriteLine("you cannot move with this piece, choose another one");
@@ -97,7 +98,8 @@ namespace ChessProgrammingFundamentalsPractice
                 return false;
             }
             bool attacked = HasAttacked(choosenPositionToMove, opponent.Pieces);
-            UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, piece, opportunities, currentPiecePosition);
+            UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, 
+                opportunities, currentPiecePosition);
             
             Console.WriteLine("updated board");
             string updatedBoard = CreateStringOfBoard();
@@ -105,17 +107,13 @@ namespace ChessProgrammingFundamentalsPractice
             return true;
         }
 
-        public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, BasePiece currentPiece, ulong opportunities, ulong currentPosition)
+        public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, ulong opportunities, ulong currentPosition)
         {
             if (attacked)
             {
-                BasePiece attackedPiece = GrabAndExtractPiece(opponent, choosenPositionToMove);
-                attackedPiece.UpdatePositionWhenBeingAttacked(choosenPositionToMove);
-                opponent.Pieces = opponent.Pieces & ~choosenPositionToMove;
+                opponent.NotifyBeingAttacked(choosenPositionToMove);
             }
-            currentPlayer.Pieces = (currentPlayer.Pieces & ~currentPiece.Positions);
-            currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, choosenPositionToMove);
-            currentPlayer.Pieces = currentPlayer.Pieces ^ currentPiece.Positions;
+            currentPlayer.NotifyMove(currentPosition, opportunities, choosenPositionToMove);
             BoardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
         }
 
@@ -139,21 +137,21 @@ namespace ChessProgrammingFundamentalsPractice
         }
 
 
-        public BasePiece GrabAndExtractPiece(Player player, ulong pos)
-        {
+        //public BasePiece GrabAndExtractPiece(Player player, ulong pos)
+        //{
             
-            Console.WriteLine(Convert.ToString((long)pos, toBase:2).PadLeft(64,'0'));
-            for (int i = 0;i < player.Length; i++)
-            {
-                Console.WriteLine(Convert.ToString((long)Player2[i].Positions, toBase:2).PadLeft(64,'0'));
-                if ((player.Pieces & (pos & player[i].Positions)) > 0)
-                {
-                    Console.WriteLine(" ");
-                    return player[i];
-                }
-            }
-            return null;
-        }
+        //    Console.WriteLine(Convert.ToString((long)pos, toBase:2).PadLeft(64,'0'));
+        //    for (int i = 0;i < player.Length; i++)
+        //    {
+        //        Console.WriteLine(Convert.ToString((long)Player2[i].Positions, toBase:2).PadLeft(64,'0'));
+        //        if ((player.Pieces & (pos & player[i].Positions)) > 0)
+        //        {
+        //            Console.WriteLine(" ");
+        //            return player[i];
+        //        }
+        //    }
+        //    return null;
+        //}
 
 
 
@@ -189,19 +187,20 @@ namespace ChessProgrammingFundamentalsPractice
         {
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             StringBuilder sb = new StringBuilder();
+
             for(int i = 0;i< 64;i++)
             {
                 bool IsSquareOccupied = false;
                 for(int j = 0; j < 6; j++)
                 {
-                    if((Player1[j].Positions & (mask & BoardWithAllMember)) > 0)
+                    if(((Player1.PiecesList[j] as BasePiece).Positions & (mask & BoardWithAllMember)) > 0)
                     {
-                        sb.Append(Player1[j].BoardName);
+                        sb.Append((Player1.PiecesList[j] as BasePiece).BoardName);
                         IsSquareOccupied = true;
                     }
-                    else if ((Player2[j].Positions & (mask & BoardWithAllMember)) > 0)
+                    else if (((Player2.PiecesList[j] as BasePiece).Positions & (mask & BoardWithAllMember)) > 0)
                     {
-                        sb.Append(Player2[j].BoardName);
+                        sb.Append((Player2.PiecesList[j] as BasePiece).BoardName);
                         IsSquareOccupied = true;
                     }
                 }

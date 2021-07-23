@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
-    public class Player
+    public class Player : ISubject
     {
         public ColorSide Color { get; set; }
         public ulong Pieces { get; set; }
@@ -17,7 +17,8 @@ namespace ChessProgrammingFundamentalsPractice
         public King King { get; set; } 
         public Pawns Pawns { get; set; }
 
-        List<BasePiece> PiecesList;
+        public List<IObserver> PiecesList;
+
         public Player(ColorSide color, ulong[] positions, string[] namesOfPiecesOnPrintedBoard, IBitScan bitscan, ILongMovements movements, IAttack rayAttack)
         {
             Color = color;
@@ -28,28 +29,63 @@ namespace ChessProgrammingFundamentalsPractice
             Queen = new Queen(color, positions[4], bitscan, movements, rayAttack);
             King = new King(color, positions[5]);
             Pawns = new Pawns(color, positions[6]);
-
-            PiecesList = new List<BasePiece>() { Rooks, Knights, Bishops, Queen, King, Pawns };
+            PiecesList = new List<IObserver>() { Rooks, Knights, Bishops, Queen, King, Pawns };
             InitPieces(namesOfPiecesOnPrintedBoard);
-
         }
 
-        
 
         private void InitPieces(string[] names)
         {
-            for(int i = 0;i < PiecesList.Count; i++)
+            for (int i = 0; i < PiecesList.Count; i++)
             {
-                PiecesList[i].BoardName = names[i];
+                (PiecesList[i] as BasePiece).BoardName = names[i];
             }
         }
 
-        public BasePiece this[int index]
+        public void Attach(IObserver observer)
         {
-            get => PiecesList[index];
+            Console.WriteLine("attached an observer");
+            this.PiecesList.Add(observer);
         }
 
-        public int Length => PiecesList.Count;
+        public void Detach(IObserver observer)
+        {
+            this.PiecesList.Remove(observer);
+        }
+
+        public BasePiece GrabAndExtractPiece(ulong pos)
+        {
+            foreach(IObserver observer in PiecesList)
+            {
+                if ((Pieces & (pos & (observer as BasePiece).Positions)) > 0)
+                {
+                    return observer as BasePiece;
+                }
+            }
+            return null;
+        }
+
+        public void NotifyBeingAttacked(ulong pos)
+        {
+            BasePiece attackedPiece = GrabAndExtractPiece(pos);
+            attackedPiece.UpdatePositionWhenBeingAttacked(pos);
+            Pieces = Pieces & ~pos;
+        }
+
+        public void NotifyMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos)
+        {
+            BasePiece currentPiece = GrabAndExtractPiece(currentPosition);
+            Pieces = (Pieces & ~currentPiece.Positions);
+            currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
+            Pieces = Pieces ^ currentPiece.Positions;
+        }
+
+        //indexer of the class
+        //public BasePiece this[int index]
+        //{
+        //    get => PiecesList[index];
+        //}
+        //public int Length => PiecesList.Count;
         
     }
 }

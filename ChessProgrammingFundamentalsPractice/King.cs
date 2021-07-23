@@ -9,15 +9,6 @@ namespace ChessProgrammingFundamentalsPractice
         private ulong MaskNotInAFile = 0b_0111_1111_0111_0111_1111_0111_1111_1111_1111_0111_1111_0111_1111_0111_1111_0111;
         private ulong MaskNotInHFile = 0b_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110;
 
-        private const int NorthDirection = 8;
-        private const int EastDiretion = -1;
-        private const int SouthDirection = -8;
-        private const int WestDirection = 1;
-        private const int EastNorthDirection = 7;
-        private const int WestNorthDirection = 9;
-        private const int EastSouthDirection = -9;
-        private const int WestSouthDirection = -7;
-
         public King(ColorSide color, ulong positions): base(color, positions)
         {
             

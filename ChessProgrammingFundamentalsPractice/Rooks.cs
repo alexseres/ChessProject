@@ -19,7 +19,6 @@ namespace ChessProgrammingFundamentalsPractice
             BitScan = bitScan;
             Movements = movements;
             Attack = attack;
-
         }
 
 
