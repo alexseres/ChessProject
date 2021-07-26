@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChessProgrammingFundamentalsPractice
+namespace ChessProject.ActionLogics.BitScanLogic
 {
     public class BitScan : IBitScan
     {

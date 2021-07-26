@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChessProgrammingFundamentalsPractice
+namespace ChessProject.ActionLogics.Attacks
 {
     public class Attack : IAttack
     {
@@ -17,11 +17,11 @@ namespace ChessProgrammingFundamentalsPractice
             {
                 square = bitScan(blocker);
                 ulong squarePosition = ((ulong)1 << square);
-                if ((opponent &  squarePosition) > 0)
+                if ((opponent & squarePosition) > 0)
                 {
                     //this includes the actual line
                 }
-                else if(((allPositionAtBoard & ~opponent) & squarePosition) > 0 )
+                else if (((allPositionAtBoard & ~opponent) & squarePosition) > 0)
                 {
                     square += SetBitScanSubtracter(direction);
 
@@ -75,7 +75,7 @@ namespace ChessProgrammingFundamentalsPractice
                     return 7;
                 case -9: // EastSouth
                     return 9;
-                    
+
                 default:
                     throw new Exception("wrong direction code");
             }

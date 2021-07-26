@@ -52,29 +52,45 @@ namespace ChessProgrammingFundamentalsPractice
                 {
                     //BasePiece choosenWhitePiece = GrabAndExtractPiece(Player2, choosenPos);
                     BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
-                    bool response = Process(Player2, choosenWhitePiece, choosenPos);
-                    if (response == true)
+                    if (choosenWhitePiece is null)
                     {
-                        isWhiteAtTurn = false;
+                        Console.WriteLine("Choose white piece not black or null");
+                        isWhiteAtTurn = true;
                     }
                     else
                     {
-                        isWhiteAtTurn = true;
+                        bool response = Process(Player2, choosenWhitePiece, choosenPos);
+                        if (response == true)
+                        {
+                            isWhiteAtTurn = false;
+                        }
+                        else
+                        {
+                            isWhiteAtTurn = true;
+                        }
                     }
+                    
                 }
                 else
                 {
-                    //BasePiece choosenBlackPiece = GrabAndExtractPiece(Player1, choosenPos);
                     PrintBoard(Convert.ToString((long)choosenPos, toBase: 2).PadLeft(64, '0'));
                     BasePiece choosenBlackPiece = Player1.GrabAndExtractPiece(choosenPos);
-                    bool response = Process(Player1, choosenBlackPiece, choosenPos);
-                    if(response == true)
+                    if(choosenBlackPiece is null)
                     {
-                        isWhiteAtTurn = true; 
+                        Console.WriteLine("Choose black piece not white or null");
+                        isWhiteAtTurn = false;
                     }
                     else
                     {
-                        isWhiteAtTurn = false;
+                        bool response = Process(Player1, choosenBlackPiece, choosenPos);
+                        if (response == true)
+                        {
+                            isWhiteAtTurn = true;
+                        }
+                        else
+                        {
+                            isWhiteAtTurn = false;
+                        }
                     }
                 }
             }
@@ -98,8 +114,7 @@ namespace ChessProgrammingFundamentalsPractice
                 return false;
             }
             bool attacked = HasAttacked(choosenPositionToMove, opponent.Pieces);
-            UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, 
-                opportunities, currentPiecePosition);
+            UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition);
             
             Console.WriteLine("updated board");
             string updatedBoard = CreateStringOfBoard();

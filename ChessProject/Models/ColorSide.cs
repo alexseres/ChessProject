@@ -4,7 +4,9 @@ using System.Text;
 
 namespace ChessProject.Models
 {
-    public class Bishop : BasePiece 
+    public enum ColorSide
     {
+        Black,
+        White
     }
 }

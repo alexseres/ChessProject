@@ -1,37 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace ChessProject.Models
+namespace ChessProject
 {
-    public abstract class BasePiece : INotifyPropertyChanged
+    public abstract class BasePiece : IObserver
     {
-        #region INotifyPropertychanged field and methods
-        public event PropertyChangedEventHandler PropertyChanged;
-        public bool SetProperty<T>(ref T backStore, T newValue, [CallerMemberName] string propName = null)
+        public ulong Positions { get; set; }
+        public string Name { get; set; }
+        public string BoardName { get; set; }
+
+        public ColorSide Color { get; set; }
+
+        public BasePiece(ColorSide color, ulong positions)
         {
-            if (EqualityComparer<T>.Default.Equals(backStore, newValue)) return false;
-            backStore = newValue;
-            OnPropertyChanged(propName);
-            return true;
+            Color = color;
+            Positions = positions;
         }
 
-        private void OnPropertyChanged([CallerMemberName] string propName = null)
+        public abstract ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions);
+
+        public void Printboard(string board)
         {
-            var handler = PropertyChanged;
-            if (handler != null)
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < board.Length; i++)
             {
-                handler.Invoke(this, new PropertyChangedEventArgs(propName));
+                if (i % 8 == 0 && i != 0)
+                {
+                    string row = new string(sb.ToString());
+                    Console.WriteLine(row);
+                    sb.Clear();
+                }
+                sb.Append(board[i]);
+            }
+            var finalrow = new string(sb.ToString());
+            Console.WriteLine(finalrow);
+        }
+        public void UpdatePositionWhenMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos)
+        {
+            if ((opportunities & decidedMovePos) > 0)
+            {
+                Positions = (~currentPosition & Positions) | decidedMovePos;
             }
         }
-        #endregion
 
-        public string Name { get; set; }
-        public Positions Positions { get; set; }
-        public Positions InitPositions { get; set; }
-        public bool IsKnockedOut { get; set; }
+        public void UpdatePositionWhenBeingAttacked(ulong attackedPosition)
+        {
+            if ((attackedPosition & Positions) > 0)
+            {
+                Positions = (Positions & ~attackedPosition);
+            }
+        }
 
     }
 }
