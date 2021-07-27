@@ -26,10 +26,37 @@ namespace ChessProgrammingFundamentalsPractice
         {
             int square = BitScan.bitScanForwardLS1B(currentPosition);
             ulong eastNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastNorth, BitScan.bitScanForwardLS1B, EastNorthDirection);
+            Console.WriteLine(" ");
+            PrintBoard(Convert.ToString((long)eastNorthAttack, toBase: 2).PadLeft(64, '0'));
+            Console.WriteLine(" ");
             ulong westNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestNorth, BitScan.bitScanForwardLS1B, WestNorthDirection);
+            PrintBoard(Convert.ToString((long)westNorthAttack, toBase: 2).PadLeft(64, '0'));
+            Console.WriteLine(" ");
             ulong eastSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastSouth, BitScan.bitScanReverseMS1B, EastSouthDirection);
+            
+            PrintBoard(Convert.ToString((long)eastSouthAttack, toBase: 2).PadLeft(64, '0'));
+            Console.WriteLine(" ");
             ulong westSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestSouth, BitScan.bitScanReverseMS1B, WestSouthDirection);
+            PrintBoard(Convert.ToString((long)westSouthAttack, toBase: 2).PadLeft(64, '0'));
+            Console.WriteLine(" ");
             return eastNorthAttack ^ westNorthAttack ^ eastSouthAttack ^ westSouthAttack;
+        }
+
+        public void PrintBoard(string board)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < board.Length; i++)
+            {
+                if (i % 8 == 0 && i != 0)
+                {
+                    string row = new string(sb.ToString());
+                    Console.WriteLine(row);
+                    sb.Clear();
+                }
+                sb.Append(board[i]);
+            }
+            var finalRow = new string(sb.ToString());
+            Console.WriteLine(finalRow);
         }
     }
 }

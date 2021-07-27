@@ -17,16 +17,19 @@ namespace ChessProgrammingFundamentalsPractice
         public King King { get; set; } 
         public Pawns Pawns { get; set; }
 
+        public IAttack Attack { get; set; }
+
         public List<IObserver> PiecesList;
 
-        public Player(ColorSide color, ulong[] positions, string[] namesOfPiecesOnPrintedBoard, IBitScan bitscan, ILongMovements movements, IAttack rayAttack)
+        public Player(ColorSide color, ulong[] positions, string[] namesOfPiecesOnPrintedBoard, IBitScan bitscan, ILongMovements movements, IAttack attack)
         {
             Color = color;
+            Attack = attack;
             Pieces = positions[0];
-            Rooks = new Rooks(color, positions[1], bitscan, movements, rayAttack);
+            Rooks = new Rooks(color, positions[1], bitscan, movements, attack);
             Knights = new Knights(color, positions[2]);
-            Bishops = new Bishops(color, positions[3], bitscan, movements, rayAttack);
-            Queen = new Queen(color, positions[4], bitscan, movements, rayAttack);
+            Bishops = new Bishops(color, positions[3], bitscan, movements, attack);
+            Queen = new Queen(color, positions[4], bitscan, movements, attack);
             King = new King(color, positions[5]);
             Pawns = new Pawns(color, positions[6]);
             PiecesList = new List<IObserver>() { Rooks, Knights, Bishops, Queen, King, Pawns };
@@ -80,12 +83,40 @@ namespace ChessProgrammingFundamentalsPractice
             Pieces = Pieces ^ currentPiece.Positions;
         }
 
+        public bool KingIsInCheck(List<IObserver> PieceListOfOpponent, ulong opponentPositions, ulong allPositionAtBoard, ulong kingPosition)
+        {
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            for (int i = 0; i < 64; i++)
+            {
+                if ((opponentPositions & mask) > 0)
+                {
+                    foreach (IObserver observer in PieceListOfOpponent)
+                    {
+                        BasePiece piece = observer as BasePiece;
+                        if ((piece.Positions & mask) > 0)
+                        {
+                            ulong attacks = piece.Search(mask, allPositionAtBoard, opponentPositions, (allPositionAtBoard & ~opponentPositions));
+                            if ((attacks & kingPosition) > 0)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                mask = mask >> 1;
+            }
+            return false;
+        }
+
+        
+        
+
         //indexer of the class
         //public BasePiece this[int index]
         //{
         //    get => PiecesList[index];
         //}
         //public int Length => PiecesList.Count;
-        
+
     }
 }

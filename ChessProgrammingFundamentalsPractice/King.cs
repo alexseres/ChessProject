@@ -29,30 +29,6 @@ namespace ChessProgrammingFundamentalsPractice
             return allPossibilities;
         }
 
-        public bool CheckIfCheck(List<IObserver> PieceListOfOpponent, ulong opponentPositions, ulong allPositionAtBoard, ulong kingPosition)
-        {
-            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-            for(int i = 0;i < 64; i++)
-            {
-                if((opponentPositions & mask) > 0)
-                {
-                    foreach(IObserver observer in PieceListOfOpponent)
-                    {
-                        BasePiece piece = observer as BasePiece;
-                        if ((piece.Positions & mask) > 0)
-                        {
-                            ulong attacks = piece.Search(mask, allPositionAtBoard, opponentPositions, (allPositionAtBoard & ~opponentPositions));
-                            if((attacks & kingPosition) > 0)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                mask = mask >> 1;
-            }
-
-            return false;
-        }
+        
     }
 }

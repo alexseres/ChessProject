@@ -7,6 +7,6 @@ namespace ChessProgrammingFundamentalsPractice
     public interface IAttack
     {
         public ulong GetRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int, ulong> rayAttack, Func<ulong, int> bitScan, int direction);
-        public ulong KnightAttacks(ulong allPositionAtBoard, ulong opponent, int square, int direction);
+        public ulong GetAllOpponentAttack(ulong allPiecePositions, ulong enemyPositions, ulong ourPositions, List<IObserver> opponentPieceList);
     }
 }

@@ -6,6 +6,40 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Attack : IAttack
     {
+
+
+        public ulong GetAllOpponentAttack(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions,  List<IObserver> pieceListOfOpponent)
+        {
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            ulong attacks = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                if((opponentPositions & mask) > 0)
+                {
+                    foreach (IObserver observer in pieceListOfOpponent)
+                    {
+                        BasePiece piece = observer as BasePiece;
+                        if ((piece.Positions & mask) > 0)
+                        {
+                            if(piece is Pawns)
+                            {
+                                Pawns pawn = piece as Pawns;
+                                ColorSide color = pawn.Color == ColorSide.Black ? ColorSide.White : ColorSide.Black;
+                                attacks |= pawn.SearchForOnlyAttack(color,mask, opponentPositions, ourPositions);
+                            }
+                            else
+                            {
+                                attacks |= piece.Search(mask, allPiecePositions, opponentPositions, ourPositions);
+                            }
+                            break;
+                        }
+                    }
+                }
+                mask = mask >> 1;
+            }
+            return attacks;
+        }
+
         public ulong GetRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int, ulong> rayAttack, Func<ulong, int> bitScan, int direction)
         {
             ulong attacks = rayAttack(square);
@@ -30,11 +64,6 @@ namespace ChessProgrammingFundamentalsPractice
                 attacks = (attacks & ~rayAttack(square));
             }
             return attacks;
-        }
-
-        public ulong KnightAttacks(ulong allPositionAtBoard, ulong opponent, int square, int direction)
-        {
-            throw new NotImplementedException();
         }
 
         public void Printboard(string board)

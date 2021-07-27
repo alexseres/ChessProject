@@ -24,7 +24,7 @@ namespace ChessProgrammingFundamentalsPractice
 
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
-            if ((currentPosition & Positions) < 0) throw new Exception("selected positions not in the current positions");
+            //if ((currentPosition & Positions) < 0) throw new Exception("selected positions not in the current positions");
 
             if(this.Color == ColorSide.Black)
             {
@@ -42,24 +42,24 @@ namespace ChessProgrammingFundamentalsPractice
                 ulong movedFirstPositions = (((MaskOfDoubleMove & currentPosition) << 8) & ~allPositionAtBoard) << 8;
                 ulong movedPositions = (currentPosition << MovingDirection) | movedFirstPositions;
                 ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
-                
-                //#region prints
-                //PrintBoard(Convert.ToString((long)currentPosition, toBase: 2).PadLeft(64, '0'));
-                //Console.WriteLine(" ");
-                //PrintBoard(Convert.ToString((long)opponentPositionAtBoard, toBase: 2).PadLeft(64, '0'));
-                //Console.WriteLine(" ");
-                //PrintBoard(Convert.ToString((long)attackPositions, toBase: 2).PadLeft(64, '0'));
-                //Console.WriteLine(" ");
-                //PrintBoard(Convert.ToString((long)movedFirstPositions, toBase: 2).PadLeft(64, '0'));
-                //Console.WriteLine(" ");
-                //PrintBoard(Convert.ToString((long)movedPositions, toBase: 2).PadLeft(64, '0'));
-                //Console.WriteLine(" ");
-                //PrintBoard(Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0'));
-                //#endregion
                 return opportunities;
             }
+        }
 
-
+        public ulong SearchForOnlyAttack(ColorSide color,ulong currentPosition, ulong opponentPositionAtBoard, ulong ourPositions)
+        {
+            if(color == ColorSide.Black)
+            {
+                ulong attackPositions = ((currentPosition >> AttacksDirection[0]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[1]) & maskNotHColumn);
+                ulong opportunities = ((~ourPositions & attackPositions) & opponentPositionAtBoard);
+                return opportunities;
+            }
+            else
+            {
+                ulong attackPositions = ((currentPosition << AttacksDirection[0]) & maskNotAColumn) ^ ((currentPosition << AttacksDirection[1]) & maskNotHColumn);
+                ulong opportunities = ((~ourPositions & attackPositions) & opponentPositionAtBoard);
+                return opportunities;
+            }
         }
 
     }

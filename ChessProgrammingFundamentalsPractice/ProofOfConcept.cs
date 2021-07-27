@@ -23,15 +23,15 @@ namespace ChessProgrammingFundamentalsPractice
                                                             0b_0000_0000_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000};
 
         public string[] WhitePrintedBoardNames = new string[6] { "A", "S", "D", "F", "G", "H" };
-        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0000_1100_0000_0000_0010_1111_1111_1111_1111,
+        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0000_1100_0000_0000_0010_1111_1101_1111_1111,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0000_0000_1000_0001,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0100_0000_0000_0000_0000_0000_0100_0010,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0100,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_1000,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001_0000,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000 };
+                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1101_0000_0000 };
 
-        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_1000_1100_0000_0100_1010_1111_1111_1111_1111;
+        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_1000_1100_0000_0100_1010_1111_1101_1111_1111;
   
         public ProofOfConcept()
         {
@@ -44,13 +44,18 @@ namespace ChessProgrammingFundamentalsPractice
 
         public void PlayGame()
         {
-            bool isWhiteAtTurn = true;
+            bool isWhiteAtTurn = false;
             while(true)
             {
                 ulong choosenPos = UserInput(From);
                 if (isWhiteAtTurn)
                 {
-                    //BasePiece choosenWhitePiece = GrabAndExtractPiece(Player2, choosenPos);
+                    //if(Player2.KingIsInCheck(Player1.PiecesList,Player1.Pieces,BoardWithAllMember,Player2.King.Positions) == true)
+                    //{
+
+                    //}
+                    //ulong allEnemyAttack = Player2.Attack.GetAllOpponentAttack(BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
+                    //PrintBoard(Convert.ToString((long)allEnemyAttack, toBase: 2).PadLeft(64, '0'));
                     BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
                     if (choosenWhitePiece.Color != ColorSide.White)
                     {
