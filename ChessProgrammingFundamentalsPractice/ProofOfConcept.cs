@@ -52,7 +52,7 @@ namespace ChessProgrammingFundamentalsPractice
                 {
                     //BasePiece choosenWhitePiece = GrabAndExtractPiece(Player2, choosenPos);
                     BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
-                    if (choosenWhitePiece is null)
+                    if (choosenWhitePiece.Color != ColorSide.White)
                     {
                         Console.WriteLine("Choose white piece not black or null");
                         isWhiteAtTurn = true;
@@ -69,13 +69,12 @@ namespace ChessProgrammingFundamentalsPractice
                             isWhiteAtTurn = true;
                         }
                     }
-                    
                 }
                 else
                 {
                     PrintBoard(Convert.ToString((long)choosenPos, toBase: 2).PadLeft(64, '0'));
                     BasePiece choosenBlackPiece = Player1.GrabAndExtractPiece(choosenPos);
-                    if(choosenBlackPiece is null)
+                    if(choosenBlackPiece.Color != ColorSide.Black)
                     {
                         Console.WriteLine("Choose black piece not white or null");
                         isWhiteAtTurn = false;
