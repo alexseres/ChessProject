@@ -24,12 +24,13 @@ namespace ChessProgrammingFundamentalsPractice
                             if(piece is Pawns)
                             {
                                 Pawns pawn = piece as Pawns;
-                                ColorSide color = pawn.Color == ColorSide.Black ? ColorSide.White : ColorSide.Black;
-                                attacks |= pawn.SearchForOnlyAttack(color,mask, opponentPositions, ourPositions);
+                                attacks = attacks | pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, ourPositions);
                             }
                             else
                             {
-                                attacks |= piece.Search(mask, allPiecePositions, opponentPositions, ourPositions);
+                                ulong newAttack = piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp)
+                                Printboard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
+                                attacks |= newAttack;
                             }
                             break;
                         }
@@ -57,9 +58,7 @@ namespace ChessProgrammingFundamentalsPractice
                 }
                 else if(((allPositionAtBoard & ~opponent) & squarePosition) > 0 )
                 {
-                    square += SetBitScanSubtracter(direction);
-
-
+                    square += SetBitScanSubtracter(direction); 
                 }
                 attacks = (attacks & ~rayAttack(square));
             }

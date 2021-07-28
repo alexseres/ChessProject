@@ -28,7 +28,7 @@ namespace ChessProgrammingFundamentalsPractice
 
             if(this.Color == ColorSide.Black)
             {
-                ulong attackPositions = ((currentPosition >> AttacksDirection[0]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[1]) & maskNotHColumn);
+                ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);
                 //this one checks if we want to move double square and noone is in front of us
                 ulong movedFirstPositions = (((MaskOfDoubleMove & currentPosition) >> 8) & ~allPositionAtBoard) >> 8;
                 ulong movedPositions = (currentPosition >> MovingDirection) | movedFirstPositions;
@@ -50,14 +50,14 @@ namespace ChessProgrammingFundamentalsPractice
         {
             if(color == ColorSide.Black)
             {
-                ulong attackPositions = ((currentPosition >> AttacksDirection[0]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[1]) & maskNotHColumn);
-                ulong opportunities = ((~ourPositions & attackPositions) & opponentPositionAtBoard);
+                ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);
+                ulong opportunities = (~ourPositions & attackPositions);
                 return opportunities;
             }
             else
             {
                 ulong attackPositions = ((currentPosition << AttacksDirection[0]) & maskNotAColumn) ^ ((currentPosition << AttacksDirection[1]) & maskNotHColumn);
-                ulong opportunities = ((~ourPositions & attackPositions) & opponentPositionAtBoard);
+                ulong opportunities = (~ourPositions & attackPositions);
                 return opportunities;
             }
         }

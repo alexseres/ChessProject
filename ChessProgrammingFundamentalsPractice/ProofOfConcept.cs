@@ -11,6 +11,7 @@ namespace ChessProgrammingFundamentalsPractice
         public readonly Player Player2;
         public const string From = "Enter position to choose piece";
         public const string To = "Enter position to choose piece";
+        public IAttack Attack { get; set; }
 
 
         public string[] BlackPrintedBoardNames = new string[6] { "R", "K", "B", "Q", "N", "P" };
@@ -35,8 +36,9 @@ namespace ChessProgrammingFundamentalsPractice
   
         public ProofOfConcept()
         {
-            Player1 = new Player(ColorSide.Black, BlackInitPositions, BlackPrintedBoardNames, new BitScan(), new LongMovements(), new Attack());
-            Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames, new BitScan(), new LongMovements(), new Attack());
+            Attack = new Attack();
+            Player1 = new Player(ColorSide.Black, BlackInitPositions, BlackPrintedBoardNames, new BitScan(), new LongMovements());
+            Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames, new BitScan(), new LongMovements());
             string board = CreateStringOfBoard();
             PrintBoard(board);
             PlayGame();
@@ -50,12 +52,14 @@ namespace ChessProgrammingFundamentalsPractice
                 ulong choosenPos = UserInput(From);
                 if (isWhiteAtTurn)
                 {
-                    //if(Player2.KingIsInCheck(Player1.PiecesList,Player1.Pieces,BoardWithAllMember,Player2.King.Positions) == true)
-                    //{
+                    ulong opponentAttacks = Attack.GetAllOpponentAttack(BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
 
-                    //}
-                    //ulong allEnemyAttack = Player2.Attack.GetAllOpponentAttack(BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
-                    //PrintBoard(Convert.ToString((long)allEnemyAttack, toBase: 2).PadLeft(64, '0'));
+                    if (Player2.KingIsInCheck(Player2.King.Positions,opponentAttacks))
+                    {
+
+                    }
+                    ulong allEnemyAttack = Player2.Attack.GetAllOpponentAttack(BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
+                    PrintBoard(Convert.ToString((long)allEnemyAttack, toBase: 2).PadLeft(64, '0'));
                     BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
                     if (choosenWhitePiece.Color != ColorSide.White)
                     {
@@ -77,7 +81,8 @@ namespace ChessProgrammingFundamentalsPractice
                 }
                 else
                 {
-                    PrintBoard(Convert.ToString((long)choosenPos, toBase: 2).PadLeft(64, '0'));
+                    ulong allEnemyAttack = Player1.Attack.GetAllOpponentAttack(BoardWithAllMember, Player2.Pieces, Player1.Pieces, Player2.PiecesList);
+                    PrintBoard(Convert.ToString((long)allEnemyAttack, toBase: 2).PadLeft(64, '0'));
                     BasePiece choosenBlackPiece = Player1.GrabAndExtractPiece(choosenPos);
                     if(choosenBlackPiece.Color != ColorSide.Black)
                     {

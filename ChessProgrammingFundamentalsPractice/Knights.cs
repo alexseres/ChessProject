@@ -24,7 +24,7 @@ namespace ChessProgrammingFundamentalsPractice
             ulong northNorthWest = (currentPosition & MaskNotInAFile) << 17;
             ulong northWestWest = (currentPosition & MaskNotInABFile) << 10;
             ulong southEastEast = (currentPosition & MaskNotInGHFile) >> 10;
-            ulong southSouthEast = (currentPosition & MaskNotInGHFile) >> 17;
+            ulong southSouthEast = (currentPosition & MaskNotInHFile) >> 17;
             ulong southSouthWest = (currentPosition & MaskNotInAFile) >> 15;
             ulong southWestWest = (currentPosition & MaskNotInABFile) >> 6;
             ulong allDirection = northNorthEast ^ northEastEast ^ northNorthWest ^ northWestWest ^ southEastEast ^ southSouthEast ^ southWestWest ^ southSouthWest;
