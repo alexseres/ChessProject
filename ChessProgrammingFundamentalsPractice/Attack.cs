@@ -7,8 +7,51 @@ namespace ChessProgrammingFundamentalsPractice
     public class Attack : IAttack
     {
 
+        public ulong CheckMateChecker(ulong attackerPieceRoute,ulong defenderPieceRoute, ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions)
+        {
+            BitScan bitScan = new BitScan();
+            PopulationCount populationCounter = new PopulationCount();
+            ulong union = attackerPieceRoute & defenderPieceRoute;
+            int population = populationCounter.GetPopulation(union);    
+            for(int i = 0;i < population; i++)
+            {
+                int pos = bitScan.bitScanForwardLS1B(union);
+                ulong movedPos = ((ulong)1 << pos);
+            }
 
-        public ulong GetAllOpponentAttack(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions,  List<IObserver> pieceListOfOpponent)
+
+        }
+
+        public ulong GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor,ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceListOfOpponent)
+        {
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            ulong attacks = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                if ((opponentPositions & mask) > 0)
+                {
+                    foreach(IObserver observer in ourPieceListOfOpponent)
+                    {
+                        BasePiece piece = observer as BasePiece;
+                        if ((piece.Positions & mask) > 0)   //it can defend it 
+                        {
+
+                            ulong counterAttack = piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp)
+                            
+                            if ((counterAttack & attackerPositionAndAttackVektor) > 0)
+                            {
+
+                            }
+
+                        }
+                    }
+                }
+                mask = mask >> 1;
+            }
+            return 0;
+        }
+
+        public ulong GetAllOpponentAttackToCheckIfKingInCheck(ulong kingPosition,ulong allPiecePositions, ulong opponentPositions, ulong ourPositions,  List<IObserver> pieceListOfOpponent)
         {
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             ulong attacks = 0;
@@ -24,13 +67,15 @@ namespace ChessProgrammingFundamentalsPractice
                             if(piece is Pawns)
                             {
                                 Pawns pawn = piece as Pawns;
-                                attacks = attacks | pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, ourPositions);
+                                ulong newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, ourPositions) | mask; // we add mask because if we do a counter attack we must know the enemyposition too
+                                if ((newAttack & kingPosition) > 0) return newAttack;
+                                //attacks = attacks | newAttack;
                             }
                             else
                             {
-                                ulong newAttack = piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp)
-                                Printboard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
-                                attacks |= newAttack;
+                                ulong newAttack = piece.Search(mask, allPiecePositions, ourPositions, opponentPositions) | mask;  // here we replaced two arguments(our <-> opp)
+                                if ((newAttack & kingPosition) > 0) return newAttack;
+                                //attacks |= newAttack;
                             }
                             break;
                         }
@@ -38,7 +83,7 @@ namespace ChessProgrammingFundamentalsPractice
                 }
                 mask = mask >> 1;
             }
-            return attacks;
+            return 0;
         }
 
         public ulong GetRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int, ulong> rayAttack, Func<ulong, int> bitScan, int direction)

@@ -52,14 +52,12 @@ namespace ChessProgrammingFundamentalsPractice
                 ulong choosenPos = UserInput(From);
                 if (isWhiteAtTurn)
                 {
-                    ulong opponentAttacks = Attack.GetAllOpponentAttack(BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
-
-                    if (Player2.KingIsInCheck(Player2.King.Positions,opponentAttacks))
+                    ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(Player2.King.Positions,BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
+                    PrintBoard(Convert.ToString((long)opponentAttacks, toBase: 2).PadLeft(64, '0'));
+                    if (opponentAttacks > 0)   // king in check
                     {
-
+                        
                     }
-                    ulong allEnemyAttack = Player2.Attack.GetAllOpponentAttack(BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
-                    PrintBoard(Convert.ToString((long)allEnemyAttack, toBase: 2).PadLeft(64, '0'));
                     BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
                     if (choosenWhitePiece.Color != ColorSide.White)
                     {
@@ -67,6 +65,7 @@ namespace ChessProgrammingFundamentalsPractice
                         isWhiteAtTurn = true;
                     }
                     else
+
                     {
                         bool response = Process(Player2, choosenWhitePiece, choosenPos);
                         if (response == true)
@@ -123,7 +122,7 @@ namespace ChessProgrammingFundamentalsPractice
                 return false;
             }
             bool attacked = HasAttacked(choosenPositionToMove, opponent.Pieces);
-            UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition);
+            UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, BoardWithAllMember);
             
             Console.WriteLine("updated board");
             string updatedBoard = CreateStringOfBoard();
@@ -131,15 +130,26 @@ namespace ChessProgrammingFundamentalsPractice
             return true;
         }
 
-        public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, ulong opportunities, ulong currentPosition)
+
+        public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, ulong opportunities, ulong currentPosition, ulong boardWithAllMember)
         {
             if (attacked)
             {
                 opponent.NotifyBeingAttacked(choosenPositionToMove);
             }
             currentPlayer.NotifyMove(currentPosition, opportunities, choosenPositionToMove);
-            BoardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
+            boardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
         }
+
+        //public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, ulong opportunities, ulong currentPosition)
+        //{
+        //    if (attacked)
+        //    {
+        //        opponent.NotifyBeingAttacked(choosenPositionToMove);
+        //    }
+        //    currentPlayer.NotifyMove(currentPosition, opportunities, choosenPositionToMove);
+        //    BoardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
+        //}
 
 
         public bool HasAttacked(ulong pos, ulong opponentPositions)

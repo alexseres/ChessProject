@@ -25,10 +25,10 @@ namespace ChessProgrammingFundamentalsPractice
         {
             Color = color;
             Pieces = positions[0];
-            Rooks = new Rooks(color, positions[1], bitscan, movements, attack);
+            Rooks = new Rooks(color, positions[1], bitscan, movements, new Attack());
             Knights = new Knights(color, positions[2]);
-            Bishops = new Bishops(color, positions[3], bitscan, movements, attack);
-            Queen = new Queen(color, positions[4], bitscan, movements, attack);
+            Bishops = new Bishops(color, positions[3], bitscan, movements, new Attack());
+            Queen = new Queen(color, positions[4], bitscan, movements, new Attack());
             King = new King(color, positions[5]);
             Pawns = new Pawns(color, positions[6]);
             PiecesList = new List<IObserver>() { Rooks, Knights, Bishops, Queen, King, Pawns };
@@ -83,10 +83,10 @@ namespace ChessProgrammingFundamentalsPractice
         }
 
 
-        public bool KingIsInCheck(ulong kingPosition, ulong opponentAttacks)
-        {
-            return (kingPosition & opponentAttacks) > 1 ? true : false;
-        }
+        //public bool KingIsInCheck(ulong kingPosition, ulong opponentAttacks)
+        //{
+        //    return (kingPosition & opponentAttacks) > 1 ? true : false;
+        //}
 
 
 
