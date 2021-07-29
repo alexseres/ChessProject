@@ -12,6 +12,7 @@ namespace ChessProgrammingFundamentalsPractice
         public const string From = "Enter position to choose piece";
         public const string To = "Enter position to choose piece";
         public IAttack Attack { get; set; }
+        public IUpdateBitBoards UpdateBitBoards{get;set;}
 
 
         public string[] BlackPrintedBoardNames = new string[6] { "R", "K", "B", "Q", "N", "P" };
@@ -37,6 +38,7 @@ namespace ChessProgrammingFundamentalsPractice
         public ProofOfConcept()
         {
             Attack = new Attack();
+            UpdateBitBoards = new UpdateBitBoards();
             Player1 = new Player(ColorSide.Black, BlackInitPositions, BlackPrintedBoardNames, new BitScan(), new LongMovements());
             Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames, new BitScan(), new LongMovements());
             string board = CreateStringOfBoard();
@@ -56,7 +58,11 @@ namespace ChessProgrammingFundamentalsPractice
                     PrintBoard(Convert.ToString((long)opponentAttacks, toBase: 2).PadLeft(64, '0'));
                     if (opponentAttacks > 0)   // king in check
                     {
-                        
+                        if(Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, Player2.King.Positions, BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList))
+                        {
+                            Console.WriteLine("CheckMATE");
+                            break;
+                        }
                     }
                     BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
                     if (choosenWhitePiece.Color != ColorSide.White)
@@ -80,8 +86,8 @@ namespace ChessProgrammingFundamentalsPractice
                 }
                 else
                 {
-                    ulong allEnemyAttack = Player1.Attack.GetAllOpponentAttack(BoardWithAllMember, Player2.Pieces, Player1.Pieces, Player2.PiecesList);
-                    PrintBoard(Convert.ToString((long)allEnemyAttack, toBase: 2).PadLeft(64, '0'));
+                    //ulong allEnemyAttack = Player1.Attack.GetAllOpponentAttack(BoardWithAllMember, Player2.Pieces, Player1.Pieces, Player2.PiecesList);
+                    //PrintBoard(Convert.ToString((long)allEnemyAttack, toBase: 2).PadLeft(64, '0'));
                     BasePiece choosenBlackPiece = Player1.GrabAndExtractPiece(choosenPos);
                     if(choosenBlackPiece.Color != ColorSide.Black)
                     {
@@ -121,8 +127,8 @@ namespace ChessProgrammingFundamentalsPractice
                 Console.WriteLine("You cannot move there because there is no opportunity there");
                 return false;
             }
-            bool attacked = HasAttacked(choosenPositionToMove, opponent.Pieces);
-            UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, BoardWithAllMember);
+            bool attacked = Attack.HasAttacked(choosenPositionToMove, opponent.Pieces);
+            UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, BoardWithAllMember);
             
             Console.WriteLine("updated board");
             string updatedBoard = CreateStringOfBoard();
@@ -131,15 +137,7 @@ namespace ChessProgrammingFundamentalsPractice
         }
 
 
-        public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, ulong opportunities, ulong currentPosition, ulong boardWithAllMember)
-        {
-            if (attacked)
-            {
-                opponent.NotifyBeingAttacked(choosenPositionToMove);
-            }
-            currentPlayer.NotifyMove(currentPosition, opportunities, choosenPositionToMove);
-            boardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
-        }
+
 
         //public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, ulong opportunities, ulong currentPosition)
         //{
@@ -152,10 +150,7 @@ namespace ChessProgrammingFundamentalsPractice
         //}
 
 
-        public bool HasAttacked(ulong pos, ulong opponentPositions)
-        {
-            return (pos & opponentPositions) > 0 ? true : false;
-        }
+
 
 
         public Player OpponentCreater(Player player)

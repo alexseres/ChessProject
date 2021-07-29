@@ -7,30 +7,38 @@ namespace ChessProgrammingFundamentalsPractice
     public class Attack : IAttack
     {
 
-        public ulong CheckMateChecker(ulong attackerPieceRoute,ulong defenderPieceRoute, ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions)
+        public bool CheckMateChecker(ulong attackerPieceRoute , ulong oldPosOfDefenderPiece, ulong defenderPieceRoute, ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> opponentPieceList)
         {
             BitScan bitScan = new BitScan();
             PopulationCount populationCounter = new PopulationCount();
+            UpdateBitBoards updateBitBoards = new UpdateBitBoards();
             ulong union = attackerPieceRoute & defenderPieceRoute;
             int population = populationCounter.GetPopulation(union);    
-            for(int i = 0;i < population; i++)
+            for(int i = 0;i < population; i++)         // most of the time it is just one iteration
             {
                 int pos = bitScan.bitScanForwardLS1B(union);
                 ulong movedPos = ((ulong)1 << pos);
+                List<IObserver> mighChangedOpponentPieceList =  updateBitBoards.SeparateUpdatePieceList(opponentPieceList, movedPos);
+                ulong[] changedPositions =  updateBitBoards.SeparateUpdateBitBoardsToEvadeCheck(movedPos, oldPosOfDefenderPiece, defenderPieceRoute, allPiecePositions, ourPositions, opponentPositions);
+                ulong IsKingStillInCheck = GetAllOpponentAttackToCheckIfKingInCheck(kingPosition, changedPositions[0], changedPositions[1], changedPositions[2], mighChangedOpponentPieceList);
+                if(IsKingStillInCheck == 0)
+                {
+                    return false;
+                }
             }
-
+            return true;
 
         }
 
-        public ulong GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor,ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceListOfOpponent)
-        {
+        public bool GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor,ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceList)
+        {   
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             ulong attacks = 0;
             for (int i = 0; i < 64; i++)
             {
                 if ((opponentPositions & mask) > 0)
                 {
-                    foreach(IObserver observer in ourPieceListOfOpponent)
+                    foreach(IObserver observer in ourPieceList)
                     {
                         BasePiece piece = observer as BasePiece;
                         if ((piece.Positions & mask) > 0)   //it can defend it 
@@ -40,15 +48,18 @@ namespace ChessProgrammingFundamentalsPractice
                             
                             if ((counterAttack & attackerPositionAndAttackVektor) > 0)
                             {
-
+                                bool IsKingStilInCheck = CheckMateChecker(attackerPositionAndAttackVektor, mask,counterAttack, kingPosition, allPiecePositions, opponentPositions, ourPositions, ourPieceList, opponentPieceList);
+                                if (!IsKingStilInCheck)
+                                {
+                                    return false;
+                                }
                             }
-
                         }
                     }
                 }
                 mask = mask >> 1;
             }
-            return 0;
+            return true;
         }
 
         public ulong GetAllOpponentAttackToCheckIfKingInCheck(ulong kingPosition,ulong allPiecePositions, ulong opponentPositions, ulong ourPositions,  List<IObserver> pieceListOfOpponent)
@@ -108,6 +119,11 @@ namespace ChessProgrammingFundamentalsPractice
                 attacks = (attacks & ~rayAttack(square));
             }
             return attacks;
+        }
+
+        public bool HasAttacked(ulong pos, ulong opponentPositions)
+        {
+            return (pos & opponentPositions) > 0 ? true : false;
         }
 
         public void Printboard(string board)
