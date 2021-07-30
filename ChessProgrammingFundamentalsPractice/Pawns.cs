@@ -9,6 +9,7 @@ namespace ChessProgrammingFundamentalsPractice
     {
         public const int MovingDirection = 8;
         public readonly int[] AttacksDirection = new int[2] { 7, 9 };
+        public readonly ulong LastLine;
 
         //these mask we need if our pawn wants to attack and its at the sides, so therefore it cannot move onto the edge and jumping to another row
         public const ulong maskNotAColumn = 0b_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111;
@@ -16,16 +17,15 @@ namespace ChessProgrammingFundamentalsPractice
         //this mask checks if pawns at the starting position, and if they are, they got the chance to move 2 square
         public readonly ulong MaskOfDoubleMove;
 
-        public Pawns(ColorSide color, ulong positions) : base(color, positions)
+        public Pawns(ColorSide color, ulong positions, ulong lastline) : base(color, positions)
         {
+            LastLine = lastline;
             MaskOfDoubleMove = color == ColorSide.Black ? (ulong)0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000 : 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000; 
         }
          
 
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
-            //if ((currentPosition & Positions) < 0) throw new Exception("selected positions not in the current positions");
-
             if(this.Color == ColorSide.Black)
             {
                 ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);

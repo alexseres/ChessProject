@@ -48,14 +48,11 @@ namespace ChessProgrammingFundamentalsPractice
 
         public void PlayGame()
         {
-            bool isWhiteAtTurn = false;
+            bool isWhiteAtTurn = true;
             while(true)
             {
-                
                 if (isWhiteAtTurn)
                 {
-
-
                     ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(Player2.King.Positions,BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
                     PrintBoard(Convert.ToString((long)opponentAttacks, toBase: 2).PadLeft(64, '0'));
                     if (opponentAttacks > 0)   // king in check
@@ -67,6 +64,7 @@ namespace ChessProgrammingFundamentalsPractice
                             break;
                         }
                     }
+
                     ulong choosenPos = UserInput(From);
                     BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
                     if (choosenWhitePiece.Color != ColorSide.White)
@@ -75,7 +73,6 @@ namespace ChessProgrammingFundamentalsPractice
                         isWhiteAtTurn = true;
                     }
                     else
-
                     {
                         bool response = Process(Player2, choosenWhitePiece, choosenPos);
                         if (response == true)
@@ -142,22 +139,6 @@ namespace ChessProgrammingFundamentalsPractice
         }
 
 
-
-
-        //public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, ulong opportunities, ulong currentPosition)
-        //{
-        //    if (attacked)
-        //    {
-        //        opponent.NotifyBeingAttacked(choosenPositionToMove);
-        //    }
-        //    currentPlayer.NotifyMove(currentPosition, opportunities, choosenPositionToMove);
-        //    BoardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
-        //}
-
-
-
-
-
         public Player OpponentCreater(Player player)
         {
             if(player == Player1)
@@ -169,25 +150,6 @@ namespace ChessProgrammingFundamentalsPractice
                 return Player1;
             }
         }
-
-
-        //public BasePiece GrabAndExtractPiece(Player player, ulong pos)
-        //{
-            
-        //    Console.WriteLine(Convert.ToString((long)pos, toBase:2).PadLeft(64,'0'));
-        //    for (int i = 0;i < player.Length; i++)
-        //    {
-        //        Console.WriteLine(Convert.ToString((long)Player2[i].Positions, toBase:2).PadLeft(64,'0'));
-        //        if ((player.Pieces & (pos & player[i].Positions)) > 0)
-        //        {
-        //            Console.WriteLine(" ");
-        //            return player[i];
-        //        }
-        //    }
-        //    return null;
-        //}
-
-
 
         public ulong UserInput(string inp)
         {

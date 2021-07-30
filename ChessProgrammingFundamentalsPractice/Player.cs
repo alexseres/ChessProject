@@ -17,9 +17,9 @@ namespace ChessProgrammingFundamentalsPractice
         public King King { get; set; } 
         public Pawns Pawns { get; set; }
 
-        
+        public Dictionary<string, int> KnockedPieces { get; set; }
 
-        public List<IObserver> PiecesList;
+        public List<IObserver> PiecesList { get; set; }
 
         public Player(ColorSide color, ulong[] positions, string[] namesOfPiecesOnPrintedBoard, IBitScan bitscan, ILongMovements movements)
         {
@@ -30,7 +30,8 @@ namespace ChessProgrammingFundamentalsPractice
             Bishops = new Bishops(color, positions[3], bitscan, movements, new Attack());
             Queen = new Queen(color, positions[4], bitscan, movements, new Attack());
             King = new King(color, positions[5]);
-            Pawns = new Pawns(color, positions[6]);
+            Pawns = new Pawns(color, positions[6], BorderOrganizer.OrganizeOrder(color));
+            KnockedPieces = new Dictionary<string, int>() { { "Rooks", 0}, { "Bishops", 0}, { "Knights", 0}, { "Pawns",0 }, {"Queen",0 }, { "King",0} };
             PiecesList = new List<IObserver>() { Rooks, Knights, Bishops, Queen, King, Pawns };
             InitPieces(namesOfPiecesOnPrintedBoard);
         }
@@ -72,6 +73,20 @@ namespace ChessProgrammingFundamentalsPractice
             BasePiece attackedPiece = GrabAndExtractPiece(pos);
             attackedPiece.UpdatePositionWhenBeingAttacked(pos);
             Pieces = Pieces & ~pos;
+            UpdateKnockedOutPiece(attackedPiece);
+
+        }
+
+        public void UpdateKnockedOutPiece(BasePiece piece)
+        {
+            if (KnockedPieces.ContainsKey(piece.GetType().Name))
+            {
+                KnockedPieces[piece.GetType().Name] += 1;
+            }
+            else
+            {
+                Console.WriteLine("You given wrong name");
+            }
         }
 
         public void NotifyMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos)
@@ -80,43 +95,58 @@ namespace ChessProgrammingFundamentalsPractice
             Pieces = (Pieces & ~currentPosition);
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
             Pieces = Pieces ^ decidedMovePos;
+            CheckIfCurrentAtLastLineAndIsPawn(currentPosition, currentPiece);
+        }
+
+        public void CheckIfCurrentAtLastLineAndIsPawn(ulong currentPosition, BasePiece currentPiece)
+        {
+            if (currentPiece is Pawns)
+            {
+                Pawns pawn = currentPiece as Pawns;
+                if ((currentPosition & pawn.LastLine) > 0)
+                {
+                    PromptAskingWhichPieceYouWantToSwap(currentPosition);
+
+                }
+            }
         }
 
 
-        //public bool KingIsInCheck(ulong kingPosition, ulong opponentAttacks)
-        //{
-        //    return (kingPosition & opponentAttacks) > 1 ? true : false;
-        //}
+        public void PromptAskingWhichPieceYouWantToSwap(ulong currentPosition)
+        {
+            Console.WriteLine("Do you want to swap?  'yes'  or 'no'");
+            string answer = Console.ReadLine();
+            if(answer == "yes")
+            {
+                Console.WriteLine("Please select from the list");
+                foreach(var item in KnockedPieces)
+                {
+                    Console.Write(item.Key);
+                }
+                Console.WriteLine();
 
+                string pieceName = Console.ReadLine();
+                if (KnockedPieces.ContainsKey(pieceName))
+                {
+                    KnockedPieces[pieceName] -= 1;
 
+                    //next line is create an instance only providing its string name
+                    Console.WriteLine("select pieceName");
+                    string name = Console.ReadLine();
+                    Type t = Type.GetType($"ChessProgrammingFundamentalsPractice.{name}");
 
-        //public bool KingIsInCheck(List<IObserver> PieceListOfOpponent, ulong opponentPositions, ulong allPositionAtBoard, ulong kingPosition)
-        //{
-        //    ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-        //    for (int i = 0; i < 64; i++)
-        //    {
-        //        if ((opponentPositions & mask) > 0)
-        //        {
-        //            foreach (IObserver observer in PieceListOfOpponent)
-        //            {
-        //                BasePiece piece = observer as BasePiece;
-        //                if ((piece.Positions & mask) > 0)
-        //                {
-        //                    ulong attacks = piece.Search(mask, allPositionAtBoard, opponentPositions, (allPositionAtBoard & ~opponentPositions));
-        //                    if ((attacks & kingPosition) > 0)
-        //                    {
-        //                        return true;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        mask = mask >> 1;
-        //    }
-        //    return false;
-        //}
+                    foreach (IObserver observer in PiecesList)
+                    {
+                        BasePiece choosenPiece = observer as BasePiece;
+                        if (choosenPiece.GetType().Name == t.Name)
+                        {
+                            choosenPiece.Positions |= currentPosition;
+                        }
 
-        
-        
+                    }
+                }
+            }
+        }
 
         //indexer of the class
         //public BasePiece this[int index]

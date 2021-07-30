@@ -26,7 +26,6 @@ namespace ChessProgrammingFundamentalsPractice
                 }
             }
             return true;
-
         }
 
         public bool GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor,ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceList, List<IObserver> opponentPieceList)
@@ -42,7 +41,7 @@ namespace ChessProgrammingFundamentalsPractice
                         BasePiece piece = observer as BasePiece;
                         if ((piece.Positions & mask) > 0)   //it can defend it 
                         {
-                            ulong counterAttack = piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp)
+                            ulong counterAttack = piece.Search(mask, allPiecePositions,opponentPositions, ourPositions);  // here we replaced two arguments(our <-> opp)
                             if ((counterAttack & attackerPositionAndAttackVektor) > 0)
                             {
                                 bool IsKingStilInCheck = CheckMateChecker(attackerPositionAndAttackVektor, mask,counterAttack, kingPosition, allPiecePositions, opponentPositions, ourPositions, opponentPieceList);
@@ -112,7 +111,7 @@ namespace ChessProgrammingFundamentalsPractice
                             }
                             else
                             {
-                                ulong newAttack = piece.Search(mask, allPiecePositions, ourPositions, opponentPositions) | mask;  // here we replaced two arguments(our <-> opp)
+                                ulong newAttack = piece.GetSpecificAttackFromSearch(mask, allPiecePositions, ourPositions, opponentPositions, kingPosition) | mask;  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
                                 if ((newAttack & kingPosition) > 0) return newAttack;
                                 //attacks |= newAttack;
                             }
