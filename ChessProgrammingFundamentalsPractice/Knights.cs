@@ -32,6 +32,34 @@ namespace ChessProgrammingFundamentalsPractice
             return allPossibleMove;
         }
 
+        public override ulong GetSpecificAttackFromSearch(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
+        {
+            ulong[] allMoves = new ulong[8];
+            ulong northNorthEast = (currentPosition & MaskNotInHFile) << 15;
+            ulong northEastEast = (currentPosition & MaskNotInGHFile) << 6;
+            ulong northNorthWest = (currentPosition & MaskNotInAFile) << 17;
+            ulong northWestWest = (currentPosition & MaskNotInABFile) << 10;
+            ulong southEastEast = (currentPosition & MaskNotInGHFile) >> 10;
+            ulong southSouthEast = (currentPosition & MaskNotInHFile) >> 17;
+            ulong southSouthWest = (currentPosition & MaskNotInAFile) >> 15;
+            ulong southWestWest = (currentPosition & MaskNotInABFile) >> 6;
+            allMoves[0] = northNorthEast;
+            allMoves[1] = northEastEast;
+            allMoves[2] = northNorthWest;
+            allMoves[3] = northWestWest;
+            allMoves[4] = southEastEast;
+            allMoves[5] = southSouthEast;
+            allMoves[6] = southSouthWest;
+            allMoves[7] = southWestWest;
+            foreach (ulong moves in allMoves)
+            {
+                if ((moves & opponentPiecePosition) > 0)
+                {
+                    return moves;
+                }
+            }
 
+            return 0;
+        }
     }
 }

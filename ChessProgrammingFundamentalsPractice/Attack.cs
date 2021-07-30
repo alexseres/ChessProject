@@ -6,7 +6,6 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Attack : IAttack
     {
-
         public bool CheckMateChecker(ulong attackerPieceRoute , ulong oldPosOfDefenderPiece, ulong defenderPieceRoute, ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> opponentPieceList)
         {
             BitScan bitScan = new BitScan();
@@ -30,25 +29,23 @@ namespace ChessProgrammingFundamentalsPractice
 
         }
 
-        public bool GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor,ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceList)
+        public bool GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor,ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceList, List<IObserver> opponentPieceList)
         {   
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             ulong attacks = 0;
             for (int i = 0; i < 64; i++)
             {
-                if ((opponentPositions & mask) > 0)
+                if ((ourPositions & mask) > 0)
                 {
                     foreach(IObserver observer in ourPieceList)
                     {
                         BasePiece piece = observer as BasePiece;
                         if ((piece.Positions & mask) > 0)   //it can defend it 
                         {
-
                             ulong counterAttack = piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp)
-                            
                             if ((counterAttack & attackerPositionAndAttackVektor) > 0)
                             {
-                                bool IsKingStilInCheck = CheckMateChecker(attackerPositionAndAttackVektor, mask,counterAttack, kingPosition, allPiecePositions, opponentPositions, ourPositions, ourPieceList, opponentPieceList);
+                                bool IsKingStilInCheck = CheckMateChecker(attackerPositionAndAttackVektor, mask,counterAttack, kingPosition, allPiecePositions, opponentPositions, ourPositions, opponentPieceList);
                                 if (!IsKingStilInCheck)
                                 {
                                     return false;
@@ -61,6 +58,37 @@ namespace ChessProgrammingFundamentalsPractice
             }
             return true;
         }
+
+
+        //public bool GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor,ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceList, List<IObserver> opponentPieceList)
+        //{   
+        //    ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+        //    ulong attacks = 0;
+        //    for (int i = 0; i < 64; i++)
+        //    {
+        //        if ((opponentPositions & mask) > 0)
+        //        {
+        //            foreach(IObserver observer in ourPieceList)
+        //            {
+        //                BasePiece piece = observer as BasePiece;
+        //                if ((piece.Positions & mask) > 0)   //it can defend it 
+        //                {
+        //                    ulong counterAttack = piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp)
+        //                    if ((counterAttack & attackerPositionAndAttackVektor) > 0)
+        //                    {
+        //                        bool IsKingStilInCheck = CheckMateChecker(attackerPositionAndAttackVektor, mask,counterAttack, kingPosition, allPiecePositions, opponentPositions, ourPositions, opponentPieceList);
+        //                        if (!IsKingStilInCheck)
+        //                        {
+        //                            return false;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        mask = mask >> 1;
+        //    }
+        //    return true;
+        //}
 
         public ulong GetAllOpponentAttackToCheckIfKingInCheck(ulong kingPosition,ulong allPiecePositions, ulong opponentPositions, ulong ourPositions,  List<IObserver> pieceListOfOpponent)
         {
@@ -78,7 +106,7 @@ namespace ChessProgrammingFundamentalsPractice
                             if(piece is Pawns)
                             {
                                 Pawns pawn = piece as Pawns;
-                                ulong newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, ourPositions) | mask; // we add mask because if we do a counter attack we must know the enemyposition too
+                                ulong newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, kingPosition) | mask; // we add mask because if we do a counter attack we must know the enemyposition too
                                 if ((newAttack & kingPosition) > 0) return newAttack;
                                 //attacks = attacks | newAttack;
                             }

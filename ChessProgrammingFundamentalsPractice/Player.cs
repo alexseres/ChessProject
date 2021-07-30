@@ -77,9 +77,9 @@ namespace ChessProgrammingFundamentalsPractice
         public void NotifyMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos)
         {
             BasePiece currentPiece = GrabAndExtractPiece(currentPosition);
-            Pieces = (Pieces & ~currentPiece.Positions);
+            Pieces = (Pieces & ~currentPosition);
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
-            Pieces = Pieces ^ currentPiece.Positions;
+            Pieces = Pieces ^ decidedMovePos;
         }
 
 

@@ -20,6 +20,11 @@ namespace ChessProgrammingFundamentalsPractice
 
         public abstract ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions);
 
+        public virtual ulong GetSpecificAttackFromSearch(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
+        {
+            return 0;
+        }
+
         public void Printboard(string board)
         {
             StringBuilder sb = new StringBuilder();

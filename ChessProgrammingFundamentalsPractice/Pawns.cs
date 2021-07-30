@@ -46,21 +46,24 @@ namespace ChessProgrammingFundamentalsPractice
             }
         }
 
-        public ulong SearchForOnlyAttack(ColorSide color,ulong currentPosition, ulong opponentPositionAtBoard, ulong ourPositions)
+
+
+        public ulong SearchForOnlyAttack(ColorSide color,ulong currentPosition, ulong ourPositions, ulong opponentPiecePosition)
         {
             if(color == ColorSide.Black)
             {
                 ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);
-                ulong opportunities = (~ourPositions & attackPositions);
+                ulong opportunities = (~ourPositions & attackPositions) & opponentPiecePosition;
                 return opportunities;
             }
             else
             {
                 ulong attackPositions = ((currentPosition << AttacksDirection[0]) & maskNotAColumn) ^ ((currentPosition << AttacksDirection[1]) & maskNotHColumn);
-                ulong opportunities = (~ourPositions & attackPositions);
+                ulong opportunities = (~ourPositions & attackPositions) & opponentPiecePosition;
                 return opportunities;
             }
         }
+ 
 
     }
 }

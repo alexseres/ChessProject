@@ -42,6 +42,29 @@ namespace ChessProgrammingFundamentalsPractice
             return eastNorthAttack ^ westNorthAttack ^ eastSouthAttack ^ westSouthAttack;
         }
 
+        public override ulong GetSpecificAttackFromSearch(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
+        {
+            ulong[] allMoves = new ulong[8];
+            int square = BitScan.bitScanForwardLS1B(currentPosition);
+            ulong eastNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastNorth, BitScan.bitScanForwardLS1B, EastNorthDirection);
+            ulong westNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestNorth, BitScan.bitScanForwardLS1B, WestNorthDirection);
+            ulong eastSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastSouth, BitScan.bitScanReverseMS1B, EastSouthDirection);
+            ulong westSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestSouth, BitScan.bitScanReverseMS1B, WestSouthDirection);
+            allMoves[4] = eastNorthAttack;
+            allMoves[5] = westNorthAttack;
+            allMoves[6] = eastNorthAttack;
+            allMoves[7] = westSouthAttack;
+            foreach (ulong moves in allMoves)
+            {
+                if ((moves & opponentPiecePosition) > 0)
+                {
+                    return moves;
+                }
+            }
+
+            return 0;
+        }
+
         public void PrintBoard(string board)
         {
             StringBuilder sb = new StringBuilder();

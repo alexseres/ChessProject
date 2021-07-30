@@ -6,14 +6,32 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class UpdateBitBoards : IUpdateBitBoards
     {
-        public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, ulong opportunities, ulong currentPosition, ulong boardWithAllMember)
+
+        public void PrintBoard(string board)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < board.Length; i++)
+            {
+                if (i % 8 == 0 && i != 0)
+                {
+                    string row = new string(sb.ToString());
+                    Console.WriteLine(row);
+                    sb.Clear();
+                }
+                sb.Append(board[i]);
+            }
+            var finalRow = new string(sb.ToString());
+            Console.WriteLine(finalRow);
+        }
+
+        public void UpdateAllBitBoard(bool attacked, Player currentPlayer, Player opponent, ulong choosenPositionToMove, ulong opportunities, ulong currentPosition, ref ulong BoardWithAllMember)
         {
             if(attacked)
             {
                 opponent.NotifyBeingAttacked(choosenPositionToMove);
             }
             currentPlayer.NotifyMove(currentPosition, opportunities, choosenPositionToMove);
-            boardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
+            BoardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
         }
 
         public ulong[] SeparateUpdateBitBoardsToEvadeCheck(ulong newPositionOfDefender, ulong oldPositionOfDefender, ulong defenderPieceRoute, ulong allPiecePositions, ulong ourPositions, ulong opponentPositions)

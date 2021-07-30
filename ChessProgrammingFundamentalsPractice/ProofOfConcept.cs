@@ -25,15 +25,15 @@ namespace ChessProgrammingFundamentalsPractice
                                                             0b_0000_0000_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000};
 
         public string[] WhitePrintedBoardNames = new string[6] { "A", "S", "D", "F", "G", "H" };
-        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0000_1100_0000_0000_0010_1111_1101_1111_1111,
+        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0001_1100_0000_0000_0010_1111_1101_1110_1111,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0000_0000_1000_0001,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0100_0000_0000_0000_0000_0000_0100_0010,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0100,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_1000,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001_0000,
+                                                             0b_0000_0000_0000_0000_0000_0000_0000_0001_0000_0000_0000_0000_0000_0000_0000_0000,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1101_0000_0000 };
 
-        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_1000_1100_0000_0100_1010_1111_1101_1111_1111;
+        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_1001_1100_0000_0100_1010_1111_1101_1110_1111;
   
         public ProofOfConcept()
         {
@@ -51,19 +51,23 @@ namespace ChessProgrammingFundamentalsPractice
             bool isWhiteAtTurn = false;
             while(true)
             {
-                ulong choosenPos = UserInput(From);
+                
                 if (isWhiteAtTurn)
                 {
+
+
                     ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(Player2.King.Positions,BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
                     PrintBoard(Convert.ToString((long)opponentAttacks, toBase: 2).PadLeft(64, '0'));
                     if (opponentAttacks > 0)   // king in check
                     {
-                        if(Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, Player2.King.Positions, BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList))
+                        Console.WriteLine($"Check for {Player2.Color} Player");
+                        if(Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, Player2.King.Positions, BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player2.PiecesList, Player1.PiecesList))
                         {
                             Console.WriteLine("CheckMATE");
                             break;
                         }
                     }
+                    ulong choosenPos = UserInput(From);
                     BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
                     if (choosenWhitePiece.Color != ColorSide.White)
                     {
@@ -88,6 +92,7 @@ namespace ChessProgrammingFundamentalsPractice
                 {
                     //ulong allEnemyAttack = Player1.Attack.GetAllOpponentAttack(BoardWithAllMember, Player2.Pieces, Player1.Pieces, Player2.PiecesList);
                     //PrintBoard(Convert.ToString((long)allEnemyAttack, toBase: 2).PadLeft(64, '0'));
+                    ulong choosenPos = UserInput(From);
                     BasePiece choosenBlackPiece = Player1.GrabAndExtractPiece(choosenPos);
                     if(choosenBlackPiece.Color != ColorSide.Black)
                     {
@@ -128,7 +133,7 @@ namespace ChessProgrammingFundamentalsPractice
                 return false;
             }
             bool attacked = Attack.HasAttacked(choosenPositionToMove, opponent.Pieces);
-            UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, BoardWithAllMember);
+            UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
             
             Console.WriteLine("updated board");
             string updatedBoard = CreateStringOfBoard();
