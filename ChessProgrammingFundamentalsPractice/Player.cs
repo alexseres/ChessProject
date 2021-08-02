@@ -95,7 +95,7 @@ namespace ChessProgrammingFundamentalsPractice
             Pieces = (Pieces & ~currentPosition);
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
             Pieces = Pieces ^ decidedMovePos;
-            CheckIfCurrentAtLastLineAndIsPawn(currentPosition, currentPiece);
+            CheckIfCurrentAtLastLineAndIsPawn(decidedMovePos, currentPiece);
         }
 
         public void CheckIfCurrentAtLastLineAndIsPawn(ulong currentPosition, BasePiece currentPiece)
@@ -105,35 +105,45 @@ namespace ChessProgrammingFundamentalsPractice
                 Pawns pawn = currentPiece as Pawns;
                 if ((currentPosition & pawn.LastLine) > 0)
                 {
-                    PromptAskingWhichPieceYouWantToSwap(currentPosition);
+                    if (PromptAskingWhichPieceYouWantToSwap(currentPosition))
+                    {
+                        pawn.Positions = pawn.Positions & ~currentPosition;
+                    }
 
                 }
             }
         }
 
 
-        public void PromptAskingWhichPieceYouWantToSwap(ulong currentPosition)
+        public bool PromptAskingWhichPieceYouWantToSwap(ulong currentPosition)
         {
             Console.WriteLine("Do you want to swap?  'yes'  or 'no'");
             string answer = Console.ReadLine();
+            int counter = 0;
             if(answer == "yes")
             {
                 Console.WriteLine("Please select from the list");
                 foreach(var item in KnockedPieces)
                 {
-                    Console.Write(item.Key);
+                    if(item.Value > 0)
+                    {
+                        Console.WriteLine(item.Key);
+                        counter++;
+                    }
                 }
-                Console.WriteLine();
-
+                
+                if(counter == 0)
+                {
+                    Console.WriteLine("no pieces available to swap");
+                    return false;
+                }
                 string pieceName = Console.ReadLine();
                 if (KnockedPieces.ContainsKey(pieceName))
                 {
                     KnockedPieces[pieceName] -= 1;
 
                     //next line is create an instance only providing its string name
-                    Console.WriteLine("select pieceName");
-                    string name = Console.ReadLine();
-                    Type t = Type.GetType($"ChessProgrammingFundamentalsPractice.{name}");
+                    Type t = Type.GetType($"ChessProgrammingFundamentalsPractice.{pieceName}");
 
                     foreach (IObserver observer in PiecesList)
                     {
@@ -141,11 +151,14 @@ namespace ChessProgrammingFundamentalsPractice
                         if (choosenPiece.GetType().Name == t.Name)
                         {
                             choosenPiece.Positions |= currentPosition;
+                            return true;
+                            
                         }
 
                     }
                 }
             }
+            return false;
         }
 
         //indexer of the class

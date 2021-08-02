@@ -9,8 +9,8 @@ namespace ChessProgrammingFundamentalsPractice
     {
         public readonly Player Player1;
         public readonly Player Player2;
-        public const string From = "Enter position to choose piece";
-        public const string To = "Enter position to choose piece";
+        public const string From = "Choose a piece";
+        public const string To = "Move with the piece to";
         public IAttack Attack { get; set; }
         public IUpdateBitBoards UpdateBitBoards{get;set;}
 
@@ -25,15 +25,15 @@ namespace ChessProgrammingFundamentalsPractice
                                                             0b_0000_0000_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000};
 
         public string[] WhitePrintedBoardNames = new string[6] { "A", "S", "D", "F", "G", "H" };
-        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0000_0000_0000_0000_0000_0001_1100_0000_0000_0010_1111_1101_1110_1111,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0000_0000_1000_0001,
+        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0100_0000_1000_0000_0000_0001_1100_0000_0000_0010_1111_1101_1110_1111,
+                                                             0b_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_0010_0000_0000_1000_0001,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0100_0000_0000_0000_0000_0000_0100_0010,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0100,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_1000,
                                                              0b_0000_0000_0000_0000_0000_0000_0000_0001_0000_0000_0000_0000_0000_0000_0000_0000,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1101_0000_0000 };
+                                                             0b_0000_0000_0100_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1101_0000_0000 };
 
-        public ulong BoardWithAllMember = 0b_1111_1111_1011_1111_0000_0000_0000_1001_1100_0000_0100_1010_1111_1101_1110_1111;
+        public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_1000_0000_0000_1001_1100_0000_0100_1010_1111_1101_1110_1111;
   
         public ProofOfConcept()
         {
@@ -48,7 +48,7 @@ namespace ChessProgrammingFundamentalsPractice
 
         public void PlayGame()
         {
-            bool isWhiteAtTurn = true;
+            bool isWhiteAtTurn = false;
             while(true)
             {
                 if (isWhiteAtTurn)

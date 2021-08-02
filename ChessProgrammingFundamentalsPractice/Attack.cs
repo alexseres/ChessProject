@@ -106,13 +106,24 @@ namespace ChessProgrammingFundamentalsPractice
                             {
                                 Pawns pawn = piece as Pawns;
                                 ulong newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, kingPosition) | mask; // we add mask because if we do a counter attack we must know the enemyposition too
-                                if ((newAttack & kingPosition) > 0) return newAttack;
+                                if ((newAttack & kingPosition) > 0)
+                                { 
+                                    return newAttack;
+                                } 
                                 //attacks = attacks | newAttack;
                             }
                             else
                             {
                                 ulong newAttack = piece.GetSpecificAttackFromSearch(mask, allPiecePositions, ourPositions, opponentPositions, kingPosition) | mask;  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
-                                if ((newAttack & kingPosition) > 0) return newAttack;
+                                if ((newAttack & kingPosition) > 0)
+                                {
+                                    Printboard(Convert.ToString((long)mask, toBase: 2).PadLeft(64, '0'));
+                                    Console.WriteLine(" ");
+                                    Printboard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
+                                    Console.WriteLine(" ");
+                                    Printboard(Convert.ToString((long)kingPosition, toBase: 2).PadLeft(64, '0'));
+                                    return newAttack; 
+                                }
                                 //attacks |= newAttack;
                             }
                             break;

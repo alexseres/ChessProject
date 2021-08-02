@@ -6,7 +6,7 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Knights : BasePiece
     {
-        private ulong MaskNotInAFile = 0b_0111_1111_0111_0111_1111_0111_1111_1111_1111_0111_1111_0111_1111_0111_1111_0111;
+        private ulong MaskNotInAFile = 0b_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111;
         private ulong MaskNotInABFile = 0b_0011_1111_0011_1111_0011_1111_0011_1111_0011_1111_0011_1111_0011_1111_0011_1111;
         private ulong MaskNotInHFile = 0b_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110;
         private ulong MaskNotInGHFile = 0b_1111_1100_1111_1100_1111_1100_1111_1100_1111_1110_1111_1100_1111_1100_1111_1100;
@@ -51,11 +51,11 @@ namespace ChessProgrammingFundamentalsPractice
             allMoves[5] = southSouthEast;
             allMoves[6] = southSouthWest;
             allMoves[7] = southWestWest;
-            foreach (ulong moves in allMoves)
+            for (int i =0;i < allMoves.Length;i++)
             {
-                if ((moves & opponentPiecePosition) > 0)
+                if ((allMoves[i] & opponentPiecePosition) > 0)
                 {
-                    return moves;
+                    return allMoves[i];
                 }
             }
 
@@ -63,3 +63,6 @@ namespace ChessProgrammingFundamentalsPractice
         }
     }
 }
+
+
+
