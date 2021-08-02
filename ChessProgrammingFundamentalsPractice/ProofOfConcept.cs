@@ -41,6 +41,8 @@ namespace ChessProgrammingFundamentalsPractice
             UpdateBitBoards = new UpdateBitBoards();
             Player1 = new Player(ColorSide.Black, BlackInitPositions, BlackPrintedBoardNames, new BitScan(), new LongMovements());
             Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames, new BitScan(), new LongMovements());
+            Player1.King.OpponentKing = Player2.King;
+            Player2.King.OpponentKing = Player1.King;
             string board = CreateStringOfBoard();
             PrintBoard(board);
             PlayGame();

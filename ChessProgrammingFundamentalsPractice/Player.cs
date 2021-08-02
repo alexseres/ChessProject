@@ -109,7 +109,6 @@ namespace ChessProgrammingFundamentalsPractice
                     {
                         pawn.Positions = pawn.Positions & ~currentPosition;
                     }
-
                 }
             }
         }
@@ -152,7 +151,6 @@ namespace ChessProgrammingFundamentalsPractice
                         {
                             choosenPiece.Positions |= currentPosition;
                             return true;
-                            
                         }
 
                     }
