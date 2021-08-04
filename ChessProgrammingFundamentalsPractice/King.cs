@@ -32,8 +32,5 @@ namespace ChessProgrammingFundamentalsPractice
             ulong allPossibilities = (allAttacks & ~ourPositions);
             return allPossibilities;
         }
-
-
-
     }
 }

@@ -12,7 +12,7 @@ namespace ChessProgrammingFundamentalsPractice
         public const string From = "Choose a piece";
         public const string To = "Move with the piece to";
         public IAttack Attack { get; set; }
-        public IUpdateBitBoards UpdateBitBoards{get;set;}
+        public IUpdateBitBoards UpdateBitBoards { get;set; }
 
 
         public string[] BlackPrintedBoardNames = new string[6] { "R", "K", "B", "Q", "N", "P" };
@@ -22,7 +22,7 @@ namespace ChessProgrammingFundamentalsPractice
                                                             0b_0010_0100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
                                                             0b_0001_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
                                                             0b_0000_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
-                                                            0b_0000_0000_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000};
+                                                            0b_0000_0000_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000 };
 
         public string[] WhitePrintedBoardNames = new string[6] { "A", "S", "D", "F", "G", "H" };
         public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0100_0000_1000_0000_0000_0001_1100_0000_0000_0010_1111_1101_1110_1111,
@@ -43,6 +43,8 @@ namespace ChessProgrammingFundamentalsPractice
             Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames, new BitScan(), new LongMovements());
             Player1.King.OpponentKing = Player2.King;
             Player2.King.OpponentKing = Player1.King;
+            Player1.Pawns.OpponentPawns = Player2.Pawns;
+            Player2.Pawns.OpponentPawns = Player1.Pawns;
             string board = CreateStringOfBoard();
             PrintBoard(board);
             PlayGame();
