@@ -10,6 +10,8 @@ namespace ChessProgrammingFundamentalsPractice
         public string Name { get; set; }
         public string BoardName { get; set; }
         public ColorSide Color { get; set; }
+
+        //      from    to
         public (ulong, ulong) LatestMove { get; set; }
 
 
@@ -17,6 +19,7 @@ namespace ChessProgrammingFundamentalsPractice
         {
             Color = color;
             Positions = positions;
+
         }
 
         public abstract ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions);

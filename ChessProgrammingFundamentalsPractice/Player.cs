@@ -74,7 +74,6 @@ namespace ChessProgrammingFundamentalsPractice
             attackedPiece.UpdatePositionWhenBeingAttacked(pos);
             Pieces = Pieces & ~pos;
             UpdateKnockedOutPiece(attackedPiece);
-
         }
 
         public void UpdateKnockedOutPiece(BasePiece piece)
@@ -93,9 +92,34 @@ namespace ChessProgrammingFundamentalsPractice
         {
             BasePiece currentPiece = GrabAndExtractPiece(currentPosition);
             Pieces = (Pieces & ~currentPosition);
+            if(CheckIfThereWasEnPassant(currentPosition, currentPiece, decidedMovePos) == 0)
+            {
+                decidedMovePos = CheckIfThereWasEnPassant(currentPosition, currentPiece, decidedMovePos);
+            }
+
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
             Pieces = Pieces ^ decidedMovePos;
+
             CheckIfCurrentAtLastLineAndIsPawn(decidedMovePos, currentPiece);
+        }
+
+        public ulong CheckIfThereWasEnPassant(ulong currentPosition, BasePiece piece, ulong decidedMovePos)
+        {
+            if(piece is Pawns)
+            {
+                Pawns pawn = piece as Pawns;
+                bool wasEnpassant = false;
+                if((currentPosition >> 1 & decidedMovePos) > 0)
+                {
+                    wasEnpassant = true; 
+                }
+                if ((currentPosition << 1 & decidedMovePos) > 0)
+                {
+                    wasEnpassant = true;
+                }
+                if(wasEnpassant) return pawn.Color == ColorSide.Black ? decidedMovePos >> 8 : decidedMovePos << 8; 
+            }
+            return 0;
         }
 
         public void CheckIfCurrentAtLastLineAndIsPawn(ulong currentPosition, BasePiece currentPiece)

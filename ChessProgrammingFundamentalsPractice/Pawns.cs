@@ -11,6 +11,7 @@ namespace ChessProgrammingFundamentalsPractice
         public readonly int[] AttacksDirection = new int[2] { 7, 9 };
         public readonly ulong LastLine;
         public readonly ulong FifthLineOfEnPassant;
+        public bool WasEnPassant { get; set; }
         public Pawns OpponentPawns;
 
         //these mask we need if our pawn wants to attack and its at the sides, so therefore it cannot move onto the edge and jumping to another row
@@ -22,6 +23,7 @@ namespace ChessProgrammingFundamentalsPractice
 
         public Pawns(ColorSide color, ulong positions, ulong lastline) : base(color, positions)
         {
+            WasEnPassant = false;
             LastLine = lastline;
             MaskOfDoubleMove = color == ColorSide.Black ? (ulong)0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000 : 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000;
             FifthLineOfEnPassant = color == ColorSide.Black ? (ulong)0b_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000 : 0b_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000;
@@ -30,6 +32,7 @@ namespace ChessProgrammingFundamentalsPractice
 
         public ulong DoEnPassant(ulong currentPositon, ulong opponentPositons, ulong ourPositions)
         {
+            ulong enPassant = 0;
             if ((currentPositon & FifthLineOfEnPassant) > 0)
             {
                 //we need these mask to check if the latest move of the last enemy piece was a double move
@@ -41,24 +44,25 @@ namespace ChessProgrammingFundamentalsPractice
                 {
                     if (((currentPositon & maskNotHColumn) >> 1 & (OpponentPawns.Positions)) > 0)
                     {
-                        return currentPositon << 7;
+                        enPassant = currentPositon >> 1;
                     }
                     else if (((currentPositon & maskNotAColumn) << 1 & (OpponentPawns.Positions)) > 0)
                     {
-                        return currentPositon << 9;
+                        enPassant =  currentPositon << 1;
                     }
                 }
                 else if((((OpponentPawns.LatestMove.Item1 & secondRank) > 0) && (OpponentPawns.LatestMove.Item2 & fourthRank) > 0))
                 {
                     if (((currentPositon & maskNotHColumn) >> 1 & (OpponentPawns.Positions)) > 0)
                     {
-                        return currentPositon >> 9;
+                        enPassant = currentPositon >> 1;
                     }
                     else if (((currentPositon & maskNotAColumn) << 1 & (OpponentPawns.Positions)) > 0)
                     {
-                        return currentPositon >> 7;
+                        enPassant = currentPositon << 1;
                     }
                 }
+                return ((enPassant & ~ourPositions) & ~opponentPositons); 
             }
             return 0;
         }
@@ -67,25 +71,27 @@ namespace ChessProgrammingFundamentalsPractice
         {
             if(this.Color == ColorSide.Black)
             {
-                
+                ulong enpassant = DoEnPassant(currentPosition, opponentPositionAtBoard, ourPositions);
                 ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);
                 //this one checks if we want to move double square and noone is in front of us
                 ulong movedFirstPositions = (((MaskOfDoubleMove & currentPosition) >> 8) & ~allPositionAtBoard) >> 8;
                 ulong movedPositions = (currentPosition >> MovingDirection) | movedFirstPositions;
                 ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
+                opportunities = opportunities | enpassant;
                 return opportunities;
             }
             else
             {
+                ulong enpassant = DoEnPassant(currentPosition, opponentPositionAtBoard, ourPositions);
                 ulong attackPositions = ((currentPosition << AttacksDirection[0]) & maskNotAColumn) ^ ((currentPosition <<  AttacksDirection[1]) & maskNotHColumn);
                 //this one checks if we want to move double square and noone is in front of us
                 ulong movedFirstPositions = (((MaskOfDoubleMove & currentPosition) << 8) & ~allPositionAtBoard) << 8;
                 ulong movedPositions = (currentPosition << MovingDirection) | movedFirstPositions;
                 ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
+                opportunities = opportunities | enpassant;
                 return opportunities;
             }
         }
-
 
         public ulong SearchForOnlyAttack(ColorSide color,ulong currentPosition, ulong ourPositions, ulong opponentPiecePosition)
         {
@@ -102,7 +108,5 @@ namespace ChessProgrammingFundamentalsPractice
                 return opportunities;
             }
         }
- 
-
     }
 }
