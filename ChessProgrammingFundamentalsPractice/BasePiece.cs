@@ -22,6 +22,7 @@ namespace ChessProgrammingFundamentalsPractice
             BoardName = boardname;
             Color = color;
             Position = position;
+            LatestMove = (0, 0);
 
         }
 

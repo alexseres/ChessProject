@@ -183,14 +183,15 @@ namespace ChessProgrammingFundamentalsPractice
             Player opponent = OpponentCreater(actualPlayer);
     
             ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
+            bool isCheck = false;
             //PrintBoard(Convert.ToString((long)opponentAttacks, toBase: 2).PadLeft(64, '0'));
             if (opponentAttacks > 0)   // king in check
             {
+                isCheck = true;
                 Console.WriteLine($"Check for {actualPlayer.Color} Player");
                 if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
                 {
                     Console.WriteLine("CheckMATE");
-
                     //break;
                 }
             }
@@ -211,7 +212,8 @@ namespace ChessProgrammingFundamentalsPractice
             }
             else
             {
-                bool response = Process(actualPlayer, choosenPiece, choosenPos);
+                bool response = Process(actualPlayer, choosenPiece, choosenPos, isCheck);
+
                 if (response == true)
                 {
                     if (isPlayer1)
@@ -238,10 +240,8 @@ namespace ChessProgrammingFundamentalsPractice
             }
             
         }
-
-       
         
-        public bool Process(Player player ,BasePiece piece,  ulong currentPiecePosition)
+        public bool Process(Player player ,BasePiece piece,  ulong currentPiecePosition, bool isCheck)
         {
             Player opponent = OpponentCreater(player);
             ulong opportunities = piece.Search(currentPiecePosition, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
@@ -258,7 +258,42 @@ namespace ChessProgrammingFundamentalsPractice
                 Console.WriteLine("You cannot move there because there is no opportunity there");
                 return false;
             }
+
             bool attacked = Attack.HasAttacked(choosenPositionToMove, opponent.PiecesPosition);
+            if (isCheck)
+            {
+                var MockOfourPiecesPosition = player.PiecesPosition & ~currentPiecePosition;
+                var MockOfOpponentPiecesPosition = opponent.PiecesPosition;
+                var MockOfEnemyPiecesList = opponent.PiecesList;
+
+                var mockOfKingPosition = player.King.Position;
+                if(piece is King)
+                {
+                    mockOfKingPosition = choosenPositionToMove;
+                }
+                if (attacked)
+                {
+                    foreach(IObserver observer in MockOfEnemyPiecesList)
+                    {
+                        BasePiece opponentPiece = observer as BasePiece;
+                        if(opponentPiece.Position == choosenPositionToMove)
+                        {
+                            MockOfEnemyPiecesList.Remove(observer);
+                        }
+                    }
+                    MockOfOpponentPiecesPosition = MockOfOpponentPiecesPosition & ~choosenPositionToMove;
+                }
+                MockOfourPiecesPosition |= choosenPositionToMove;
+                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(mockOfKingPosition, BoardWithAllMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
+                if(opponentAttacks > 0)
+                {
+                    Console.WriteLine("Choose another piece, the king is still in check, step not succeeded");
+                    return false;
+                }
+
+            }
+
+
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
             
             Console.WriteLine("updated board");

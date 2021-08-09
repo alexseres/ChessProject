@@ -71,10 +71,12 @@ namespace ChessProgrammingFundamentalsPractice
                 opportunities = (opportunities | decidedMovePos);
             }
             
+            
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
             PiecesPosition = PiecesPosition ^ decidedMovePos;
             CheckIfCurrentAtLastLineAndIsPawn(decidedMovePos, currentPiece);
         }
+
 
         public ulong CheckIfThereWasEnPassant(ulong currentPosition, BasePiece piece, ulong decidedMovePos)
         {
