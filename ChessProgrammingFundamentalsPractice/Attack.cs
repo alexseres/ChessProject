@@ -39,7 +39,7 @@ namespace ChessProgrammingFundamentalsPractice
                     foreach(IObserver observer in ourPieceList)
                     {
                         BasePiece piece = observer as BasePiece;
-                        if ((piece.Position & mask) > 0)   //it can defend it 
+                        if ((piece.Position & mask) > 0)   //it can defend it
                         {
                             ulong counterAttack = piece.Search(mask, allPiecePositions,opponentPositions, ourPositions);  // here we replaced two arguments(our <-> opp)
                             if ((counterAttack & attackerPositionAndAttackVektor) > 0)
@@ -58,36 +58,6 @@ namespace ChessProgrammingFundamentalsPractice
             return true;
         }
 
-
-        //public bool GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor,ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceList, List<IObserver> opponentPieceList)
-        //{   
-        //    ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-        //    ulong attacks = 0;
-        //    for (int i = 0; i < 64; i++)
-        //    {
-        //        if ((opponentPositions & mask) > 0)
-        //        {
-        //            foreach(IObserver observer in ourPieceList)
-        //            {
-        //                BasePiece piece = observer as BasePiece;
-        //                if ((piece.Positions & mask) > 0)   //it can defend it 
-        //                {
-        //                    ulong counterAttack = piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp)
-        //                    if ((counterAttack & attackerPositionAndAttackVektor) > 0)
-        //                    {
-        //                        bool IsKingStilInCheck = CheckMateChecker(attackerPositionAndAttackVektor, mask,counterAttack, kingPosition, allPiecePositions, opponentPositions, ourPositions, opponentPieceList);
-        //                        if (!IsKingStilInCheck)
-        //                        {
-        //                            return false;
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        mask = mask >> 1;
-        //    }
-        //    return true;
-        //}
 
         public ulong GetAllOpponentAttackToCheckIfKingInCheck(ulong kingPosition,ulong allPiecePositions, ulong opponentPositions, ulong ourPositions,  List<IObserver> pieceListOfOpponent)
         {

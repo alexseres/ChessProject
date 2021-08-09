@@ -30,10 +30,34 @@ namespace ChessProgrammingFundamentalsPractice
             ulong opponentKingOpportunities = OpponentKing.Search(OpponentKing.Position, allPositionAtBoard, ourPositions, opponentPositionAtBoard);
             ulong allAttacks = (northAttack ^ northEastAttack ^ northWestAttack ^ westAttack ^ eastAttack ^ southEastAttack ^ southWestAttack ^ southAttack) & ~opponentKingOpportunities;
             //Printboard(Convert.ToString((long)allAttacks, toBase: 2).PadLeft(64, '0'));
-            ulong allPossibilities = (allAttacks & ~ourPositions);
+            ulong opponentAttacks = GetFreeSquareWHereEnemyCannotIndave(allPositionAtBoard, opponentPositionAtBoard, ourPositions, Creator.OpponentPiecesList);
+
+            ulong allPossibilities = (allAttacks & ~ourPositions) &~opponentAttacks;
             return allPossibilities;
         }
 
 
+        public ulong GetFreeSquareWHereEnemyCannotIndave(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> pieceListOfOpponent)
+        {
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            ulong attacks = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                if ((opponentPositions & mask) > 0)
+                {
+                    foreach (IObserver observer in pieceListOfOpponent)
+                    {
+                        BasePiece piece = observer as BasePiece;
+                        if ((piece.Position & mask) > 0)
+                        {
+                            ulong newAttack = piece.Search(mask, allPiecePositions, opponentPositions, ourPositions);
+                            attacks |= newAttack;
+                        }
+                    }
+                }
+                mask = mask >> 1;
+            }
+            return attacks;
+        }
     }
 }

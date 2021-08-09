@@ -138,6 +138,8 @@ namespace ChessProgrammingFundamentalsPractice
             #endregion
             Player2.King.OpponentKing = Player1.King;
             Player1.King.OpponentKing = Player2.King;
+            Player2.OpponentPiecesList = Player1.PiecesList;
+            Player1.OpponentPiecesList = Player2.PiecesList;
         }
 
 

@@ -16,6 +16,7 @@ namespace ChessProgrammingFundamentalsPractice
         public King King { get; set; }
         public List<IObserver> PiecesList { get; set; }
         public List<Pawns> OpponentPawnsList { get; set; }
+        public List<IObserver> OpponentPiecesList { get; set; }
 
         public Player(ColorSide color)
         {
