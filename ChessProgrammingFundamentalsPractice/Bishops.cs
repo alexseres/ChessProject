@@ -15,9 +15,9 @@ namespace ChessProgrammingFundamentalsPractice
         private const int EastSouthDirection = -9;
         private const int WestSouthDirection = -7;
 
-
-        public Bishops(ColorSide color, ulong positions, IBitScan bitScan, ILongMovements movements, IAttack attack) : base(color, positions)
+        public Bishops(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
         {
+            Name = "Bishop";
             Movements = movements;
             BitScan = bitScan;
             Attack = attack;
@@ -26,18 +26,18 @@ namespace ChessProgrammingFundamentalsPractice
         {
             int square = BitScan.bitScanForwardLS1B(currentPosition);
             ulong eastNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastNorth, BitScan.bitScanForwardLS1B, EastNorthDirection);
-            Console.WriteLine(" ");
-            PrintBoard(Convert.ToString((long)eastNorthAttack, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
+            //Console.WriteLine(" ");
+            //PrintBoard(Convert.ToString((long)eastNorthAttack, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
             ulong westNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestNorth, BitScan.bitScanForwardLS1B, WestNorthDirection);
-            PrintBoard(Convert.ToString((long)westNorthAttack, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
+            //PrintBoard(Convert.ToString((long)westNorthAttack, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
             ulong eastSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastSouth, BitScan.bitScanReverseMS1B, EastSouthDirection);
             
-            PrintBoard(Convert.ToString((long)eastSouthAttack, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
+            //PrintBoard(Convert.ToString((long)eastSouthAttack, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
             ulong westSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestSouth, BitScan.bitScanReverseMS1B, WestSouthDirection);
-            PrintBoard(Convert.ToString((long)westSouthAttack, toBase: 2).PadLeft(64, '0'));
+            //PrintBoard(Convert.ToString((long)westSouthAttack, toBase: 2).PadLeft(64, '0'));
             Console.WriteLine(" ");
             return eastNorthAttack ^ westNorthAttack ^ eastSouthAttack ^ westSouthAttack;
         }
@@ -61,7 +61,6 @@ namespace ChessProgrammingFundamentalsPractice
                     return moves;
                 }
             }
-
             return 0;
         }
 

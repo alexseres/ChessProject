@@ -6,7 +6,8 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public abstract class BasePiece : IObserver
     {
-        public ulong Positions { get; set; }
+        public Player Creator { get; set; }
+        public ulong Position { get; set; }
         public string Name { get; set; }
         public string BoardName { get; set; }
         public ColorSide Color { get; set; }
@@ -15,10 +16,12 @@ namespace ChessProgrammingFundamentalsPractice
         public (ulong, ulong) LatestMove { get; set; }
 
 
-        public BasePiece(ColorSide color, ulong positions)
-        {
+        public BasePiece(Player player, ColorSide color, ulong position, string boardname)
+        { 
+            Creator = player;
+            BoardName = boardname;
             Color = color;
-            Positions = positions;
+            Position = position;
 
         }
 
@@ -50,18 +53,15 @@ namespace ChessProgrammingFundamentalsPractice
 
             if ((opportunities & decidedMovePos) > 0)
             {
-                Positions = (~currentPosition & Positions) | decidedMovePos;
+                Position = (~currentPosition & Position) | decidedMovePos;
                 //for now we need latest move to en passant 
                 LatestMove = (currentPosition, decidedMovePos);
             }
         }
 
-        public void UpdatePositionWhenBeingAttacked(ulong attackedPosition)
+        public void UpdatePositionWhenBeingAttacked()
         {
-            if((attackedPosition & Positions) > 0)
-            {
-                Positions = (Positions & ~attackedPosition);
-            }
+            Position = 0;
         }
 
     }

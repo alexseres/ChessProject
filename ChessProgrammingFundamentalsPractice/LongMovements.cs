@@ -40,8 +40,8 @@ namespace ChessProgrammingFundamentalsPractice
                 return 0;
             }
 
-            Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
+            //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
             for(int i = square + 9; i < 64; i += 9)
             {
                 if ((pos & maskNotAColumn) > 0)
@@ -49,10 +49,10 @@ namespace ChessProgrammingFundamentalsPractice
                     break;
                 }
                 pos = pos | (pos << 9);
-                Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
-                Console.WriteLine(" ");
+                //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+                //Console.WriteLine(" ");
             }
-            Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
             return pos & ~initPos;
 
         }
@@ -66,11 +66,11 @@ namespace ChessProgrammingFundamentalsPractice
                  return 0;
             }
 
-            Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
+            //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
             for (int i = square + 7; i < 64; i += 7)
             {
-                Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+                //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
                 if ((pos & maskNotHColumn) > 0)
                 {
                     //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
@@ -79,10 +79,10 @@ namespace ChessProgrammingFundamentalsPractice
                     break;
                 }
                 pos = pos | (pos << 7);
-                Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+                //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
                 Console.WriteLine(" ");
             }
-            Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
             return pos & ~initPos;
         }
 
@@ -136,13 +136,13 @@ namespace ChessProgrammingFundamentalsPractice
                 if (i % 8 == 0 && i != 0)
                 {
                     string row = new string(sb.ToString());
-                    Console.WriteLine(row);
+                    //Console.WriteLine(row);
                     sb.Clear();
                 }
                 sb.Append(board[i]);
             }
             var finalrow = new string(sb.ToString());
-            Console.WriteLine(finalrow);
+            //Console.WriteLine(finalrow);
 
         }
 

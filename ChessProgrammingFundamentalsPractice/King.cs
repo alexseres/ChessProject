@@ -10,8 +10,9 @@ namespace ChessProgrammingFundamentalsPractice
         private ulong MaskNotInHFile = 0b_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110;
         public King OpponentKing { get; set; }
 
-        public King(ColorSide color, ulong positions): base(color, positions)
+        public King(Player player, ColorSide color, ulong position, string boardName): base(player,color, position, boardName)
         {
+            Name = "King";
         }
 
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
@@ -26,11 +27,13 @@ namespace ChessProgrammingFundamentalsPractice
             ulong southAttack = currentPosition >> 8;
 
             // so basically we need the other king position to keep 2 square distance between the kings as the rule say
-            ulong opponentKingOpportunities = OpponentKing.Search(OpponentKing.Positions, allPositionAtBoard, ourPositions, opponentPositionAtBoard);
+            ulong opponentKingOpportunities = OpponentKing.Search(OpponentKing.Position, allPositionAtBoard, ourPositions, opponentPositionAtBoard);
             ulong allAttacks = (northAttack ^ northEastAttack ^ northWestAttack ^ westAttack ^ eastAttack ^ southEastAttack ^ southWestAttack ^ southAttack) & ~opponentKingOpportunities;
-            Printboard(Convert.ToString((long)allAttacks, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)allAttacks, toBase: 2).PadLeft(64, '0'));
             ulong allPossibilities = (allAttacks & ~ourPositions);
             return allPossibilities;
         }
+
+
     }
 }

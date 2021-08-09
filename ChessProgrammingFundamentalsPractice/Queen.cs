@@ -18,8 +18,9 @@ namespace ChessProgrammingFundamentalsPractice
         private const int EastSouthDirection = -9;
         private const int WestSouthDirection = -7;
 
-        public Queen(ColorSide color, ulong positions, IBitScan bitScan, ILongMovements movements, IAttack attack) : base(color, positions)
+        public Queen(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
         {
+            Name = "Queen";
             BitScan = bitScan;
             Movements = movements;
             Attack = attack;

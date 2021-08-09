@@ -31,7 +31,7 @@ namespace ChessProgrammingFundamentalsPractice
                 opponent.NotifyBeingAttacked(choosenPositionToMove);
             }
             currentPlayer.NotifyMove(currentPosition, opportunities, choosenPositionToMove);
-            BoardWithAllMember = currentPlayer.Pieces ^ opponent.Pieces;
+            BoardWithAllMember = currentPlayer.PiecesPosition ^ opponent.PiecesPosition;
         }
 
         public ulong[] SeparateUpdateBitBoardsToEvadeCheck(ulong newPositionOfDefender, ulong oldPositionOfDefender, ulong defenderPieceRoute, ulong allPiecePositions, ulong ourPositions, ulong opponentPositions)
@@ -51,9 +51,9 @@ namespace ChessProgrammingFundamentalsPractice
             {
                 BasePiece piece = observer as BasePiece;
                 
-                if((piece.Positions & occupiedPos) > 0)
+                if((piece.Position & occupiedPos) > 0)
                 {
-                    piece.Positions = (piece.Positions & ~occupiedPos);
+                    piece.Position = (piece.Position & ~occupiedPos);
                 }
             }
             return copyOfOpponentList;

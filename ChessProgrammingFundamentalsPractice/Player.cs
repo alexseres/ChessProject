@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 
@@ -9,41 +10,22 @@ namespace ChessProgrammingFundamentalsPractice
     public class Player : ISubject
     {
         public ColorSide Color { get; set; }
-        public ulong Pieces { get; set; }
-        public Rooks Rooks { get; set; }
-        public Knights Knights { get; set; } 
-        public Bishops Bishops { get; set; } 
-        public Queen Queen { get; set; }  
-        public King King { get; set; } 
-        public Pawns Pawns { get; set; }
+        public ulong PiecesPosition { get; set; }
+        public List<IObserver> KnockedPieces { get; set; }
 
-        public Dictionary<string, int> KnockedPieces { get; set; }
-
+        public King King { get; set; }
         public List<IObserver> PiecesList { get; set; }
+        public List<Pawns> OpponentPawnsList { get; set; }
 
-        public Player(ColorSide color, ulong[] positions, string[] namesOfPiecesOnPrintedBoard, IBitScan bitscan, ILongMovements movements)
+        public Player(ColorSide color)
         {
             Color = color;
-            Pieces = positions[0];
-            Rooks = new Rooks(color, positions[1], bitscan, movements, new Attack());
-            Knights = new Knights(color, positions[2]);
-            Bishops = new Bishops(color, positions[3], bitscan, movements, new Attack());
-            Queen = new Queen(color, positions[4], bitscan, movements, new Attack());
-            King = new King(color, positions[5]);
-            Pawns = new Pawns(color, positions[6], BorderOrganizer.OrganizeOrder(color));
-            KnockedPieces = new Dictionary<string, int>() { { "Rooks", 0}, { "Bishops", 0}, { "Knights", 0}, { "Pawns",0 }, {"Queen",0 }, { "King",0} };
-            PiecesList = new List<IObserver>() { Rooks, Knights, Bishops, Queen, King, Pawns };
-            InitPieces(namesOfPiecesOnPrintedBoard);
+            KnockedPieces = new List<IObserver>();
+            PiecesList = new List<IObserver>();
+            OpponentPawnsList = new List<Pawns>();
         }
 
 
-        private void InitPieces(string[] names)
-        {
-            for (int i = 0; i < PiecesList.Count; i++)
-            {
-                (PiecesList[i] as BasePiece).BoardName = names[i];
-            }
-        }
 
         public void Attach(IObserver observer)
         {
@@ -60,7 +42,7 @@ namespace ChessProgrammingFundamentalsPractice
         {
             foreach(IObserver observer in PiecesList)
             {
-                if ((Pieces & (pos & (observer as BasePiece).Positions)) > 0)
+                if ((PiecesPosition & (pos & (observer as BasePiece).Position)) > 0)
                 {
                     return observer as BasePiece;
                 }
@@ -71,35 +53,25 @@ namespace ChessProgrammingFundamentalsPractice
         public void NotifyBeingAttacked(ulong pos)
         {
             BasePiece attackedPiece = GrabAndExtractPiece(pos);
-            attackedPiece.UpdatePositionWhenBeingAttacked(pos);
-            Pieces = Pieces & ~pos;
-            UpdateKnockedOutPiece(attackedPiece);
-        }
-
-        public void UpdateKnockedOutPiece(BasePiece piece)
-        {
-            if (KnockedPieces.ContainsKey(piece.GetType().Name))
-            {
-                KnockedPieces[piece.GetType().Name] += 1;
-            }
-            else
-            {
-                Console.WriteLine("You given wrong name");
-            }
+            attackedPiece.UpdatePositionWhenBeingAttacked();
+            Detach(attackedPiece);
+            KnockedPieces.Add(attackedPiece);
+            PiecesPosition = PiecesPosition & ~pos;
         }
 
         public void NotifyMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos)
         {
             BasePiece currentPiece = GrabAndExtractPiece(currentPosition);
-            Pieces = (Pieces & ~currentPosition);
-            if(CheckIfThereWasEnPassant(currentPosition, currentPiece, decidedMovePos) == 0)
+            PiecesPosition = (PiecesPosition & ~currentPosition);
+            if(CheckIfThereWasEnPassant(currentPosition, currentPiece, decidedMovePos) != 0)
             {
+                opportunities = (opportunities & ~decidedMovePos);
                 decidedMovePos = CheckIfThereWasEnPassant(currentPosition, currentPiece, decidedMovePos);
+                opportunities = (opportunities | decidedMovePos);
             }
-
+            
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
-            Pieces = Pieces ^ decidedMovePos;
-
+            PiecesPosition = PiecesPosition ^ decidedMovePos;
             CheckIfCurrentAtLastLineAndIsPawn(decidedMovePos, currentPiece);
         }
 
@@ -131,7 +103,9 @@ namespace ChessProgrammingFundamentalsPractice
                 {
                     if (PromptAskingWhichPieceYouWantToSwap(currentPosition))
                     {
-                        pawn.Positions = pawn.Positions & ~currentPosition;
+                        pawn.UpdatePositionWhenBeingAttacked();
+                        Detach(pawn);
+                        KnockedPieces.Add(pawn);
                     }
                 }
             }
@@ -146,13 +120,11 @@ namespace ChessProgrammingFundamentalsPractice
             if(answer == "yes")
             {
                 Console.WriteLine("Please select from the list");
-                foreach(var item in KnockedPieces)
+                foreach(BasePiece piece in KnockedPieces)
                 {
-                    if(item.Value > 0)
-                    {
-                        Console.WriteLine(item.Key);
-                        counter++;
-                    }
+                    Console.WriteLine(piece.Name);
+                    counter++;
+                    
                 }
                 
                 if(counter == 0)
@@ -161,24 +133,18 @@ namespace ChessProgrammingFundamentalsPractice
                     return false;
                 }
                 string pieceName = Console.ReadLine();
-                if (KnockedPieces.ContainsKey(pieceName))
+                foreach(BasePiece piece in KnockedPieces)
                 {
-                    KnockedPieces[pieceName] -= 1;
-
-                    //next line is create an instance only providing its string name
-                    Type t = Type.GetType($"ChessProgrammingFundamentalsPractice.{pieceName}");
-
-                    foreach (IObserver observer in PiecesList)
+                    if(pieceName == piece.BoardName)
                     {
-                        BasePiece choosenPiece = observer as BasePiece;
-                        if (choosenPiece.GetType().Name == t.Name)
-                        {
-                            choosenPiece.Positions |= currentPosition;
-                            return true;
-                        }
-
+                        piece.Position = currentPosition;
+                        Attach(piece);
+                        KnockedPieces.Remove(piece);
+                        return true;
                     }
                 }
+                Console.WriteLine("Wrong name you have given");
+                return false;
             }
             return false;
         }

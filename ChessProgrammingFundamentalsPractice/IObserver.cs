@@ -7,6 +7,6 @@ namespace ChessProgrammingFundamentalsPractice
     public interface IObserver
     {
         public void UpdatePositionWhenMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos);
-        public void UpdatePositionWhenBeingAttacked(ulong attackedPosition);
+        public void UpdatePositionWhenBeingAttacked();
     }
 }

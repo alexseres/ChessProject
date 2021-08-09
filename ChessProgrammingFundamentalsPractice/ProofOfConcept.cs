@@ -7,119 +7,242 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class ProofOfConcept
     {
-        public readonly Player Player1;
-        public readonly Player Player2;
+        public Player Player1 { get; set; }
+        public Player Player2 { get; set; }
         public const string From = "Choose a piece";
         public const string To = "Move with the piece to";
         public IAttack Attack { get; set; }
         public IUpdateBitBoards UpdateBitBoards { get;set; }
+        public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
 
 
-        public string[] BlackPrintedBoardNames = new string[6] { "R", "K", "B", "Q", "N", "P" };
-        public ulong[] BlackInitPositions = new ulong[7] { 0b_1111_1111_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000,
-                                                           0b_1000_0001_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
-                                                            0b_0100_0010_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
-                                                            0b_0010_0100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
-                                                            0b_0001_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
-                                                            0b_0000_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
-                                                            0b_0000_0000_1011_1111_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000 };
+        public ColorSide SelectColorSide()
+        {
+            Console.WriteLine("Which color you want it to be up? 'white' or 'black'");
+            string answer = Console.ReadLine();
+            if(answer == "white")
+            {
+                return ColorSide.White;
+            }
+            else if(answer == "black")
+            {
+                return ColorSide.Black;
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
 
-        public string[] WhitePrintedBoardNames = new string[6] { "A", "S", "D", "F", "G", "H" };
-        public ulong[] WhiteInitPositions = new ulong[7] { 0b_0000_0000_0100_0000_1000_0000_0000_0001_1100_0000_0000_0010_1111_1101_1110_1111,
-                                                             0b_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_0010_0000_0000_1000_0001,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0100_0000_0000_0000_0000_0000_0100_0010,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010_0100,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_1000,
-                                                             0b_0000_0000_0000_0000_0000_0000_0000_0001_0000_0000_0000_0000_0000_0000_0000_0000,
-                                                             0b_0000_0000_0100_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1101_0000_0000 };
+        public void InitAllPieces(ColorSide choosenColorToBeUp, IBitScan bitScan, ILongMovements movements, IAttack attack)
+        {
+            ColorSide otherColor = choosenColorToBeUp == ColorSide.White ? ColorSide.Black : ColorSide.White;
+            Player1 = new Player(choosenColorToBeUp);
+            Player2 = new Player(otherColor);
 
-        public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_1000_0000_0000_1001_1100_0000_0100_1010_1111_1101_1110_1111;
-  
+
+            //pawn properties
+            ulong doubleMoveSignForUp = 0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            ulong doubleMoveSignForDown = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000;
+            ulong fifthLineOfEnPassantForUp = 0b_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000;
+            ulong fifthLineOfEnPassantForDown =0b_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000;
+            ulong lastLineForSwapForUp = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_000_0000_0000_1111_1111;
+            ulong lastLineForSwapToDown = 0b_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+
+            #region InitIteratePieces
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            for (int i = 0; i < 64; i++)
+            {
+                
+                if(i == 0 || i == 7)
+                {
+                    Rooks rookUp = new Rooks(Player1,choosenColorToBeUp, mask, bitScan, movements, attack, "R");
+                    Player1.PiecesList.Add(rookUp);
+                    Player1.PiecesPosition ^= mask;
+                }
+                else if(i == 1 || i == 6)
+                {
+                    Knights knightUp = new Knights(Player1,choosenColorToBeUp, mask, "N");
+                    Player1.PiecesList.Add(knightUp);
+                    Player1.PiecesPosition ^= mask;
+                }
+                else if(i == 2 || i == 5)
+                {
+                    Bishops bishopUp = new Bishops(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, "B");
+                    Player1.PiecesList.Add(bishopUp);
+                    Player1.PiecesPosition ^= mask;
+                }
+                else if(i == 3)
+                {
+                    King kingUp = new King(Player1, choosenColorToBeUp, mask, "K");
+                    Player1.PiecesList.Add(kingUp);
+                    Player1.King = kingUp;
+                    Player1.PiecesPosition ^= mask;
+                }
+                else if(i == 4)
+                {
+                    Queen queenUp = new Queen(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, "Q");
+                    Player1.PiecesList.Add(queenUp);
+                    Player1.PiecesPosition ^= mask;
+                }
+                else if(i >=8 && i <= 15)
+                {
+                    Pawns pawnUp = new Pawns(Player1, choosenColorToBeUp, mask, "P", lastLineForSwapForUp, doubleMoveSignForUp, fifthLineOfEnPassantForUp);
+                    Player1.PiecesList.Add(pawnUp);
+                    Player1.PiecesPosition ^= mask;
+                    Player2.OpponentPawnsList.Add(pawnUp);
+                }
+                else if(i >47 && i < 56)
+                {
+                    Pawns pawnDown = new Pawns(Player2,otherColor, mask, "H", lastLineForSwapToDown, doubleMoveSignForDown, fifthLineOfEnPassantForDown);
+                    Player2.PiecesList.Add(pawnDown);
+                    Player2.PiecesPosition ^= mask;
+                    Player1.OpponentPawnsList.Add(pawnDown);
+                }
+                else if(i == 56 || i == 63)
+                {
+                    Rooks rookDown = new Rooks(Player2,otherColor, mask, bitScan, movements, attack, "A");
+                    Player2.PiecesList.Add(rookDown);
+                    Player2.PiecesPosition ^= mask;
+                }
+                else if(i == 57 || i == 62)
+                {
+                    Bishops bishopDown = new Bishops(Player2,otherColor, mask, bitScan, movements, attack, "S");
+                    Player2.PiecesList.Add(bishopDown);
+                    Player2.PiecesPosition ^= mask;
+                }
+                else if(i == 58 || i == 61)
+                {
+                    Knights knightDown = new Knights(Player2,otherColor, mask, "D");
+                    Player2.PiecesList.Add(knightDown);
+                    Player2.PiecesPosition ^= mask;
+                }
+                else if(i == 59)
+                {
+                    Queen queenDown = new Queen(Player2, otherColor, mask, bitScan, movements, attack, "F");
+                    Player2.PiecesList.Add(queenDown);
+                    Player2.PiecesPosition ^= mask;
+                }
+                else if(i == 60)
+                {
+                    King kingDown = new King(Player2, otherColor, mask, "G");
+                    Player2.PiecesList.Add(kingDown);
+                    Player2.PiecesPosition ^= mask;
+                    Player2.King = kingDown;
+
+                }
+
+                mask = mask >> 1;
+            }
+
+            #endregion
+            Player2.King.OpponentKing = Player1.King;
+            Player1.King.OpponentKing = Player2.King;
+        }
+
+
         public ProofOfConcept()
         {
+            ColorSide color = SelectColorSide();
             Attack = new Attack();
             UpdateBitBoards = new UpdateBitBoards();
-            Player1 = new Player(ColorSide.Black, BlackInitPositions, BlackPrintedBoardNames, new BitScan(), new LongMovements());
-            Player2 = new Player(ColorSide.White, WhiteInitPositions, WhitePrintedBoardNames, new BitScan(), new LongMovements());
-            Player1.King.OpponentKing = Player2.King;
-            Player2.King.OpponentKing = Player1.King;
-            Player1.Pawns.OpponentPawns = Player2.Pawns;
-            Player2.Pawns.OpponentPawns = Player1.Pawns;
+            
+            InitAllPieces(color,new BitScan(), new LongMovements(), Attack);
             string board = CreateStringOfBoard();
             PrintBoard(board);
             PlayGame();
         }
 
+        public bool CheckIfPlayer1IsWhite()
+        {
+            return Player1.Color == ColorSide.White ? true : false;
+        }
+
         public void PlayGame()
         {
-            bool isWhiteAtTurn = false;
-            while(true)
-            {
-                if (isWhiteAtTurn)
-                {
-                    ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(Player2.King.Positions,BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player1.PiecesList);
-                    PrintBoard(Convert.ToString((long)opponentAttacks, toBase: 2).PadLeft(64, '0'));
-                    if (opponentAttacks > 0)   // king in check
-                    {
-                        Console.WriteLine($"Check for {Player2.Color} Player");
-                        if(Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, Player2.King.Positions, BoardWithAllMember, Player1.Pieces, Player2.Pieces, Player2.PiecesList, Player1.PiecesList))
-                        {
-                            Console.WriteLine("CheckMATE");
-                            break;
-                        }
-                    }
 
-                    ulong choosenPos = UserInput(From);
-                    BasePiece choosenWhitePiece = Player2.GrabAndExtractPiece(choosenPos);
-                    if (choosenWhitePiece.Color != ColorSide.White)
-                    {
-                        Console.WriteLine("Choose white piece not black or null");
-                        isWhiteAtTurn = true;
-                    }
-                    else
-                    {
-                        bool response = Process(Player2, choosenWhitePiece, choosenPos);
-                        if (response == true)
-                        {
-                            isWhiteAtTurn = false;
-                        }
-                        else
-                        {
-                            isWhiteAtTurn = true;
-                        }
-                    }
+            bool isPlayer1AtTurn = CheckIfPlayer1IsWhite();
+
+            while (true)
+            {
+                if (isPlayer1AtTurn)
+                {
+                    isPlayer1AtTurn = PlayerTurn(Player1, true);
                 }
                 else
                 {
-                    //ulong allEnemyAttack = Player1.Attack.GetAllOpponentAttack(BoardWithAllMember, Player2.Pieces, Player1.Pieces, Player2.PiecesList);
-                    //PrintBoard(Convert.ToString((long)allEnemyAttack, toBase: 2).PadLeft(64, '0'));
-                    ulong choosenPos = UserInput(From);
-                    BasePiece choosenBlackPiece = Player1.GrabAndExtractPiece(choosenPos);
-                    if(choosenBlackPiece.Color != ColorSide.Black)
-                    {
-                        Console.WriteLine("Choose black piece not white or null");
-                        isWhiteAtTurn = false;
-                    }
-                    else
-                    {
-                        bool response = Process(Player1, choosenBlackPiece, choosenPos);
-                        if (response == true)
-                        {
-                            isWhiteAtTurn = true;
-                        }
-                        else
-                        {
-                            isWhiteAtTurn = false;
-                        }
-                    }
+                    isPlayer1AtTurn = PlayerTurn(Player2, false);
                 }
             }
         }
+
+        public bool PlayerTurn(Player actualPlayer, bool isPlayer1)
+        {
+            Player opponent = OpponentCreater(actualPlayer);
+    
+            ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
+            //PrintBoard(Convert.ToString((long)opponentAttacks, toBase: 2).PadLeft(64, '0'));
+            if (opponentAttacks > 0)   // king in check
+            {
+                Console.WriteLine($"Check for {actualPlayer.Color} Player");
+                if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
+                {
+                    Console.WriteLine("CheckMATE");
+
+                    //break;
+                }
+            }
+
+            ulong choosenPos = UserInput(From);
+            BasePiece choosenPiece = actualPlayer.GrabAndExtractPiece(choosenPos);
+            if (choosenPiece is null || choosenPiece.Color != actualPlayer.Color)
+            {
+                Console.WriteLine("Choose white piece not black or null");
+                if (isPlayer1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                bool response = Process(actualPlayer, choosenPiece, choosenPos);
+                if (response == true)
+                {
+                    if (isPlayer1)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+
+                }
+                else
+                {
+                    if (isPlayer1)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            
+        }
+
+       
         
         public bool Process(Player player ,BasePiece piece,  ulong currentPiecePosition)
         {
             Player opponent = OpponentCreater(player);
-            ulong opportunities = piece.Search(currentPiecePosition, BoardWithAllMember, opponent.Pieces, player.Pieces);
+            ulong opportunities = piece.Search(currentPiecePosition, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
             PrintBoard(Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0'));
             if (opportunities <= 0)
             {
@@ -133,7 +256,7 @@ namespace ChessProgrammingFundamentalsPractice
                 Console.WriteLine("You cannot move there because there is no opportunity there");
                 return false;
             }
-            bool attacked = Attack.HasAttacked(choosenPositionToMove, opponent.Pieces);
+            bool attacked = Attack.HasAttacked(choosenPositionToMove, opponent.PiecesPosition);
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
             
             Console.WriteLine("updated board");
@@ -191,19 +314,26 @@ namespace ChessProgrammingFundamentalsPractice
             for(int i = 0;i< 64;i++)
             {
                 bool IsSquareOccupied = false;
-                for(int j = 0; j < 6; j++)
+                for(int j = 0; j < Player1.PiecesList.Count; j++)
                 {
-                    if(((Player1.PiecesList[j] as BasePiece).Positions & (mask & BoardWithAllMember)) > 0)
+                    if(((Player1.PiecesList[j] as BasePiece).Position & (mask & BoardWithAllMember)) > 0)
                     {
                         sb.Append((Player1.PiecesList[j] as BasePiece).BoardName);
                         IsSquareOccupied = true;
+                        break;
                     }
-                    else if (((Player2.PiecesList[j] as BasePiece).Positions & (mask & BoardWithAllMember)) > 0)
+
+                }
+                for(int k = 0;k < Player2.PiecesList.Count; k++)
+                {
+                    if (((Player2.PiecesList[k] as BasePiece).Position & (mask & BoardWithAllMember)) > 0)
                     {
-                        sb.Append((Player2.PiecesList[j] as BasePiece).BoardName);
+                        sb.Append((Player2.PiecesList[k] as BasePiece).BoardName);
                         IsSquareOccupied = true;
+                        break;
                     }
                 }
+
                 if (!IsSquareOccupied)
                 {
                     sb.Append(".");

@@ -14,8 +14,9 @@ namespace ChessProgrammingFundamentalsPractice
         private const int SouthDirection = -8;
         private const int WestDirection = 1;
 
-        public Rooks(ColorSide color, ulong positions, IBitScan bitScan, ILongMovements movements, IAttack attack) : base(color, positions)
+        public Rooks(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player,color, position, boardName)
         {
+            Name = "Rook";
             BitScan = bitScan;
             Movements = movements;
             Attack = attack;
@@ -29,14 +30,14 @@ namespace ChessProgrammingFundamentalsPractice
             ulong eastAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEast, BitScan.bitScanReverseMS1B, EastDiretion);
             ulong southAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetSouth, BitScan.bitScanReverseMS1B, SouthDirection);
             ulong westAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWest, BitScan.bitScanForwardLS1B, WestDirection);
-            Printboard(Convert.ToString((long)northAttack, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
-            Printboard(Convert.ToString((long)eastAttack, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
-            Printboard(Convert.ToString((long)southAttack, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
-            Printboard(Convert.ToString((long)westAttack, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
+            //Printboard(Convert.ToString((long)northAttack, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
+            //Printboard(Convert.ToString((long)eastAttack, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
+            //Printboard(Convert.ToString((long)southAttack, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
+            //Printboard(Convert.ToString((long)westAttack, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
             return northAttack ^ eastAttack ^ southAttack ^ westAttack;
         }
 

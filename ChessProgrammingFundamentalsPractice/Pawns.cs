@@ -12,7 +12,6 @@ namespace ChessProgrammingFundamentalsPractice
         public readonly ulong LastLine;
         public readonly ulong FifthLineOfEnPassant;
         public bool WasEnPassant { get; set; }
-        public Pawns OpponentPawns;
 
         //these mask we need if our pawn wants to attack and its at the sides, so therefore it cannot move onto the edge and jumping to another row
         public const ulong maskNotAColumn = 0b_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111;
@@ -21,15 +20,15 @@ namespace ChessProgrammingFundamentalsPractice
         //this mask checks if pawns at the starting position, and if they are, they got the chance to move 2 square
         public readonly ulong MaskOfDoubleMove;
 
-        public Pawns(ColorSide color, ulong positions, ulong lastline) : base(color, positions)
+        public Pawns(Player player, ColorSide color, ulong position,string boardName, ulong lastline, ulong maskOfDoubleMove, ulong fifthLineOfEnPassant) : base(player, color, position, boardName)
         {
+            Name = "Pawn";
             WasEnPassant = false;
             LastLine = lastline;
-            MaskOfDoubleMove = color == ColorSide.Black ? (ulong)0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000 : 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000;
-            FifthLineOfEnPassant = color == ColorSide.Black ? (ulong)0b_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000 : 0b_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000;
+            MaskOfDoubleMove = maskOfDoubleMove;
+            FifthLineOfEnPassant = fifthLineOfEnPassant;
         }
-         
-
+  
         public ulong DoEnPassant(ulong currentPositon, ulong opponentPositons, ulong ourPositions)
         {
             ulong enPassant = 0;
@@ -40,29 +39,33 @@ namespace ChessProgrammingFundamentalsPractice
                 ulong fithRank = 0b_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000;
                 ulong fourthRank = 0b_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000;
                 ulong secondRank = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000;
-                if ((((OpponentPawns.LatestMove.Item1 & seventhRank) > 0) && ((OpponentPawns.LatestMove.Item2 & fithRank)) > 0))
+                foreach(Pawns pawn in Creator.OpponentPawnsList)
                 {
-                    if (((currentPositon & maskNotHColumn) >> 1 & (OpponentPawns.Positions)) > 0)
+
+                    if ((((pawn.LatestMove.Item1 & seventhRank) > 0) && ((pawn.LatestMove.Item2 & fithRank)) > 0))
                     {
-                        enPassant = currentPositon >> 1;
+                        if (((currentPositon & maskNotHColumn) >> 1 & (pawn.Position)) > 0)
+                        {
+                            enPassant = currentPositon >> 1;
+                        }
+                        else if (((currentPositon & maskNotAColumn) << 1 & (pawn.Position)) > 0)
+                        {
+                            enPassant =  currentPositon << 1;
+                        }
                     }
-                    else if (((currentPositon & maskNotAColumn) << 1 & (OpponentPawns.Positions)) > 0)
+                    else if((((pawn.LatestMove.Item1 & secondRank) > 0) && (pawn.LatestMove.Item2 & fourthRank) > 0))
                     {
-                        enPassant =  currentPositon << 1;
+                        if (((currentPositon & maskNotHColumn) >> 1 & (pawn.Position)) > 0)
+                        {
+                            enPassant = currentPositon >> 1;
+                        }
+                        else if (((currentPositon & maskNotAColumn) << 1 & (pawn.Position)) > 0)
+                        {
+                            enPassant = currentPositon << 1;
+                        }
                     }
                 }
-                else if((((OpponentPawns.LatestMove.Item1 & secondRank) > 0) && (OpponentPawns.LatestMove.Item2 & fourthRank) > 0))
-                {
-                    if (((currentPositon & maskNotHColumn) >> 1 & (OpponentPawns.Positions)) > 0)
-                    {
-                        enPassant = currentPositon >> 1;
-                    }
-                    else if (((currentPositon & maskNotAColumn) << 1 & (OpponentPawns.Positions)) > 0)
-                    {
-                        enPassant = currentPositon << 1;
-                    }
-                }
-                return ((enPassant & ~ourPositions) & ~opponentPositons); 
+                return enPassant; 
             }
             return 0;
         }
@@ -89,6 +92,7 @@ namespace ChessProgrammingFundamentalsPractice
                 ulong movedPositions = (currentPosition << MovingDirection) | movedFirstPositions;
                 ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
                 opportunities = opportunities | enpassant;
+                Printboard(Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0'));
                 return opportunities;
             }
         }

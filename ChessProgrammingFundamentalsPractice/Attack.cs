@@ -6,7 +6,7 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class Attack : IAttack
     {
-        public bool CheckMateChecker(ulong attackerPieceRoute , ulong oldPosOfDefenderPiece, ulong defenderPieceRoute, ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> opponentPieceList)
+        public bool CheckMateChecker(ulong attackerPieceRoute ,ulong oldPosOfDefenderPiece, ulong defenderPieceRoute, ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> opponentPieceList)
         {
             BitScan bitScan = new BitScan();
             PopulationCount populationCounter = new PopulationCount();
@@ -39,7 +39,7 @@ namespace ChessProgrammingFundamentalsPractice
                     foreach(IObserver observer in ourPieceList)
                     {
                         BasePiece piece = observer as BasePiece;
-                        if ((piece.Positions & mask) > 0)   //it can defend it 
+                        if ((piece.Position & mask) > 0)   //it can defend it 
                         {
                             ulong counterAttack = piece.Search(mask, allPiecePositions,opponentPositions, ourPositions);  // here we replaced two arguments(our <-> opp)
                             if ((counterAttack & attackerPositionAndAttackVektor) > 0)
@@ -100,7 +100,7 @@ namespace ChessProgrammingFundamentalsPractice
                     foreach (IObserver observer in pieceListOfOpponent)
                     {
                         BasePiece piece = observer as BasePiece;
-                        if ((piece.Positions & mask) > 0)
+                        if ((piece.Position & mask) > 0)
                         {
                             if(piece is Pawns)
                             {
@@ -117,11 +117,6 @@ namespace ChessProgrammingFundamentalsPractice
                                 ulong newAttack = piece.GetSpecificAttackFromSearch(mask, allPiecePositions, ourPositions, opponentPositions, kingPosition) | mask;  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
                                 if ((newAttack & kingPosition) > 0)
                                 {
-                                    Printboard(Convert.ToString((long)mask, toBase: 2).PadLeft(64, '0'));
-                                    Console.WriteLine(" ");
-                                    Printboard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
-                                    Console.WriteLine(" ");
-                                    Printboard(Convert.ToString((long)kingPosition, toBase: 2).PadLeft(64, '0'));
                                     return newAttack; 
                                 }
                                 //attacks |= newAttack;
@@ -138,10 +133,10 @@ namespace ChessProgrammingFundamentalsPractice
         public ulong GetRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int, ulong> rayAttack, Func<ulong, int> bitScan, int direction)
         {
             ulong attacks = rayAttack(square);
-            Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
 
             ulong blocker = attacks & allPositionAtBoard;
-            Printboard(Convert.ToString((long)blocker, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)blocker, toBase: 2).PadLeft(64, '0'));
             if (blocker > 0)
             {
                 square = bitScan(blocker);
