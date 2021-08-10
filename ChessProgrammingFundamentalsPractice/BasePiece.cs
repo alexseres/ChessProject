@@ -56,7 +56,7 @@ namespace ChessProgrammingFundamentalsPractice
             if ((opportunities & decidedMovePos) > 0)
             {
                 Position = (~currentPosition & Position) | decidedMovePos;
-                //for now we need latest move to en passant 
+                //for now we need latest move to en passant and/or castling
                 LatestMove = (currentPosition, decidedMovePos);
             }
         }

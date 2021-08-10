@@ -25,8 +25,8 @@ namespace ChessProgrammingFundamentalsPractice
             //Printboard(Convert.ToString((long)allAttacks, toBase: 2).PadLeft(64, '0'));
             ulong opponentAttacks = GetFreeSquareWHereEnemyCannotIndave(allPositionAtBoard, opponentPositionAtBoard, ourPositions, Creator.OpponentPiecesList);
             
-            //ulong castlingAvailable = CheckForCastling(currentPosition, allPositionAtBoard, opponentPositionAtBoard, ourPositions, Creator.OpponentPiecesList);
-            ulong allPossibilities = (possibleAttacks & ~ourPositions) &~opponentAttacks;
+            ulong castlingAvailable = Creator.PlayerInCheck == false ? CheckForCastling(allPositionAtBoard) : 0;
+            ulong allPossibilities = ((possibleAttacks & ~ourPositions) &~opponentAttacks) | castlingAvailable;
             return allPossibilities;
         }
 
@@ -44,7 +44,7 @@ namespace ChessProgrammingFundamentalsPractice
             return northAttack ^ northEastAttack ^ northWestAttack ^ westAttack ^ eastAttack ^ southEastAttack ^ southWestAttack ^ southAttack;
         }
 
-        public ulong CheckForCastling(ulong currentPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> pieceListOfOpponent)
+        public ulong CheckForCastling( ulong allPiecePositions)
         {
             if(this.LatestMove == (0, 0))
             {

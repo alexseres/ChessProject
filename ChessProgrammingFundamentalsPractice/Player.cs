@@ -63,7 +63,7 @@ namespace ChessProgrammingFundamentalsPractice
         public void NotifyMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos)
         {
             BasePiece currentPiece = GrabAndExtractPiece(currentPosition);
-            PiecesPosition = (PiecesPosition & ~currentPosition);
+            if (CheckIfThereWasCastling(currentPosition, currentPiece, decidedMovePos, opportunities)) return;
             if(CheckIfThereWasEnPassant(currentPosition, currentPiece, decidedMovePos) != 0)
             {
                 opportunities = (opportunities & ~decidedMovePos);
@@ -72,10 +72,65 @@ namespace ChessProgrammingFundamentalsPractice
             }
 
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
+            PiecesPosition = (PiecesPosition & ~currentPosition);
             PiecesPosition = PiecesPosition ^ decidedMovePos;
             CheckIfCurrentAtLastLineAndIsPawn(decidedMovePos, currentPiece);
         }
 
+        public bool CheckIfThereWasCastling(ulong currentPosition, BasePiece piece, ulong decidedMovePos, ulong kingOpportunities)
+        {
+            if(piece is King)
+            {
+                King king = piece as King;
+                foreach(IObserver observer in PiecesList)
+                {
+                    if(observer is Rooks)
+                    {
+                        Rooks rook = observer as Rooks;
+                        if(rook.Position == decidedMovePos)
+                        {
+
+                            ulong newKingPos = 0;
+                            ulong newRookPos = 0;
+                            if(king.Position > rook.Position)
+                            {
+                                if(king.Position >> 4 == rook.Position)
+                                {
+                                    newKingPos = king.Position >> 3;
+                                    newRookPos = rook.Position << 2;
+                                }
+                                else if(king.Position >> 3 == rook.Position)
+                                {
+                                    newKingPos = king.Position >> 2;
+                                    newRookPos = rook.Position << 2;
+                                }
+                            }
+                            else
+                            {
+                                if (king.Position << 4 == rook.Position)
+                                {
+                                    newKingPos = king.Position << 3;
+                                    newRookPos = rook.Position >> 2;
+                                }
+                                else if (king.Position << 3 == rook.Position)
+                                {
+                                    newKingPos = king.Position << 2;
+                                    newRookPos = rook.Position >> 2;
+                                }
+                            }
+                            PiecesPosition = PiecesPosition & ~king.Position;
+                            PiecesPosition = PiecesPosition & ~rook.Position;
+                            king.UpdatePositionWhenMove(currentPosition, kingOpportunities, newKingPos);
+                            rook.UpdatePositionWhenMove(rook.Position, newRookPos, newRookPos);
+                            PiecesPosition = PiecesPosition ^ king.Position;
+                            PiecesPosition = PiecesPosition ^ rook.Position;
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
 
         public ulong CheckIfThereWasEnPassant(ulong currentPosition, BasePiece piece, ulong decidedMovePos)
         {
@@ -135,7 +190,7 @@ namespace ChessProgrammingFundamentalsPractice
                     return false;
                 }
                 string pieceName = Console.ReadLine();
-                foreach(BasePiece piece in KnockedPieces)
+                foreach(BasePiece piece in KnockedPieces.ToList())
                 {
                     if(pieceName == piece.BoardName)
                     {
@@ -146,7 +201,6 @@ namespace ChessProgrammingFundamentalsPractice
                     }
                 }
                 Console.WriteLine("Wrong name you have given");
-                return false;
             }
             return false;
         }

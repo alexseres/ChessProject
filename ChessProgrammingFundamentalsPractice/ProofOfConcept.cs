@@ -280,6 +280,7 @@ namespace ChessProgrammingFundamentalsPractice
                     return false;
                 }
             }
+            player.PlayerInCheck = false;
             return true;
         }
 
