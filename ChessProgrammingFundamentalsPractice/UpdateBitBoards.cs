@@ -29,7 +29,7 @@ namespace ChessProgrammingFundamentalsPractice
             {
                 opponent.NotifyBeingAttacked(choosenPositionToMove);
             }
-            currentPlayer.NotifyMove(currentPosition, opportunities, choosenPositionToMove);
+            currentPlayer.NotifyMove(currentPosition, opportunities, choosenPositionToMove, attacked);
             BoardWithAllMember = currentPlayer.PiecesPosition ^ opponent.PiecesPosition;
         }
 

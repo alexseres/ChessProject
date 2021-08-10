@@ -18,6 +18,8 @@ namespace ChessProgrammingFundamentalsPractice
         public List<Pawns> OpponentPawnsList { get; set; }
         public List<IObserver> OpponentPiecesList { get; set; }
         public bool IsThreeFold { get; set; } = false;
+        public bool IsFiftyMoveWIthoutCaptureOrPawnMove { get; set; } = false;
+        public int FiftyMoveWithoutCaptureAndPawnMove { get; set; } = 0;
 
         public bool PlayerInCheck { get; set; }
 
@@ -61,7 +63,7 @@ namespace ChessProgrammingFundamentalsPractice
             PiecesPosition = PiecesPosition & ~pos;
         }
 
-        public void NotifyMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos)
+        public void NotifyMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos, bool weAttacked)
         {
             BasePiece currentPiece = GrabAndExtractPiece(currentPosition);
             if (CheckIfThereWasCastling(currentPosition, currentPiece, decidedMovePos, opportunities)) return;
@@ -71,11 +73,20 @@ namespace ChessProgrammingFundamentalsPractice
                 decidedMovePos = CheckIfThereWasEnPassant(currentPosition, currentPiece, decidedMovePos);
                 opportunities = (opportunities | decidedMovePos);
             }
-
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
             PiecesPosition = (PiecesPosition & ~currentPosition);
             PiecesPosition = PiecesPosition ^ decidedMovePos;
             CheckIfCurrentAtLastLineAndIsPawn(decidedMovePos, currentPiece);
+            Check50MoveRule(currentPiece, weAttacked);
+
+        }
+
+        public void Check50MoveRule(BasePiece piece, bool weAttacked)
+        {
+            if (!weAttacked && !(piece is Pawns)) FiftyMoveWithoutCaptureAndPawnMove += 1;
+            else FiftyMoveWithoutCaptureAndPawnMove = 0;
+
+            if (FiftyMoveWithoutCaptureAndPawnMove == 50) IsFiftyMoveWIthoutCaptureOrPawnMove = true;
         }
 
         public bool CheckIfThereWasCastling(ulong currentPosition, BasePiece piece, ulong decidedMovePos, ulong kingOpportunities)

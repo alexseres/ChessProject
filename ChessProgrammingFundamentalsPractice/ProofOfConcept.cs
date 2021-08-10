@@ -182,7 +182,12 @@ namespace ChessProgrammingFundamentalsPractice
 
                 if(Player1.IsThreeFold == true || Player2.IsThreeFold == true)
                 {
-                    Console.WriteLine("Its a draw");
+                    Console.WriteLine("Its a draw because of TreeFold");
+                    break;
+                }
+                if(Player1.IsFiftyMoveWIthoutCaptureOrPawnMove == true || Player2.IsFiftyMoveWIthoutCaptureOrPawnMove == true)
+                {
+                    Console.WriteLine("Its draw because of 50 move rule");
                     break;
                 }
             }
