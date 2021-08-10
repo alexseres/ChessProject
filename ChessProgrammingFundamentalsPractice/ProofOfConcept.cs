@@ -13,7 +13,8 @@ namespace ChessProgrammingFundamentalsPractice
         public const string To = "Move with the piece to";
         public IAttack Attack { get; set; }
         public IUpdateBitBoards UpdateBitBoards { get;set; }
-        public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
+        public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0100_0000_0000_0000_1111_1111_1111_1111;
+        
 
 
         public ColorSide SelectColorSide()
@@ -60,7 +61,7 @@ namespace ChessProgrammingFundamentalsPractice
                     Player1.PiecesList.Add(rookUp);
                     Player1.PiecesPosition ^= mask;
                 }
-                else if(i == 1 || i == 6)
+                else if(i == 1 || i == 6 || i == 33)
                 {
                     Knights knightUp = new Knights(Player1,choosenColorToBeUp, mask, "N");
                     Player1.PiecesList.Add(knightUp);
@@ -136,6 +137,7 @@ namespace ChessProgrammingFundamentalsPractice
             }
 
             #endregion
+
             Player2.King.OpponentKing = Player1.King;
             Player1.King.OpponentKing = Player2.King;
             Player2.OpponentPiecesList = Player1.PiecesList;
@@ -162,18 +164,20 @@ namespace ChessProgrammingFundamentalsPractice
 
         public void PlayGame()
         {
-
             bool isPlayer1AtTurn = CheckIfPlayer1IsWhite();
-
             while (true)
             {
                 if (isPlayer1AtTurn)
                 {
                     isPlayer1AtTurn = PlayerTurn(Player1, true);
+                    string board = CreateStringOfBoard();
+                    PrintBoard(board);
                 }
                 else
                 {
                     isPlayer1AtTurn = PlayerTurn(Player2, false);
+                    string board = CreateStringOfBoard();
+                    PrintBoard(board);
                 }
             }
         }
@@ -181,18 +185,18 @@ namespace ChessProgrammingFundamentalsPractice
         public bool PlayerTurn(Player actualPlayer, bool isPlayer1)
         {
             Player opponent = OpponentCreater(actualPlayer);
-    
-            ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
-            bool isCheck = false;
-            //PrintBoard(Convert.ToString((long)opponentAttacks, toBase: 2).PadLeft(64, '0'));
-            if (opponentAttacks > 0)   // king in check
+            if (!actualPlayer.PlayerInCheck)
             {
-                isCheck = true;
-                Console.WriteLine($"Check for {actualPlayer.Color} Player");
-                if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
+                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
+                if (opponentAttacks > 0)   // king in check
                 {
-                    Console.WriteLine("CheckMATE");
-                    //break;
+                    Console.WriteLine($"Check for {actualPlayer.Color} Player");
+                    actualPlayer.PlayerInCheck = true;
+                    if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
+                    {
+                        Console.WriteLine("CheckMATE");
+                        //break;
+                    }
                 }
             }
 
@@ -200,7 +204,7 @@ namespace ChessProgrammingFundamentalsPractice
             BasePiece choosenPiece = actualPlayer.GrabAndExtractPiece(choosenPos);
             if (choosenPiece is null || choosenPiece.Color != actualPlayer.Color)
             {
-                Console.WriteLine("Choose white piece not black or null");
+                Console.WriteLine($"Choose piece is not {actualPlayer.Color} piece");
                 if (isPlayer1)
                 {
                     return true;
@@ -212,12 +216,13 @@ namespace ChessProgrammingFundamentalsPractice
             }
             else
             {
-                bool response = Process(actualPlayer, choosenPiece, choosenPos, isCheck);
+                bool response = Process(actualPlayer, choosenPiece, choosenPos);
 
                 if (response == true)
                 {
                     if (isPlayer1)
                     {
+                        
                         return false;
                     }
                     else
@@ -240,8 +245,46 @@ namespace ChessProgrammingFundamentalsPractice
             }
             
         }
+
+        public bool CheckProcess(Player player, ulong currentPiecePosition, Player opponent, BasePiece piece, bool attacked, ulong choosenPositionToMove)
+        {
+            if (player.PlayerInCheck)
+            {
+                ulong MockOfourPiecesPosition = player.PiecesPosition & ~currentPiecePosition;
+                ulong MockOfOpponentPiecesPosition = opponent.PiecesPosition;
+                List<IObserver> MockOfEnemyPiecesList = Clone.DeepCopyItem(opponent.PiecesList);
+                ulong mockOfKingPosition = player.King.Position;
+                if (piece is King)
+                {
+                    mockOfKingPosition = choosenPositionToMove;
+                }
+                if (attacked)
+                {
+                    foreach (IObserver observer in MockOfEnemyPiecesList.ToList())
+                    {
+                        BasePiece opponentPiece = observer as BasePiece;
+                        if (opponentPiece.Position == choosenPositionToMove)
+                        {
+
+                            MockOfEnemyPiecesList.Remove(observer);
+                            break;
+                        }
+                    }
+                    MockOfOpponentPiecesPosition = MockOfOpponentPiecesPosition & ~choosenPositionToMove;
+                }
+                MockOfourPiecesPosition |= choosenPositionToMove;
+                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingStillInCheck(BoardWithAllMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
+                if ((opponentAttacks & mockOfKingPosition) > 0)
+                {
+                    Console.WriteLine("Choose another piece, the king is still in check, step not succeeded");
+                    return false;
+                }
+            }
+            return true;
+        }
+
         
-        public bool Process(Player player ,BasePiece piece,  ulong currentPiecePosition, bool isCheck)
+        public bool Process(Player player ,BasePiece piece,  ulong currentPiecePosition)
         {
             Player opponent = OpponentCreater(player);
             ulong opportunities = piece.Search(currentPiecePosition, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
@@ -260,45 +303,13 @@ namespace ChessProgrammingFundamentalsPractice
             }
 
             bool attacked = Attack.HasAttacked(choosenPositionToMove, opponent.PiecesPosition);
-            if (isCheck)
+
+            if(!CheckProcess(player, currentPiecePosition, opponent, piece, attacked, choosenPositionToMove))
             {
-                var MockOfourPiecesPosition = player.PiecesPosition & ~currentPiecePosition;
-                var MockOfOpponentPiecesPosition = opponent.PiecesPosition;
-                var MockOfEnemyPiecesList = opponent.PiecesList;
-
-                var mockOfKingPosition = player.King.Position;
-                if(piece is King)
-                {
-                    mockOfKingPosition = choosenPositionToMove;
-                }
-                if (attacked)
-                {
-                    foreach(IObserver observer in MockOfEnemyPiecesList)
-                    {
-                        BasePiece opponentPiece = observer as BasePiece;
-                        if(opponentPiece.Position == choosenPositionToMove)
-                        {
-                            MockOfEnemyPiecesList.Remove(observer);
-                        }
-                    }
-                    MockOfOpponentPiecesPosition = MockOfOpponentPiecesPosition & ~choosenPositionToMove;
-                }
-                MockOfourPiecesPosition |= choosenPositionToMove;
-                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(mockOfKingPosition, BoardWithAllMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
-                if(opponentAttacks > 0)
-                {
-                    Console.WriteLine("Choose another piece, the king is still in check, step not succeeded");
-                    return false;
-                }
-
+                return false;
             }
 
-
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
-            
-            Console.WriteLine("updated board");
-            string updatedBoard = CreateStringOfBoard();
-            PrintBoard(updatedBoard);
             return true;
         }
 

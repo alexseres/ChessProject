@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
+    [Serializable]
     public class King : BasePiece
     {
         private ulong MaskNotInAFile = 0b_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111;
@@ -14,8 +15,6 @@ namespace ChessProgrammingFundamentalsPractice
         {
             Name = "King";
         }
-
-
 
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {

@@ -7,16 +7,18 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
+    [Serializable]
     public class Player : ISubject
     {
         public ColorSide Color { get; set; }
         public ulong PiecesPosition { get; set; }
         public List<IObserver> KnockedPieces { get; set; }
-
         public King King { get; set; }
         public List<IObserver> PiecesList { get; set; }
         public List<Pawns> OpponentPawnsList { get; set; }
         public List<IObserver> OpponentPiecesList { get; set; }
+
+        public bool PlayerInCheck { get; set; }
 
         public Player(ColorSide color)
         {
@@ -25,9 +27,7 @@ namespace ChessProgrammingFundamentalsPractice
             PiecesList = new List<IObserver>();
             OpponentPawnsList = new List<Pawns>();
         }
-
-
-
+            
         public void Attach(IObserver observer)
         {
             Console.WriteLine("attached an observer");
@@ -70,8 +70,7 @@ namespace ChessProgrammingFundamentalsPractice
                 decidedMovePos = CheckIfThereWasEnPassant(currentPosition, currentPiece, decidedMovePos);
                 opportunities = (opportunities | decidedMovePos);
             }
-            
-            
+
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
             PiecesPosition = PiecesPosition ^ decidedMovePos;
             CheckIfCurrentAtLastLineAndIsPawn(decidedMovePos, currentPiece);

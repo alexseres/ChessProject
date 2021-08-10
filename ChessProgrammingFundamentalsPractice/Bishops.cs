@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
+    [Serializable]
     public class Bishops : BasePiece
     {
         public ILongMovements Movements { get; set; }
@@ -38,7 +39,7 @@ namespace ChessProgrammingFundamentalsPractice
             //Console.WriteLine(" ");
             ulong westSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestSouth, BitScan.bitScanReverseMS1B, WestSouthDirection);
             //PrintBoard(Convert.ToString((long)westSouthAttack, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
+
             return eastNorthAttack ^ westNorthAttack ^ eastSouthAttack ^ westSouthAttack;
         }
 

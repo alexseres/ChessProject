@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
+    [Serializable]
     public class Knights : BasePiece
     {
         private ulong MaskNotInAFile = 0b_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111;

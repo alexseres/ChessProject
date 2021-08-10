@@ -6,7 +6,6 @@ namespace ChessProgrammingFundamentalsPractice
 {
     public class UpdateBitBoards : IUpdateBitBoards
     {
-
         public void PrintBoard(string board)
         {
             StringBuilder sb = new StringBuilder();
@@ -46,11 +45,10 @@ namespace ChessProgrammingFundamentalsPractice
 
         public List<IObserver> SeparateUpdatePieceList(List<IObserver> opponentList, ulong occupiedPos)
         {
-            List<IObserver> copyOfOpponentList = opponentList;
+            List<IObserver> copyOfOpponentList = Clone.DeepCopyItem(opponentList);
             foreach(IObserver observer in copyOfOpponentList)
             {
                 BasePiece piece = observer as BasePiece;
-                
                 if((piece.Position & occupiedPos) > 0)
                 {
                     piece.Position = (piece.Position & ~occupiedPos);

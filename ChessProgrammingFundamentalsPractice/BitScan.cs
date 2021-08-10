@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
+    [Serializable]
     public class BitScan : IBitScan
     {
         public int[] Index64 = new int[]

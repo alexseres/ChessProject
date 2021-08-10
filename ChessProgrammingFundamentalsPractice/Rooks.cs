@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
+    [Serializable]
     public class Rooks : BasePiece
     {
         public IBitScan BitScan { get; set; }

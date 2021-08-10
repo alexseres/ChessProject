@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
+    [Serializable]
     public class LongMovements : ILongMovements
     {
         public const ulong maskNotAColumn = 0b_1000_0000_1000_0000_1000_0000_1000_0000_1000_0000_1000_0000_1000_0000_1000_0000; 

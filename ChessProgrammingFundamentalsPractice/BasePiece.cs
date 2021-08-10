@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ChessProgrammingFundamentalsPractice
 {
+    [Serializable]
     public abstract class BasePiece : IObserver
     {
         public Player Creator { get; set; }
