@@ -17,6 +17,7 @@ namespace ChessProgrammingFundamentalsPractice
         public List<IObserver> PiecesList { get; set; }
         public List<Pawns> OpponentPawnsList { get; set; }
         public List<IObserver> OpponentPiecesList { get; set; }
+        public bool IsThreeFold { get; set; } = false;
 
         public bool PlayerInCheck { get; set; }
 
@@ -118,6 +119,7 @@ namespace ChessProgrammingFundamentalsPractice
                                     newRookPos = rook.Position >> 2;
                                 }
                             }
+                            kingOpportunities |= newKingPos;
                             PiecesPosition = PiecesPosition & ~king.Position;
                             PiecesPosition = PiecesPosition & ~rook.Position;
                             king.UpdatePositionWhenMove(currentPosition, kingOpportunities, newKingPos);

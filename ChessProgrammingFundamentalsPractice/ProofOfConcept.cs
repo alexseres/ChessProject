@@ -106,13 +106,13 @@ namespace ChessProgrammingFundamentalsPractice
                     Player2.PiecesList.Add(rookDown);
                     Player2.PiecesPosition ^= mask;
                 }
-                else if(i == 57 || i == 62)
+                else if(i == 57 || i == 61)
                 {
                     Bishops bishopDown = new Bishops(Player2,otherColor, mask, bitScan, movements, attack, "S");
                     Player2.PiecesList.Add(bishopDown);
                     Player2.PiecesPosition ^= mask;
                 }
-                else if(i == 58 || i == 61)
+                else if(i == 58 || i == 62)
                 {
                     Knights knightDown = new Knights(Player2,otherColor, mask, "D");
                     Player2.PiecesList.Add(knightDown);
@@ -179,6 +179,12 @@ namespace ChessProgrammingFundamentalsPractice
                     string board = CreateStringOfBoard();
                     PrintBoard(board);
                 }
+
+                if(Player1.IsThreeFold == true || Player2.IsThreeFold == true)
+                {
+                    Console.WriteLine("Its a draw");
+                    break;
+                }
             }
         }
 
@@ -243,7 +249,6 @@ namespace ChessProgrammingFundamentalsPractice
                     }
                 }
             }
-            
         }
 
         public bool CheckProcess(Player player, ulong currentPiecePosition, Player opponent, BasePiece piece, bool attacked, ulong choosenPositionToMove)
@@ -279,8 +284,8 @@ namespace ChessProgrammingFundamentalsPractice
                     Console.WriteLine("Choose another piece, the king is still in check, step not succeeded");
                     return false;
                 }
+                player.PlayerInCheck = false;
             }
-            player.PlayerInCheck = false;
             return true;
         }
 
@@ -313,7 +318,6 @@ namespace ChessProgrammingFundamentalsPractice
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
             return true;
         }
-
 
         public Player OpponentCreater(Player player)
         {

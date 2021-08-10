@@ -62,7 +62,7 @@ namespace ChessProgrammingFundamentalsPractice
                             //checks if which is bigger and then we do iteration and we check if between the two piece any position is occupied
                             if(this.Position > rook.Position)
                             {
-                                for(ulong i = rook.Position >> 1; i <= this.Position;i >>= 1)
+                                for(ulong i = rook.Position << 1; i < this.Position;i <<= 1)
                                 {
                                     if((i & (allPiecePositions)) > 0)
                                     {
@@ -75,7 +75,7 @@ namespace ChessProgrammingFundamentalsPractice
                             }
                             else
                             {
-                                for (ulong k = this.Position; k <= rook.Position; k >>= 1)
+                                for (ulong k = this.Position >> 1; k < rook.Position; k >>= 1)
                                 {
                                     if ((k & (allPiecePositions)) > 0)
                                     {
@@ -86,6 +86,7 @@ namespace ChessProgrammingFundamentalsPractice
                                 }
                                 result |= occupied == false ? rook.Position : 0;
                             }
+
                         }
                     }
                 }
