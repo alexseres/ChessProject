@@ -8,7 +8,7 @@ namespace ChessProject.Models.ObserverRelated
     {
         void Attach(IObserver observer);
         void Detach(IObserver observer);
-        void NotifyMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos);
+        void NotifyMove(ulong currentPosition, ulong opportunities, ulong decidedMovePos, bool weAttacked);
         void NotifyBeingAttacked(ulong pos);
     }
 }

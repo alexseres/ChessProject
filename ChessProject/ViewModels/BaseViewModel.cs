@@ -10,7 +10,6 @@ namespace ChessProject.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-
         public bool SetProperty<T>(ref T backStore, T newValue,[CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(backStore, newValue)) return false;

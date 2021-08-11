@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ChessProject.ActionLogics.BitScanLogic
 {
+    [Serializable]
     public class BitScan : IBitScan
     {
         public int[] Index64 = new int[]

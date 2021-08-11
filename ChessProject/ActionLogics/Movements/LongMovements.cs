@@ -4,10 +4,11 @@ using System.Text;
 
 namespace ChessProject.Actions.Movements
 {
+    [Serializable]
     public class LongMovements : ILongMovements
     {
-        public const ulong maskNotAColumn = 0b_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111;
-        public const ulong maskNotHColumn = 0b_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110;
+        public const ulong maskNotAColumn = 0b_1000_0000_1000_0000_1000_0000_1000_0000_1000_0000_1000_0000_1000_0000_1000_0000;
+        public const ulong maskNotHColumn = 0b_0000_0001_0000_0001_0000_0001_0000_0001_0000_0001_0000_0001_0000_0001_0000_0001;
 
         public ulong GetNorth(int sq)
         {
@@ -35,25 +36,24 @@ namespace ChessProject.Actions.Movements
         {
             ulong pos = (ulong)1 << square;
             ulong initPos = pos;
-            if ((pos & maskNotAColumn) == 0)
+            if ((pos & maskNotAColumn) > 0)
             {
                 return 0;
             }
 
-            Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
+            //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
             for (int i = square + 9; i < 64; i += 9)
             {
-                if (((pos << 9) & maskNotAColumn) == 0)
+                if ((pos & maskNotAColumn) > 0)
                 {
-                    pos = pos | (pos << 9);
                     break;
                 }
                 pos = pos | (pos << 9);
-                Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
-                Console.WriteLine(" ");
+                //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+                //Console.WriteLine(" ");
             }
-            Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
             return pos & ~initPos;
 
         }
@@ -62,25 +62,28 @@ namespace ChessProject.Actions.Movements
         {
             ulong pos = (ulong)1 << square;
             ulong initPos = pos;
-            if ((pos & maskNotHColumn) == 0)
+            if ((pos & maskNotHColumn) > 0)
             {
                 return 0;
             }
 
-            Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
-            Console.WriteLine(" ");
+            //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+            //Console.WriteLine(" ");
             for (int i = square + 7; i < 64; i += 7)
             {
-                if (((pos << 7) & maskNotHColumn) == 0)
+                //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+                if ((pos & maskNotHColumn) > 0)
                 {
-                    pos = pos | (pos << 7);
+                    //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+                    //pos = pos | (pos << 7);
+                    //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
                     break;
                 }
                 pos = pos | (pos << 7);
-                Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+                //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
                 Console.WriteLine(" ");
             }
-            Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
             return pos & ~initPos;
         }
 
@@ -88,16 +91,15 @@ namespace ChessProject.Actions.Movements
         {
             ulong pos = (ulong)1 << square;
             ulong initPos = pos;
-            if ((pos & maskNotHColumn) == 0)
+            if ((pos & maskNotHColumn) > 0)
             {
                 return 0;
             }
 
             for (int i = square - 9; i > 0; i -= 9)
             {
-                if (((pos >> 9) & maskNotHColumn) == 0)
+                if ((pos & maskNotHColumn) > 0)
                 {
-                    pos = pos | (pos >> 9);
                     break;
                 }
                 pos = pos | (pos >> 9);
@@ -110,16 +112,15 @@ namespace ChessProject.Actions.Movements
         {
             ulong pos = (ulong)1 << square;
             ulong initPos = pos;
-            if ((pos & maskNotAColumn) == 0)
+            if ((pos & maskNotAColumn) > 0)
             {
                 return 0;
             }
 
             for (int i = square - 7; i > 0; i -= 9)
             {
-                if (((pos >> 7) & maskNotAColumn) == 0)
+                if ((pos & maskNotAColumn) > 0)
                 {
-                    pos = pos | (pos >> 7);
                     break;
                 }
                 pos = pos | (pos >> 7);
@@ -136,13 +137,13 @@ namespace ChessProject.Actions.Movements
                 if (i % 8 == 0 && i != 0)
                 {
                     string row = new string(sb.ToString());
-                    Console.WriteLine(row);
+                    //Console.WriteLine(row);
                     sb.Clear();
                 }
                 sb.Append(board[i]);
             }
             var finalrow = new string(sb.ToString());
-            Console.WriteLine(finalrow);
+            //Console.WriteLine(finalrow);
 
         }
 

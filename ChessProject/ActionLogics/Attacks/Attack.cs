@@ -1,18 +1,171 @@
-﻿using System;
+﻿
+using ChessProject.ActionLogics.Attacks;
+using ChessProject.ActionLogics.BitBoardsUpdater;
+using ChessProject.ActionLogics.BitScanLogic;
+using ChessProject.ActionLogics.PopulationCountLogic;
+using ChessProject.Models.ObserverRelated;
+using ChessProject.Models.Pieces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChessProject.ActionLogics.Attacks
+namespace ChessProject.ActionLogics
 {
+    [Serializable]
     public class Attack : IAttack
     {
+        public IBitScan Scan { get; set; }
+        public IPopulationCount PopCount { get; set; }
+        public IUpdateBitBoards BitBoardsUpdater { get; set; }
+
+        public Attack(IBitScan bitScan, IPopulationCount popCount, IUpdateBitBoards updater)
+        {
+            Scan = bitScan;
+            PopCount = popCount;
+            BitBoardsUpdater = updater;
+        }
+
+        public bool CheckMateChecker(ulong attackerPieceRoute, ulong oldPosOfDefenderPiece, ulong defenderPieceRoute, ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> opponentPieceList)
+        {
+
+            ulong union = attackerPieceRoute & defenderPieceRoute;
+            int population = PopCount.GetPopulation(union);
+            for (int i = 0; i < population; i++)         // most of the time it is just one iteration
+            {
+                int pos = Scan.bitScanForwardLS1B(union);
+                ulong movedPos = ((ulong)1 << pos);
+                List<IObserver> mighChangedOpponentPieceList = BitBoardsUpdater.SeparateUpdatePieceList(opponentPieceList, movedPos);
+                ulong[] changedPositions = BitBoardsUpdater.SeparateUpdateBitBoardsToEvadeCheck(movedPos, oldPosOfDefenderPiece, defenderPieceRoute, allPiecePositions, ourPositions, opponentPositions);
+                ulong IsKingStillInCheck = GetAllOpponentAttackToCheckIfKingInCheck(kingPosition, changedPositions[0], changedPositions[1], changedPositions[2], mighChangedOpponentPieceList);
+                if (IsKingStillInCheck == 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor, ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceList, List<IObserver> opponentPieceList)
+        {
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            ulong attacks = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                if ((ourPositions & mask) > 0)
+                {
+                    foreach (IObserver observer in ourPieceList)
+                    {
+                        BasePiece piece = observer as BasePiece;
+                        if ((piece.Position & mask) > 0)   //it can defend it
+                        {
+                            ulong counterAttack = piece.Search(mask, allPiecePositions, opponentPositions, ourPositions);  // here we replaced two arguments(our <-> opp)
+                            if ((counterAttack & attackerPositionAndAttackVektor) > 0)
+                            {
+                                bool IsKingStilInCheck = CheckMateChecker(attackerPositionAndAttackVektor, mask, counterAttack, kingPosition, allPiecePositions, opponentPositions, ourPositions, opponentPieceList);
+                                if (!IsKingStilInCheck)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+                mask = mask >> 1;
+            }
+            return true;
+        }
+
+        public ulong GetAllOpponentAttackToCheckIfKingStillInCheck(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> pieceListOfOpponent)
+        {
+
+            Printboard(Convert.ToString((long)allPiecePositions, toBase: 2).PadLeft(64, '0'));
+            Printboard(Convert.ToString((long)opponentPositions, toBase: 2).PadLeft(64, '0'));
+            Printboard(Convert.ToString((long)ourPositions, toBase: 2).PadLeft(64, '0'));
+
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            ulong allAttack = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                if ((opponentPositions & mask) > 0)
+                {
+                    foreach (IObserver observer in pieceListOfOpponent)
+                    {
+                        BasePiece piece = observer as BasePiece;
+                        if ((piece.Position & mask) > 0)
+                        {
+
+                            if (piece is Pawns)
+                            {
+                                Pawns pawn = piece as Pawns;
+                                allAttack |= pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, ourPositions); // we add mask because if we do a counter attack we must know the enemyposition too
+                            }
+                            else
+                            {
+                                Printboard(Convert.ToString((long)piece.Position, toBase: 2).PadLeft(64, '0'));
+                                allAttack |= piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
+                            }
+                            break;
+
+                        }
+                    }
+                }
+                mask = mask >> 1;
+            }
+            Printboard(Convert.ToString((long)allAttack, toBase: 2).PadLeft(64, '0'));
+            return allAttack;
+        }
+
+
+        public ulong GetAllOpponentAttackToCheckIfKingInCheck(ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> pieceListOfOpponent)
+        {
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            for (int i = 0; i < 64; i++)
+            {
+                if ((opponentPositions & mask) > 0)
+                {
+                    foreach (IObserver observer in pieceListOfOpponent)
+                    {
+                        BasePiece piece = observer as BasePiece;
+                        if ((piece.Position & mask) > 0)
+                        {
+                            if (piece is Pawns)
+                            {
+                                Pawns pawn = piece as Pawns;
+                                ulong newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, kingPosition) | mask; // we add mask because if we do a counter attack we must know the enemyposition too
+                                if ((newAttack & kingPosition) > 0)
+                                {
+                                    return newAttack;
+                                }
+                                //attacks = attacks | newAttack;
+                            }
+                            else
+                            {
+                                Printboard(Convert.ToString((long)piece.Position, toBase: 2).PadLeft(64, '0'));
+                                ulong newAttack = piece.GetSpecificAttackFromSearch(mask, allPiecePositions, ourPositions, opponentPositions, kingPosition) | mask;  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
+                                if ((newAttack & kingPosition) > 0)
+                                {
+                                    return newAttack;
+                                }
+                                //attacks |= newAttack;
+                            }
+                            break;
+                        }
+                    }
+                }
+                mask = mask >> 1;
+            }
+            return 0;
+        }
+
+
+
         public ulong GetRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int, ulong> rayAttack, Func<ulong, int> bitScan, int direction)
         {
             ulong attacks = rayAttack(square);
-            Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
 
             ulong blocker = attacks & allPositionAtBoard;
-            Printboard(Convert.ToString((long)blocker, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)blocker, toBase: 2).PadLeft(64, '0'));
             if (blocker > 0)
             {
                 square = bitScan(blocker);
@@ -24,17 +177,15 @@ namespace ChessProject.ActionLogics.Attacks
                 else if (((allPositionAtBoard & ~opponent) & squarePosition) > 0)
                 {
                     square += SetBitScanSubtracter(direction);
-
-
                 }
                 attacks = (attacks & ~rayAttack(square));
             }
             return attacks;
         }
 
-        public ulong KnightAttacks(ulong allPositionAtBoard, ulong opponent, int square, int direction)
+        public bool HasAttacked(ulong pos, ulong opponentPositions)
         {
-            throw new NotImplementedException();
+            return (pos & opponentPositions) > 0 ? true : false;
         }
 
         public void Printboard(string board)
@@ -80,6 +231,7 @@ namespace ChessProject.ActionLogics.Attacks
                     throw new Exception("wrong direction code");
             }
         }
+
 
     }
 }
