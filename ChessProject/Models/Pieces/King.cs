@@ -53,9 +53,9 @@ namespace ChessProject.Models.Pieces
                 foreach (IObserver observer in Creator.PiecesList)
                 {
                     BasePiece piece = observer as BasePiece;
-                    if (piece is Rooks)
+                    if (piece is Rook)
                     {
-                        Rooks rook = piece as Rooks;
+                        Rook rook = piece as Rook;
                         if (rook.LatestMove == (0, 0))
                         {
                             int counterOfSquareDistance = 0;

@@ -8,7 +8,7 @@ using System.Text;
 namespace ChessProject.Models.Pieces
 {
     [Serializable]
-    public class Bishops : BasePiece
+    public class Bishop : BasePiece
     {
         public ILongMovements Movements { get; set; }
         public IBitScan BitScan { get; set; }
@@ -19,7 +19,7 @@ namespace ChessProject.Models.Pieces
         private const int EastSouthDirection = -9;
         private const int WestSouthDirection = -7;
 
-        public Bishops(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
+        public Bishop(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
         {
             Name = "Bishop";
             Movements = movements;

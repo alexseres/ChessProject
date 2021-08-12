@@ -5,14 +5,14 @@ using System.Text;
 namespace ChessProject.Models.Pieces
 {
     [Serializable]
-    public class Knights : BasePiece
+    public class Knight : BasePiece
     {
         private ulong MaskNotInAFile = 0b_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111;
         private ulong MaskNotInABFile = 0b_0011_1111_0011_1111_0011_1111_0011_1111_0011_1111_0011_1111_0011_1111_0011_1111;
         private ulong MaskNotInHFile = 0b_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110;
         private ulong MaskNotInGHFile = 0b_1111_1100_1111_1100_1111_1100_1111_1100_1111_1110_1111_1100_1111_1100_1111_1100;
 
-        public Knights(Player player, ColorSide color, ulong position, string boardName) : base(player, color, position, boardName)
+        public Knight(Player player, ColorSide color, ulong position, string boardName) : base(player, color, position, boardName)
         {
             Name = "Knight";
         }

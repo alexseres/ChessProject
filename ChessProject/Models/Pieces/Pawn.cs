@@ -5,7 +5,7 @@ using System.Text;
 namespace ChessProject.Models.Pieces
 {
     [Serializable]
-    public class Pawns : BasePiece
+    public class Pawn : BasePiece
     {
         public const int MovingDirection = 8;
         public readonly int[] AttacksDirection = new int[2] { 7, 9 };
@@ -20,7 +20,7 @@ namespace ChessProject.Models.Pieces
         //this mask checks if pawns at the starting position, and if they are, they got the chance to move 2 square
         public readonly ulong MaskOfDoubleMove;
 
-        public Pawns(Player player, ColorSide color, ulong position, string boardName, ulong lastline, ulong maskOfDoubleMove, ulong fifthLineOfEnPassant) : base(player, color, position, boardName)
+        public Pawn(Player player, ColorSide color, ulong position, string boardName, ulong lastline, ulong maskOfDoubleMove, ulong fifthLineOfEnPassant) : base(player, color, position, boardName)
         {
             Name = "Pawn";
             WasEnPassant = false;
@@ -39,7 +39,7 @@ namespace ChessProject.Models.Pieces
                 ulong fithRank = 0b_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000;
                 ulong fourthRank = 0b_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000;
                 ulong secondRank = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000;
-                foreach (Pawns pawn in Creator.OpponentPawnsList)
+                foreach (Pawn pawn in Creator.OpponentPawnsList)
                 {
 
                     if ((((pawn.LatestMove.Item1 & seventhRank) > 0) && ((pawn.LatestMove.Item2 & fithRank)) > 0))

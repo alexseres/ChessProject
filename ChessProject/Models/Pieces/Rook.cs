@@ -8,7 +8,7 @@ using System.Text;
 namespace ChessProject.Models.Pieces
 {
     [Serializable]
-    public class Rooks : BasePiece
+    public class Rook : BasePiece
     {
         public IBitScan BitScan { get; set; }
         public ILongMovements Movements { get; set; }
@@ -18,7 +18,7 @@ namespace ChessProject.Models.Pieces
         private const int SouthDirection = -8;
         private const int WestDirection = 1;
 
-        public Rooks(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
+        public Rook(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
         {
             Name = "Rook";
             BitScan = bitScan;

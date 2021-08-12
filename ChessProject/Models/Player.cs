@@ -15,7 +15,7 @@ namespace ChessProject.Models
         public List<IObserver> KnockedPieces { get; set; }
         public King King { get; set; }
         public List<IObserver> PiecesList { get; set; }
-        public List<Pawns> OpponentPawnsList { get; set; }
+        public List<Pawn> OpponentPawnsList { get; set; }
         public List<IObserver> OpponentPiecesList { get; set; }
         public bool IsThreeFold { get; set; } = false;
         public bool IsFiftyMoveWIthoutCaptureOrPawnMove { get; set; } = false;
@@ -28,7 +28,7 @@ namespace ChessProject.Models
             Color = color;
             KnockedPieces = new List<IObserver>();
             PiecesList = new List<IObserver>();
-            OpponentPawnsList = new List<Pawns>();
+            OpponentPawnsList = new List<Pawn>();
         }
 
         public void Attach(IObserver observer)
@@ -83,7 +83,7 @@ namespace ChessProject.Models
 
         public void Check50MoveRule(BasePiece piece, bool weAttacked)
         {
-            if (!weAttacked && !(piece is Pawns)) FiftyMoveWithoutCaptureAndPawnMove += 1;
+            if (!weAttacked && !(piece is Pawn)) FiftyMoveWithoutCaptureAndPawnMove += 1;
             else FiftyMoveWithoutCaptureAndPawnMove = 0;
 
             if (FiftyMoveWithoutCaptureAndPawnMove == 50) IsFiftyMoveWIthoutCaptureOrPawnMove = true;
@@ -96,9 +96,9 @@ namespace ChessProject.Models
                 King king = piece as King;
                 foreach (IObserver observer in PiecesList)
                 {
-                    if (observer is Rooks)
+                    if (observer is Rook)
                     {
-                        Rooks rook = observer as Rooks;
+                        Rook rook = observer as Rook;
                         if (rook.Position == decidedMovePos)
                         {
 
@@ -147,9 +147,9 @@ namespace ChessProject.Models
 
         public ulong CheckIfThereWasEnPassant(ulong currentPosition, BasePiece piece, ulong decidedMovePos)
         {
-            if (piece is Pawns)
+            if (piece is Pawn)
             {
-                Pawns pawn = piece as Pawns;
+                Pawn pawn = piece as Pawn;
                 bool wasEnpassant = false;
                 if ((currentPosition >> 1 & decidedMovePos) > 0)
                 {
@@ -166,9 +166,9 @@ namespace ChessProject.Models
 
         public void CheckIfCurrentAtLastLineAndIsPawn(ulong currentPosition, BasePiece currentPiece)
         {
-            if (currentPiece is Pawns)
+            if (currentPiece is Pawn)
             {
-                Pawns pawn = currentPiece as Pawns;
+                Pawn pawn = currentPiece as Pawn;
                 if ((currentPosition & pawn.LastLine) > 0)
                 {
                     if (PromptAskingWhichPieceYouWantToSwap(currentPosition))
@@ -217,6 +217,8 @@ namespace ChessProject.Models
             }
             return false;
         }
+
+        
 
         //indexer of the class
         //public BasePiece this[int index]

@@ -94,9 +94,9 @@ namespace ChessProject.ActionLogics
                         if ((piece.Position & mask) > 0)
                         {
 
-                            if (piece is Pawns)
+                            if (piece is Pawn)
                             {
-                                Pawns pawn = piece as Pawns;
+                                Pawn pawn = piece as Pawn;
                                 allAttack |= pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, ourPositions); // we add mask because if we do a counter attack we must know the enemyposition too
                             }
                             else
@@ -128,9 +128,9 @@ namespace ChessProject.ActionLogics
                         BasePiece piece = observer as BasePiece;
                         if ((piece.Position & mask) > 0)
                         {
-                            if (piece is Pawns)
+                            if (piece is Pawn)
                             {
-                                Pawns pawn = piece as Pawns;
+                                Pawn pawn = piece as Pawn;
                                 ulong newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, kingPosition) | mask; // we add mask because if we do a counter attack we must know the enemyposition too
                                 if ((newAttack & kingPosition) > 0)
                                 {

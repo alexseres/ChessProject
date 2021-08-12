@@ -7,11 +7,9 @@ using ChessProject.Actions.Movements;
 using ChessProject.Models;
 using ChessProject.Models.ObserverRelated;
 using ChessProject.Models.Pieces;
-using ChessProject.Services;
 using ChessProject.Utils.CloneCollections;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -19,8 +17,6 @@ namespace ChessProject.ViewModels
 {
     public class MainGameViewModel
     {
-        
-
 
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
@@ -41,14 +37,13 @@ namespace ChessProject.ViewModels
             Movements = new LongMovements();
             PopCount = new PopulationCount();
             Attack = new Attack(Scan, PopCount, UpdateBitBoards);
-
             InitAllPieces(color, Scan, Movements, Attack);
             string board = CreateStringOfBoard();
             PrintBoard(board);
             PlayGame();
         }
 
-
+ 
         public ColorSide SelectColorSide()
         {
             Console.WriteLine("Which color you want it to be up? 'white' or 'black'");
@@ -57,16 +52,11 @@ namespace ChessProject.ViewModels
             {
                 return ColorSide.White;
             }
-            else if (answer == "black")
+            else
             {
                 return ColorSide.Black;
             }
-            else
-            {
-                throw new Exception();
-            }
         }
-
         public void InitAllPieces(ColorSide choosenColorToBeUp, IBitScan bitScan, ILongMovements movements, IAttack attack)
         {
             ColorSide otherColor = choosenColorToBeUp == ColorSide.White ? ColorSide.Black : ColorSide.White;
@@ -89,19 +79,19 @@ namespace ChessProject.ViewModels
 
                 if (i == 0 || i == 7)
                 {
-                    Rooks rookUp = new Rooks(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, "R");
+                    Rook rookUp = new Rook(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, "R");
                     Player1.PiecesList.Add(rookUp);
                     Player1.PiecesPosition ^= mask;
                 }
                 else if (i == 1 || i == 6 || i == 33)
                 {
-                    Knights knightUp = new Knights(Player1, choosenColorToBeUp, mask, "N");
+                    Knight knightUp = new Knight(Player1, choosenColorToBeUp, mask, "N");
                     Player1.PiecesList.Add(knightUp);
                     Player1.PiecesPosition ^= mask;
                 }
                 else if (i == 2 || i == 5)
                 {
-                    Bishops bishopUp = new Bishops(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, "B");
+                    Bishop bishopUp = new Bishop(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, "B");
                     Player1.PiecesList.Add(bishopUp);
                     Player1.PiecesPosition ^= mask;
                 }
@@ -120,33 +110,33 @@ namespace ChessProject.ViewModels
                 }
                 else if (i >= 8 && i <= 15)
                 {
-                    Pawns pawnUp = new Pawns(Player1, choosenColorToBeUp, mask, "P", lastLineForSwapForUp, doubleMoveSignForUp, fifthLineOfEnPassantForUp);
+                    Pawn pawnUp = new Pawn(Player1, choosenColorToBeUp, mask, "P", lastLineForSwapForUp, doubleMoveSignForUp, fifthLineOfEnPassantForUp);
                     Player1.PiecesList.Add(pawnUp);
                     Player1.PiecesPosition ^= mask;
                     Player2.OpponentPawnsList.Add(pawnUp);
                 }
                 else if (i > 47 && i < 56)
                 {
-                    Pawns pawnDown = new Pawns(Player2, otherColor, mask, "H", lastLineForSwapToDown, doubleMoveSignForDown, fifthLineOfEnPassantForDown);
+                    Pawn pawnDown = new Pawn(Player2, otherColor, mask, "H", lastLineForSwapToDown, doubleMoveSignForDown, fifthLineOfEnPassantForDown);
                     Player2.PiecesList.Add(pawnDown);
                     Player2.PiecesPosition ^= mask;
                     Player1.OpponentPawnsList.Add(pawnDown);
                 }
                 else if (i == 56 || i == 63)
                 {
-                    Rooks rookDown = new Rooks(Player2, otherColor, mask, bitScan, movements, attack, "A");
+                    Rook rookDown = new Rook(Player2, otherColor, mask, bitScan, movements, attack, "A");
                     Player2.PiecesList.Add(rookDown);
                     Player2.PiecesPosition ^= mask;
                 }
                 else if (i == 57 || i == 61)
                 {
-                    Bishops bishopDown = new Bishops(Player2, otherColor, mask, bitScan, movements, attack, "S");
+                    Bishop bishopDown = new Bishop(Player2, otherColor, mask, bitScan, movements, attack, "S");
                     Player2.PiecesList.Add(bishopDown);
                     Player2.PiecesPosition ^= mask;
                 }
                 else if (i == 58 || i == 62)
                 {
-                    Knights knightDown = new Knights(Player2, otherColor, mask, "D");
+                    Knight knightDown = new Knight(Player2, otherColor, mask, "D");
                     Player2.PiecesList.Add(knightDown);
                     Player2.PiecesPosition ^= mask;
                 }
@@ -175,9 +165,7 @@ namespace ChessProject.ViewModels
             Player2.OpponentPiecesList = Player1.PiecesList;
             Player1.OpponentPiecesList = Player2.PiecesList;
         }
-
-
-
+  
         public bool CheckIfPlayer1IsWhite()
         {
             return Player1.Color == ColorSide.White ? true : false;
@@ -424,7 +412,5 @@ namespace ChessProject.ViewModels
             return sb.ToString();
         }
         #endregion
-
-
     }
 }
