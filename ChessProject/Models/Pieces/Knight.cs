@@ -14,7 +14,7 @@ namespace ChessProject.Models.Pieces
 
         public Knight(Player player, ColorSide color, ulong position, string boardName) : base(player, color, position, boardName)
         {
-            Name = "Knight";
+            PType = PieceType.Knight;
         }
 
 

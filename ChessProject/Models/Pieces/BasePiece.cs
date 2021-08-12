@@ -10,7 +10,7 @@ namespace ChessProject.Models.Pieces
     {
         public Player Creator { get; set; }
         public ulong Position { get; set; }
-        public string Name { get; set; }
+        public PieceType PType { get; set; }
         public string BoardName { get; set; }
         public ColorSide Color { get; set; }
         public List<ulong> AllMovesHasTaken { get; set; }

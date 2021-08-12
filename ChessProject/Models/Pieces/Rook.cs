@@ -20,7 +20,7 @@ namespace ChessProject.Models.Pieces
 
         public Rook(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
         {
-            Name = "Rook";
+            PType = PieceType.Rook;
             BitScan = bitScan;
             Movements = movements;
             Attack = attack;

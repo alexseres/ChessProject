@@ -14,7 +14,7 @@ namespace ChessProject.Models.Pieces
 
         public King(Player player, ColorSide color, ulong position, string boardName) : base(player, color, position, boardName)
         {
-            Name = "King";
+            PType = PieceType.King;
         }
 
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)

@@ -21,7 +21,7 @@ namespace ChessProject.Models.Pieces
 
         public Bishop(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
         {
-            Name = "Bishop";
+            PType = PieceType.Bishop;
             Movements = movements;
             BitScan = bitScan;
             Attack = attack;

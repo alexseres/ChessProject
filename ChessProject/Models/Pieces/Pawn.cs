@@ -22,7 +22,7 @@ namespace ChessProject.Models.Pieces
 
         public Pawn(Player player, ColorSide color, ulong position, string boardName, ulong lastline, ulong maskOfDoubleMove, ulong fifthLineOfEnPassant) : base(player, color, position, boardName)
         {
-            Name = "Pawn";
+            PType = PieceType.Pawn;
             WasEnPassant = false;
             LastLine = lastline;
             MaskOfDoubleMove = maskOfDoubleMove;

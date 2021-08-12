@@ -24,7 +24,7 @@ namespace ChessProject.Models.Pieces
 
         public Queen(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
         {
-            Name = "Queen";
+            PType = PieceType.Queen;
             BitScan = bitScan;
             Movements = movements;
             Attack = attack;
