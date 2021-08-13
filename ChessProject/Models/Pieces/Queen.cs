@@ -1,6 +1,7 @@
 ﻿using ChessProject.ActionLogics.Attacks;
 using ChessProject.ActionLogics.BitScanLogic;
 using ChessProject.Actions.Movements;
+using ChessProject.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,7 +23,7 @@ namespace ChessProject.Models.Pieces
         private const int EastSouthDirection = -9;
         private const int WestSouthDirection = -7;
 
-        public Queen(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string boardName) : base(player, color, position, boardName)
+        public Queen(Player player, ColorSide color, ulong position, IBitScan bitScan, ILongMovements movements, IAttack attack, string imagePath) : base(player, color, position, imagePath)
         {
             PType = PieceType.Queen;
             BitScan = bitScan;

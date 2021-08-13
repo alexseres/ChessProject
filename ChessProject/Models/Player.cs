@@ -1,4 +1,5 @@
-﻿using ChessProject.Models.ObserverRelated;
+﻿using ChessProject.Models.Enums;
+using ChessProject.Models.ObserverRelated;
 using ChessProject.Models.Pieces;
 using System;
 using System.Collections.Generic;
@@ -192,7 +193,7 @@ namespace ChessProject.Models
                 Console.WriteLine("Please select from the list");
                 foreach (BasePiece piece in KnockedPieces)
                 {
-                    Console.WriteLine(piece.Name);
+                    Console.WriteLine(piece.PType);
                     counter++;
 
                 }
@@ -205,9 +206,10 @@ namespace ChessProject.Models
                 string pieceName = Console.ReadLine();
                 foreach (BasePiece piece in KnockedPieces.ToList())
                 {
-                    if (pieceName == piece.BoardName)
+                    if (pieceName == piece.ImagePath)
                     {
                         piece.Position = currentPosition;
+                        piece.CalculateRowAndColumnPosition(currentPosition);
                         Attach(piece);
                         KnockedPieces.Remove(piece);
                         return true;

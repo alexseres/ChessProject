@@ -7,6 +7,9 @@ namespace ChessProgrammingFundamentalsPractice
     [Serializable]
     public abstract class BasePiece : IObserver
     {
+
+        public int Column { get; set; }
+        public int Row { get; set; }
         public Player Creator { get; set; }
         public ulong Position { get; set; }
         public string Name { get; set; }
@@ -24,6 +27,7 @@ namespace ChessProgrammingFundamentalsPractice
             BoardName = boardname;
             Color = color;
             Position = position;
+            CalculateRowAndColumnPosition(position);
             LatestMove = (0, 0);
             AllMovesHasTaken = new List<ulong>();
         }
@@ -35,22 +39,7 @@ namespace ChessProgrammingFundamentalsPractice
             return 0;
         }
 
-        public void Printboard(string board)
-        {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < board.Length; i++)
-            {
-                if (i % 8 == 0 && i != 0)
-                {
-                    string row = new string(sb.ToString());
-                    Console.WriteLine(row);
-                    sb.Clear();
-                }
-                sb.Append(board[i]);
-            }
-            var finalrow = new string(sb.ToString());
-            Console.WriteLine(finalrow);
-        }
+
 
         public void CheckForThreeFoldRepetition()
         {
@@ -71,6 +60,7 @@ namespace ChessProgrammingFundamentalsPractice
                 AllMovesHasTaken.Add(decidedMovePos);
                 //for now we need latest move to en passant and/or castling
                 LatestMove = (currentPosition, decidedMovePos);
+                CalculateRowAndColumnPosition(decidedMovePos);
             }
             CheckForThreeFoldRepetition();
         }
@@ -79,6 +69,8 @@ namespace ChessProgrammingFundamentalsPractice
         {
             Position = 0;
             AllMovesHasTaken.Clear();
+            Column = 0;
+            Row = 0;
         }
 
     }

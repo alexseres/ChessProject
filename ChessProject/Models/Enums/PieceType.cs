@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChessProject.Models.Pieces
+namespace ChessProject.Models.Enums
 {
     public enum PieceType
     {
@@ -14,3 +14,4 @@ namespace ChessProject.Models.Pieces
         Pawn
     }
 }
+

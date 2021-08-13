@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChessProject.Models.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,7 +13,7 @@ namespace ChessProject.Models.Pieces
         private ulong MaskNotInHFile = 0b_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110_1111_1110;
         private ulong MaskNotInGHFile = 0b_1111_1100_1111_1100_1111_1100_1111_1100_1111_1110_1111_1100_1111_1100_1111_1100;
 
-        public Knight(Player player, ColorSide color, ulong position, string boardName) : base(player, color, position, boardName)
+        public Knight(Player player, ColorSide color, ulong position, string imagePath) : base(player, color, position, imagePath)
         {
             PType = PieceType.Knight;
         }

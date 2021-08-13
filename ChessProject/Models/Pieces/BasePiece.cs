@@ -1,4 +1,5 @@
-﻿using ChessProject.Models.ObserverRelated;
+﻿using ChessProject.Models.Enums;
+using ChessProject.Models.ObserverRelated;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,9 @@ namespace ChessProject.Models.Pieces
         public Player Creator { get; set; }
         public ulong Position { get; set; }
         public PieceType PType { get; set; }
-        public string BoardName { get; set; }
+        public int Column { get; set; }
+        public int Row { get; set; }
+        public string ImagePath { get; set; }
         public ColorSide Color { get; set; }
         public List<ulong> AllMovesHasTaken { get; set; }
 
@@ -19,12 +22,13 @@ namespace ChessProject.Models.Pieces
         public (ulong, ulong) LatestMove { get; set; }
 
 
-        public BasePiece(Player player, ColorSide color, ulong position, string boardname)
+        public BasePiece(Player player, ColorSide color, ulong position, string imagePath)
         {
             Creator = player;
-            BoardName = boardname;
+            ImagePath = imagePath;
             Color = color;
             Position = position;
+            CalculateRowAndColumnPosition(position);
             LatestMove = (0, 0);
             AllMovesHasTaken = new List<ulong>();
         }
@@ -36,21 +40,21 @@ namespace ChessProject.Models.Pieces
             return 0;
         }
 
-        public void Printboard(string board)
+
+        public void CalculateRowAndColumnPosition(ulong actualPosition)
         {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < board.Length; i++)
+            ulong mask = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001;
+            for (int row = 0; row < 8; row++, mask <<= 1)
             {
-                if (i % 8 == 0 && i != 0)
+                for (int col = 0; col < 8; col++, mask <<= 1)
                 {
-                    string row = new string(sb.ToString());
-                    Console.WriteLine(row);
-                    sb.Clear();
+                    if ((mask & actualPosition) > 0)
+                    {
+                        Row = row;
+                        Column = col;
+                    }
                 }
-                sb.Append(board[i]);
             }
-            var finalrow = new string(sb.ToString());
-            Console.WriteLine(finalrow);
         }
 
         public void CheckForThreeFoldRepetition()
@@ -72,6 +76,7 @@ namespace ChessProject.Models.Pieces
                 AllMovesHasTaken.Add(decidedMovePos);
                 //for now we need latest move to en passant and/or castling
                 LatestMove = (currentPosition, decidedMovePos);
+                CalculateRowAndColumnPosition(decidedMovePos);
             }
             CheckForThreeFoldRepetition();
         }
@@ -80,6 +85,8 @@ namespace ChessProject.Models.Pieces
         {
             Position = 0;
             AllMovesHasTaken.Clear();
+            Column = 0;
+            Row = 0;
         }
     }
 }

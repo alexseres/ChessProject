@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChessProject.Models.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -20,7 +21,7 @@ namespace ChessProject.Models.Pieces
         //this mask checks if pawns at the starting position, and if they are, they got the chance to move 2 square
         public readonly ulong MaskOfDoubleMove;
 
-        public Pawn(Player player, ColorSide color, ulong position, string boardName, ulong lastline, ulong maskOfDoubleMove, ulong fifthLineOfEnPassant) : base(player, color, position, boardName)
+        public Pawn(Player player, ColorSide color, ulong position, string imagePath, ulong lastline, ulong maskOfDoubleMove, ulong fifthLineOfEnPassant) : base(player, color, position, imagePath)
         {
             PType = PieceType.Pawn;
             WasEnPassant = false;
