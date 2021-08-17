@@ -22,7 +22,7 @@ namespace ChessProject.ViewModels
     {
         public Rook TestRook { get; set; }
 
-        public ObservableCollection<BasePiece> PieceCollection = new ObservableCollection<BasePiece>();
+        public ObservableCollection<BasePiece> PieceCollection { get; set; }
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
         public const string From = "Choose a piece";
@@ -36,7 +36,8 @@ namespace ChessProject.ViewModels
 
         public MainGameViewModel()
         {
-            TestRook = new Rook(Player1, ColorSide.White, 0, new BitScan(), new LongMovements(), new Attack(new BitScan(), new PopulationCount(), new UpdateBitBoards()), "../ChessPiecePictures/WhiteRook.png");
+            TestRook = new Rook(Player1, ColorSide.White, 0b_100, new BitScan(), new LongMovements(), new Attack(new BitScan(), new PopulationCount(), new UpdateBitBoards()), "../ChessPiecePictures/WhiteRook.png");
+            PieceCollection = new ObservableCollection<BasePiece>(); 
             PieceCollection.Add(TestRook);
             //ColorSide color = SelectColorSide();
             //UpdateBitBoards = new UpdateBitBoards();

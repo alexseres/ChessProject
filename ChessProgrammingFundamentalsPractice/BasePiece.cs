@@ -27,7 +27,7 @@ namespace ChessProgrammingFundamentalsPractice
             BoardName = boardname;
             Color = color;
             Position = position;
-            CalculateRowAndColumnPosition(position);
+
             LatestMove = (0, 0);
             AllMovesHasTaken = new List<ulong>();
         }
@@ -60,7 +60,6 @@ namespace ChessProgrammingFundamentalsPractice
                 AllMovesHasTaken.Add(decidedMovePos);
                 //for now we need latest move to en passant and/or castling
                 LatestMove = (currentPosition, decidedMovePos);
-                CalculateRowAndColumnPosition(decidedMovePos);
             }
             CheckForThreeFoldRepetition();
         }

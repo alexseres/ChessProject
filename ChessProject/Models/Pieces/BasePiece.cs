@@ -44,9 +44,9 @@ namespace ChessProject.Models.Pieces
         public void CalculateRowAndColumnPosition(ulong actualPosition)
         {
             ulong mask = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001;
-            for (int row = 0; row < 8; row++, mask <<= 1)
+            for (int row = 7; row >= 0; row--, mask <<= 1)
             {
-                for (int col = 0; col < 8; col++, mask <<= 1)
+                for (int col = 7; col >= 0; col--, mask <<= 1)
                 {
                     if ((mask & actualPosition) > 0)
                     {

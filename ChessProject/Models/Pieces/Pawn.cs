@@ -93,7 +93,6 @@ namespace ChessProject.Models.Pieces
                 ulong movedPositions = (currentPosition << MovingDirection) | movedFirstPositions;
                 ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
                 opportunities = opportunities | enpassant;
-                Printboard(Convert.ToString((long)opportunities, toBase: 2).PadLeft(64, '0'));
                 return opportunities;
             }
         }

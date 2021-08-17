@@ -1,166 +1,67 @@
-﻿ <Window x:Class="ChessProject.Views.MainGameView"
+﻿<Window x:Class="ChessProject.Views.MainGameView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namesace:ChessProject.Views"
         mc:Ignorable="d"
-        Title="MainGameView" Height="450" Width="800">
+        Title="MainGameView" Height="600" Width="850">
     <Window.Resources>
 
-        
+
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="70*"/>
-            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="600"/>
+            <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
-        <Grid x:Name="BoardGrid" Grid.Column="0" Background="AliceBlue" Margin="5,5,5,5" >
+        <Grid Grid.Column="0" Background="AliceBlue">
 
-            <ItemsControl  ItemsSource="{Binding PieceCollection}">
+            <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid" />
+            <ItemsControl ItemsSource="{Binding PieceCollection}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid IsItemsHost="True">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate >
-                        <!--<Grid Width="50" Height="50">
-                            <Image Width="45" Height="45" Source="../ChessPiecePictures/WhiteRook.png"/>
-                        </Grid>-->
-                        <TextBlock Text="OK" Width="30" Height="30"/>
+                        <Grid Width="75" Height="75">
+                            <Image Width="65" Height="65" Source="{Binding ImagePath}"/>
+                        </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemContainerStyle>
-                    <Style>
-                        <Setter Property="Grid.Column" Value="1"/>
-                        <Setter Property="Grid.Row" Value="5"/>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="Grid.Column" Value="{Binding Column}"/>
+                        <Setter Property="Grid.Row" Value="{Binding Row}"/>
                     </Style>
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
-
         </Grid>
         <Grid x:Name="ChatWindow" Grid.Column="1">
-            <Image Width="200" Height="200" Source="../ChessPiecePictures/WhiteRook.png" VerticalAlignment="Top"/>
         </Grid>
     </Grid>
 </Window>
-
-        <!--<Style x:Key="ChessPieceStyle" TargetType="{x:Type Image}">
-            <Style.Triggers>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Pawn}"/>
-                        <Condition Binding="{Binding ColorSide}" Value="{x:Static enums:ColorSide.White}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Source" Value="../ChessPiecePictures/WhitePawn.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Queen}"/>
-                        <Condition Binding="{Binding ColorSide}" Value="{x:Static enums:ColorSide.White}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Source" Value="../ChessPiecePictures/WhiteQueen.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.King}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.White}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/WhiteKing.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Rook}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.White}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/WhiteRook.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Knight}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.White}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/WhiteKnight.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Bishop}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.White}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/WhiteBishop.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Pawn}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.Black}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/BlackPawn.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Queen}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.Black}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/BlackQueen.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.King}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.Black}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/BlackKing.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Rook}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.Black}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/BlackRook.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Knight}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.Black}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/BlackKnight.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding PieceType}" Value="{x:Static enums:PieceType.Bishop}"/>
-                        <Condition Binding="{Binding Colorside}" Value="{x:Static enums:ColorSide.Black}"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.Setters>
-                        <Setter Property="Image.Source" Value="../ChessPiecePictures/BlackBishop.png"/>
-                    </MultiDataTrigger.Setters>
-                </MultiDataTrigger>
-            </Style.Triggers>
-        </Style>-->
