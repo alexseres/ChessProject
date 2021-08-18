@@ -4,6 +4,7 @@ using ChessProject.ActionLogics.BitBoardsUpdater;
 using ChessProject.ActionLogics.BitScanLogic;
 using ChessProject.ActionLogics.PopulationCountLogic;
 using ChessProject.Actions.Movements;
+using ChessProject.Commands;
 using ChessProject.Models;
 using ChessProject.Models.Enums;
 using ChessProject.Models.ObserverRelated;
@@ -13,16 +14,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Windows.Controls;
+
 
 namespace ChessProject.ViewModels
 {
-    public class MainGameViewModel
+    public class MainGameViewModel : BaseViewModel
     {
         public Rook TestRook { get; set; }
 
-        public ObservableCollection<BasePiece> PieceCollection { get; set; }
+        public ObservableCollection<BasePiece> _pieceCollection;
+        public ObservableCollection<BasePiece> PieceCollection { get { return _pieceCollection; } set { SetProperty(ref _pieceCollection, value); } }
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
         public const string From = "Choose a piece";
@@ -32,21 +33,24 @@ namespace ChessProject.ViewModels
         public IBitScan Scan { get; set; }
         public ILongMovements Movements { get; set; }
         public IPopulationCount PopCount { get; set; }
-        public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0100_0000_0000_0000_1111_1111_1111_1111;
+        public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
+
 
         public MainGameViewModel()
         {
-            TestRook = new Rook(Player1, ColorSide.White, 0b_100, new BitScan(), new LongMovements(), new Attack(new BitScan(), new PopulationCount(), new UpdateBitBoards()), "../ChessPiecePictures/WhiteRook.png");
-            PieceCollection = new ObservableCollection<BasePiece>(); 
-            PieceCollection.Add(TestRook);
+            //Rook ro = new Rook(Player1, ColorSide.White, 0b_0100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000, new BitScan(), new LongMovements(), new Attack(new BitScan(), new PopulationCount(), new UpdateBitBoards()), "../ChessPiecePictures/WhiteRook.png");
+            //PieceCollection.Add(ro);
+
+
+            PieceCollection = new ObservableCollection<BasePiece>();
             //ColorSide color = SelectColorSide();
-            //UpdateBitBoards = new UpdateBitBoards();
-            //Scan = new BitScan();
-            //Movements = new LongMovements();
-            //PopCount = new PopulationCount();
-            //Attack = new Attack(Scan, PopCount, UpdateBitBoards);
-            //InitAllPieces(color, Scan, Movements, Attack);
-            //string board = CreateStringOfBoard();
+            ColorSide color = ColorSide.Black;
+            UpdateBitBoards = new UpdateBitBoards();
+            Scan = new BitScan();
+            Movements = new LongMovements();
+            PopCount = new PopulationCount();
+            Attack = new Attack(Scan, PopCount, UpdateBitBoards);
+            InitAllPieces(color, Scan, Movements, Attack);
             //PrintBoard(board);
             //PlayGame();
         }
@@ -87,80 +91,104 @@ namespace ChessProject.ViewModels
                 string imagePath = "";
                 if (i == 0 || i == 7)
                 {
-                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Rook";
+                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Rook.png";
                     Rook rookUp = new Rook(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, imagePath);
                     Player1.PiecesList.Add(rookUp);
                     Player1.PiecesPosition ^= mask;
+                    PieceCollection.Add(rookUp);
+
                 }
-                else if (i == 1 || i == 6 || i == 33)
+                else if (i == 1 || i == 6 )
                 {
-                    Knight knightUp = new Knight(Player1, choosenColorToBeUp, mask, "N");
+                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Knight.png";
+                    Knight knightUp = new Knight(Player1, choosenColorToBeUp, mask, imagePath);
                     Player1.PiecesList.Add(knightUp);
                     Player1.PiecesPosition ^= mask;
+                    PieceCollection.Add(knightUp);
                 }
                 else if (i == 2 || i == 5)
                 {
-                    Bishop bishopUp = new Bishop(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, "B");
+                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Bishop.png";
+                    Bishop bishopUp = new Bishop(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, imagePath);
                     Player1.PiecesList.Add(bishopUp);
                     Player1.PiecesPosition ^= mask;
+                    PieceCollection.Add(bishopUp);
                 }
                 else if (i == 3)
                 {
-                    King kingUp = new King(Player1, choosenColorToBeUp, mask, "K");
+                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}King.png";
+                    King kingUp = new King(Player1, choosenColorToBeUp, mask, imagePath);
                     Player1.PiecesList.Add(kingUp);
                     Player1.King = kingUp;
                     Player1.PiecesPosition ^= mask;
+                    PieceCollection.Add(kingUp);
                 }
                 else if (i == 4)
                 {
-                    Queen queenUp = new Queen(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, "Q");
+                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Queen.png";
+                    Queen queenUp = new Queen(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, imagePath);
                     Player1.PiecesList.Add(queenUp);
                     Player1.PiecesPosition ^= mask;
+                    PieceCollection.Add(queenUp);
                 }
                 else if (i >= 8 && i <= 15)
                 {
-                    Pawn pawnUp = new Pawn(Player1, choosenColorToBeUp, mask, "P", lastLineForSwapForUp, doubleMoveSignForUp, fifthLineOfEnPassantForUp);
+                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Pawn.png";
+                    Pawn pawnUp = new Pawn(Player1, choosenColorToBeUp, mask, imagePath, lastLineForSwapForUp, doubleMoveSignForUp, fifthLineOfEnPassantForUp);
                     Player1.PiecesList.Add(pawnUp);
                     Player1.PiecesPosition ^= mask;
                     Player2.OpponentPawnsList.Add(pawnUp);
+                    PieceCollection.Add(pawnUp);
                 }
                 else if (i > 47 && i < 56)
                 {
-                    Pawn pawnDown = new Pawn(Player2, otherColor, mask, "H", lastLineForSwapToDown, doubleMoveSignForDown, fifthLineOfEnPassantForDown);
+                    imagePath = $"../ChessPiecePictures/{otherColor}Pawn.png";
+                    Pawn pawnDown = new Pawn(Player2, otherColor, mask, imagePath, lastLineForSwapToDown, doubleMoveSignForDown, fifthLineOfEnPassantForDown);
                     Player2.PiecesList.Add(pawnDown);
                     Player2.PiecesPosition ^= mask;
                     Player1.OpponentPawnsList.Add(pawnDown);
+                    PieceCollection.Add(pawnDown);
                 }
                 else if (i == 56 || i == 63)
                 {
-                    Rook rookDown = new Rook(Player2, otherColor, mask, bitScan, movements, attack, "A");
+                    imagePath = $"../ChessPiecePictures/{otherColor}Rook.png";
+                    Rook rookDown = new Rook(Player2, otherColor, mask, bitScan, movements, attack, imagePath);
                     Player2.PiecesList.Add(rookDown);
                     Player2.PiecesPosition ^= mask;
+                    PieceCollection.Add(rookDown);
                 }
                 else if (i == 57 || i == 61)
                 {
-                    Bishop bishopDown = new Bishop(Player2, otherColor, mask, bitScan, movements, attack, "S");
+                    imagePath = $"../ChessPiecePictures/{otherColor}Bishop.png";
+                    Bishop bishopDown = new Bishop(Player2, otherColor, mask, bitScan, movements, attack, imagePath);
                     Player2.PiecesList.Add(bishopDown);
                     Player2.PiecesPosition ^= mask;
+                    PieceCollection.Add(bishopDown);
                 }
                 else if (i == 58 || i == 62)
                 {
-                    Knight knightDown = new Knight(Player2, otherColor, mask, "D");
+                    imagePath = $"../ChessPiecePictures/{otherColor}Knight.png";
+                    Knight knightDown = new Knight(Player2, otherColor, mask, imagePath);
                     Player2.PiecesList.Add(knightDown);
                     Player2.PiecesPosition ^= mask;
+                    PieceCollection.Add(knightDown);
                 }
                 else if (i == 59)
                 {
-                    Queen queenDown = new Queen(Player2, otherColor, mask, bitScan, movements, attack, "F");
+                    imagePath = $"../ChessPiecePictures/{otherColor}Queen.png";
+                    Queen queenDown = new Queen(Player2, otherColor, mask, bitScan, movements, attack, imagePath);
                     Player2.PiecesList.Add(queenDown);
                     Player2.PiecesPosition ^= mask;
+                    PieceCollection.Add(queenDown);
                 }
                 else if (i == 60)
                 {
-                    King kingDown = new King(Player2, otherColor, mask, "G");
+                    imagePath = $"../ChessPiecePictures/{otherColor}King.png";
+                    King kingDown = new King(Player2, otherColor, mask, imagePath);
                     Player2.PiecesList.Add(kingDown);
                     Player2.PiecesPosition ^= mask;
                     Player2.King = kingDown;
+                    PieceCollection.Add(kingDown);
 
                 }
 

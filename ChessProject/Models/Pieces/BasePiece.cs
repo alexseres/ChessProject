@@ -2,6 +2,8 @@
 using ChessProject.Models.ObserverRelated;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ChessProject.Models.Pieces
@@ -43,16 +45,17 @@ namespace ChessProject.Models.Pieces
 
         public void CalculateRowAndColumnPosition(ulong actualPosition)
         {
-            ulong mask = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001;
-            for (int row = 7; row >= 0; row--, mask <<= 1)
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            for (int row = 0; row <= 7; row++)
             {
-                for (int col = 7; col >= 0; col--, mask <<= 1)
+                for (int col = 0; col <= 7; col++)
                 {
                     if ((mask & actualPosition) > 0)
                     {
                         Row = row;
                         Column = col;
                     }
+                    mask = mask >> 1;
                 }
             }
         }
