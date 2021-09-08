@@ -1,4 +1,5 @@
-﻿using ChessProject.Utils;
+﻿using ChessProject.Models.Pieces;
+using ChessProject.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,11 +16,21 @@ namespace ChessProject.Behaviors
         private static DragBehavior _instance = new DragBehavior();
         public static DragBehavior Instance { get { return _instance; } set { _instance = value; } }
 
+        private Point _elementStartPosition;
+        private Point _mouseStartPosition;
+        private Point _m_start;
+
         public static readonly DependencyProperty IsDragProperty =
             DependencyProperty.RegisterAttached("Drag", typeof(bool), typeof(DragBehavior), new PropertyMetadata(false, OnDragChanged));
+
         public static bool GetDrag(DependencyObject obj)
         {
             return (bool)obj.GetValue(IsDragProperty);
+        }
+
+        public static void SetDrag(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsDragProperty, value);
         }
 
         private static void OnDragChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -46,23 +57,38 @@ namespace ChessProject.Behaviors
 
         private void ElementOnMouseLeftButtonDown(object sender, MouseButtonEventArgs mouseButtoEventArgs)
         {
+            FrameworkElement element = sender as FrameworkElement;
+            Grid parent = element.FindAncestor<Grid>();
+            Grid grandParent = parent.FindAncestor<Grid>();
+            //var parent = Application.Current.MainWindow;
+            _mouseStartPosition = mouseButtoEventArgs.GetPosition(grandParent);
             ((UIElement)sender).CaptureMouse();
         }
 
         private void ElementOnMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             ((UIElement)sender).ReleaseMouseCapture();
+            _elementStartPosition.X = Transform.X;
+            _elementStartPosition.Y = Transform.Y;
         }
 
         private void ElementOnMouseMove(object sender, MouseEventArgs mouseEventArgs)
         {
             FrameworkElement element = sender as FrameworkElement;
             Grid parent = element.FindAncestor<Grid>();
-            var mousePos = mouseEventArgs.GetPosition(parent);
+            var grandParent = parent.FindAncestor<Grid>();
+            var mousePos = mouseEventArgs.GetPosition(grandParent);
+            var diff = (mousePos - _mouseStartPosition);
+
             if (!((UIElement)sender).IsMouseCaptured) return;
-
+            //if(mousePos.X < parent.Width && mousePos.Y < parent.Height && mousePos.X >= 0 && mousePos.Y >= 0)
+            //{
+            //}
+             
+            Transform.X = diff.X;
+            Transform.Y = diff.Y;
+            //Transform.X = _elementStartPosition.X + diff.X;
+            //Transform.Y = _elementStartPosition.Y + diff.Y;
         }
-
-        
     }
 }

@@ -45,7 +45,5 @@ namespace ChessProject.Views
                 }
             }
         }
-
-
     }
 }
