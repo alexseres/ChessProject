@@ -59,15 +59,19 @@ namespace ChessProject.Behaviors
         {
             FrameworkElement element = sender as FrameworkElement;
             Grid parent = element.FindAncestor<Grid>();
-            Grid grandParent = parent.FindAncestor<Grid>();
             //var parent = Application.Current.MainWindow;
-            _mouseStartPosition = mouseButtoEventArgs.GetPosition(grandParent);
+            _mouseStartPosition = mouseButtoEventArgs.GetPosition(parent);
             ((UIElement)sender).CaptureMouse();
         }
 
         private void ElementOnMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             ((UIElement)sender).ReleaseMouseCapture();
+            FrameworkElement element = sender as FrameworkElement;
+            Grid parent = element.FindAncestor<Grid>();
+            Point pos = mouseButtonEventArgs.GetPosition(parent);
+            
+            //var pos = mouseButtonEventArgs.GetPosition()
             _elementStartPosition.X = Transform.X;
             _elementStartPosition.Y = Transform.Y;
         }
@@ -76,13 +80,12 @@ namespace ChessProject.Behaviors
         {
             FrameworkElement element = sender as FrameworkElement;
             Grid parent = element.FindAncestor<Grid>();
-            var grandParent = parent.FindAncestor<Grid>();
-            var mousePos = mouseEventArgs.GetPosition(grandParent);
+            var mousePos = mouseEventArgs.GetPosition(parent);
             var diff = (mousePos - _mouseStartPosition);
-
             if (!((UIElement)sender).IsMouseCaptured) return;
             //if(mousePos.X < parent.Width && mousePos.Y < parent.Height && mousePos.X >= 0 && mousePos.Y >= 0)
             //{
+            
             //}
              
             Transform.X = diff.X;
