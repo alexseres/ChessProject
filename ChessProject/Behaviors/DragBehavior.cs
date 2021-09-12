@@ -14,6 +14,7 @@ namespace ChessProject.Behaviors
     {
         public readonly TranslateTransform Transform = new TranslateTransform();
         private static DragBehavior _instance = new DragBehavior();
+
         public static DragBehavior Instance { get { return _instance; } set { _instance = value; } }
 
         private Point _elementStartPosition;
@@ -70,8 +71,9 @@ namespace ChessProject.Behaviors
             FrameworkElement element = sender as FrameworkElement;
             Grid parent = element.FindAncestor<Grid>();
             Point pos = mouseButtonEventArgs.GetPosition(parent);
-            
-            //var pos = mouseButtonEventArgs.GetPosition()
+            (int col, int row) = RowAndColumnCalculator.GetRowColumn(parent, pos);
+
+             
             _elementStartPosition.X = Transform.X;
             _elementStartPosition.Y = Transform.Y;
         }
