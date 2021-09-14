@@ -4,6 +4,7 @@ using ChessProject.ActionLogics.BitBoardsUpdater;
 using ChessProject.ActionLogics.BitScanLogic;
 using ChessProject.ActionLogics.PopulationCountLogic;
 using ChessProject.Actions.Movements;
+using ChessProject.Behaviors;
 using ChessProject.Commands;
 using ChessProject.Models;
 using ChessProject.Models.Enums;
@@ -36,12 +37,13 @@ namespace ChessProject.ViewModels
         public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
 
 
+        public RelayCommand<DragBehavior> _dragBehaviorCommand;
+        public RelayCommand<DragBehavior> DragBehaviorCommand { get { return _dragBehaviorCommand; } set { SetProperty(ref _dragBehaviorCommand, value); } }
+
         public MainGameViewModel()
         {
-            //Rook ro = new Rook(Player1, ColorSide.White, 0b_0100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000, new BitScan(), new LongMovements(), new Attack(new BitScan(), new PopulationCount(), new UpdateBitBoards()), "../ChessPiecePictures/WhiteRook.png");
-            //PieceCollection.Add(ro);
 
-
+            DragBehaviorCommand = new RelayCommand<DragBehavior>(DoDrag, DragBehaviorCanExecute);
             PieceCollection = new ObservableCollection<BasePiece>();
             //ColorSide color = SelectColorSide();
             ColorSide color = ColorSide.Black;
@@ -51,10 +53,17 @@ namespace ChessProject.ViewModels
             PopCount = new PopulationCount();
             Attack = new Attack(Scan, PopCount, UpdateBitBoards);
             InitAllPieces(color, Scan, Movements, Attack);
-            //PrintBoard(board);
-            //PlayGame();
         }
 
+        public bool DragBehaviorCanExecute(object obj)
+        {
+            return true;
+        }
+
+        public void DoDrag(object obj)
+        {
+
+        }
  
         public ColorSide SelectColorSide()
         {
@@ -257,7 +266,8 @@ namespace ChessProject.ViewModels
                 }
             }
 
-            ulong choosenPos = UserInput(From);
+            //ulong choosenPos = UserInput(From);
+            ulong choosenPos = 1;
             BasePiece choosenPiece = actualPlayer.GrabAndExtractPiece(choosenPos);
             if (choosenPiece is null || choosenPiece.Color != actualPlayer.Color)
             {
@@ -351,7 +361,8 @@ namespace ChessProject.ViewModels
                 return false;
             }
 
-            ulong choosenPositionToMove = UserInput(To);
+            //ulong choosenPositionToMove = UserInput(To);
+            ulong choosenPositionToMove = 2;
             if ((choosenPositionToMove & opportunities) <= 0)
             {
                 Console.WriteLine("You cannot move there because there is no opportunity there");
@@ -380,73 +391,6 @@ namespace ChessProject.ViewModels
                 return Player1;
             }
         }
-
-        public ulong UserInput(string inp)
-        {
-            Console.WriteLine(inp);
-            string result = Console.ReadLine();
-            int convertToInt = Int16.Parse(result) - 1;
-            ulong pos = (ulong)1 << convertToInt;
-            return pos;
-        }
-
-
-        #region Print and Create Board
-        //public void PrintBoard(string board)
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    for (int i = 0; i < board.Length; i++)
-        //    {
-        //        if (i % 8 == 0 && i != 0)
-        //        {
-        //            string row = new string(sb.ToString());
-        //            Console.WriteLine(row);
-        //            sb.Clear();
-        //        }
-        //        sb.Append(board[i]);
-        //    }
-        //    var finalRow = new string(sb.ToString());
-        //    Console.WriteLine(finalRow);
-        //}
-
-        //public string CreateStringOfBoard()
-        //{
-        //    ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-        //    StringBuilder sb = new StringBuilder();
-
-        //    for (int i = 0; i < 64; i++)
-        //    {
-        //        bool IsSquareOccupied = false;
-        //        for (int j = 0; j < Player1.PiecesList.Count; j++)
-        //        {
-        //            if (((Player1.PiecesList[j] as BasePiece).Position & (mask & BoardWithAllMember)) > 0)
-        //            {
-        //                sb.Append((Player1.PiecesList[j] as BasePiece).BoardName);
-        //                IsSquareOccupied = true;
-        //                break;
-        //            }
-
-        //        }
-        //        for (int k = 0; k < Player2.PiecesList.Count; k++)
-        //        {
-        //            if (((Player2.PiecesList[k] as BasePiece).Position & (mask & BoardWithAllMember)) > 0)
-        //            {
-        //                sb.Append((Player2.PiecesList[k] as BasePiece).BoardName);
-        //                IsSquareOccupied = true;
-        //                break;
-        //            }
-        //        }
-
-        //        if (!IsSquareOccupied)
-        //        {
-        //            sb.Append(".");
-        //        }
-
-        //        mask = mask >> 1;
-        //    }
-        //    Console.WriteLine(sb.ToString());
-        //    return sb.ToString();
-        //}
-        #endregion
+        
     }
 }
