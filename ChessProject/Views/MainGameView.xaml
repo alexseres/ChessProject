@@ -19,7 +19,7 @@
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0" Background="AliceBlue">
-            <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid" />
+            <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid"/>
             <ItemsControl ItemsSource="{Binding PieceCollection}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -48,11 +48,14 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate >
+                    <DataTemplate>
                         <Grid Width="75"
                               Height="75"
-                              behaviors:DragBehavior.Drag ="True">
-                             
+                              
+                              >
+                            <i:Interaction.Behaviors>
+                                <behaviors:DragBehavior DragOverC="{Binding DragOverCommand}"/>
+                            </i:Interaction.Behaviors>
                             <Image Width="65" 
                                    Height="65"
                                    Source="{Binding ImagePath}"/>

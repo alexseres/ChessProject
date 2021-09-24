@@ -15,11 +15,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
+using System.Windows.Input;
 
 namespace ChessProject.ViewModels
 {
-    public class MainGameViewModel : BaseViewModel
+    public class MainGameViewModel : BaseViewModel,IDragBehavior
     {
         public Rook TestRook { get; set; }
 
@@ -37,13 +37,23 @@ namespace ChessProject.ViewModels
         public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
 
 
-        public RelayCommand<DragBehavior> _dragBehaviorCommand;
-        public RelayCommand<DragBehavior> DragBehaviorCommand { get { return _dragBehaviorCommand; } set { SetProperty(ref _dragBehaviorCommand, value); } }
+        //public RelayCommand<DragBehavior> _dragBehaviorCommand;
+        //public RelayCommand<DragBehavior> DragBehaviorCommand { get { return _dragBehaviorCommand; } set { SetProperty(ref _dragBehaviorCommand, value); } }
+
+        public ICommand _dragOverCommand;
+        public ICommand DragBehaviorCommand { get { return _dragOverCommand; } set { SetProperty(ref _dragOverCommand, value); } }
+
+        public ICommand _dropCommand;
+        public ICommand DropCommand { get { return _dropCommand; } set { SetProperty(ref _dropCommand, value); } }
+
+
 
         public MainGameViewModel()
         {
-
+            //DragBehaviorCommand = new RelayCommand<DragBehavior>(DoDrag, DragBehaviorCanExecute);
+            //Cmm = new ICommand(DragBehaviorCanExecute, DoDrag);
             DragBehaviorCommand = new RelayCommand<DragBehavior>(DoDrag, DragBehaviorCanExecute);
+
             PieceCollection = new ObservableCollection<BasePiece>();
             //ColorSide color = SelectColorSide();
             ColorSide color = ColorSide.Black;
@@ -391,6 +401,10 @@ namespace ChessProject.ViewModels
                 return Player1;
             }
         }
-        
+
+        public void OnDrag(int col, int row)
+        {
+            Console.WriteLine("Working");
+        }
     }
 }
