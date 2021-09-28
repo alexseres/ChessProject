@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interactivity;
 using System.Windows.Media;
+using static ChessProject.ViewModels.MainGameViewModel;
 
 namespace ChessProject.Behaviors
 {
@@ -21,34 +22,100 @@ namespace ChessProject.Behaviors
         private Point _elementStartPosition;
         private Point _mouseStartPosition;
 
-        private bool _isDragging;
-        private IDataObject _dataObject;
-        private Type _dataType;
+
+        //public DragDelegate DragOver
+        //{
+        //    get { return (DragDelegate)GetValue(DragOverCommandProperty); }
+        //    set { SetValue(DragOverCommandProperty, value); }
+        //}
+
+        //public DragDelegate GetDragDelegate(Grid grid)
+        //{
+        //    return (DragDelegate)grid.GetValue(DragOverCommandProperty);
+        //}
 
 
-        public static ICommand GetCommandProperty(DependencyObject obj)
-        {
-            return (ICommand)obj.GetValue(DragOverCommandProperty);
-        }
+        //public void SetDragDelegate(Grid grid, DragDelegate value)
+        //{
+        //    grid.SetValue(DragOverCommandProperty, value);
+        //}
 
-        public ICommand DragOverC { get { return (ICommand)GetValue(DragOverCommandProperty); } set { SetValue(DragOverCommandProperty, value); } }
-        public static readonly DependencyProperty DragOverCommandProperty = DependencyProperty.Register("DragOverC", typeof(ICommand), typeof(DragBehavior), new PropertyMetadata(null));
+        //public static DragDelegate GetCommandProperty(DependencyObject obj)
+        //{
+        //    return (DragDelegate)obj.GetValue(DragOverCommandProperty);
+        //}
 
-        public ICommand DropCommand { get { return (ICommand)GetValue(DropCommandProperty); } set { SetValue(DropCommandProperty, value); } }
-        public static readonly DependencyProperty DropCommandProperty = DependencyProperty.Register("DropCommand", typeof(ICommand), typeof(DragBehavior), new PropertyMetadata(null));
+        public ICommand DragOverCommand { get { return (ICommand)GetValue(DragOverCommandProperty); } set { SetValue(DragOverCommandProperty, value); } }
+        public static readonly DependencyProperty DragOverCommandProperty = DependencyProperty.Register("DragOverCommand", typeof(ICommand), typeof(DragBehavior), new PropertyMetadata(null, DragChanged));
+
+        //public ICommand DropCommand { get { return (ICommand)GetValue(DropCommandProperty); } set { SetValue(DropCommandProperty, value); } }
+        //public static readonly DependencyProperty DropCommandProperty = DependencyProperty.Register("DropCommand", typeof(ICommand), typeof(DragBehavior), new PropertyMetadata(null));
 
         protected override void OnAttached()
         {
+            base.OnAttached();
             this.AssociatedObject.AllowDrop = true;
             this.AssociatedObject.PreviewMouseLeftButtonDown += MouseLeftButtonDown;
             this.AssociatedObject.PreviewMouseLeftButtonUp += MouseLeftButtonUp;
             this.AssociatedObject.PreviewMouseMove += MouseMove;
-            base.OnAttached();
         }
 
-        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        private static void DragChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            base.OnPropertyChanged(e);
+            Console.WriteLine("ok");
+            var element = (UIElement)d;
+            var isDrag = (bool)(e.NewValue);
+
+            Instance = new DragBehavior();
+            ((UIElement)d).RenderTransform = Instance.Transform;
+
+            if (isDrag)
+            {
+                element.MouseLeftButtonDown += Instance.MouseLeftButtonDown;
+                element.MouseLeftButtonUp += Instance.MouseLeftButtonUp;
+                element.MouseMove += Instance.MouseMove;
+            }
+            else
+            {
+                element.MouseLeftButtonDown -= Instance.MouseLeftButtonDown;
+                element.MouseLeftButtonUp -= Instance.MouseLeftButtonUp;
+                element.MouseMove -= Instance.MouseMove;
+            }
+        }
+
+        //private static void OnDragChanged(object sender, DependencyPropertyChangedEventArgs e)
+        //{
+        //    var element = (UIElement)sender;
+        //    var isDrag = (bool)(e.NewValue);
+
+        //    Instance = new DragBehavior();
+        //    ((UIElement)sender).RenderTransform = Instance.Transform;
+
+        //    if (isDrag)
+        //    {
+        //        element.MouseLeftButtonDown += Instance.MouseLeftButtonDown;
+        //        element.MouseLeftButtonUp += Instance.MouseLeftButtonUp;
+        //        element.MouseMove += Instance.MouseMove;
+        //    }
+        //    else
+        //    {
+        //        element.MouseLeftButtonDown -= Instance.MouseLeftButtonDown;
+        //        element.MouseLeftButtonUp -= Instance.MouseLeftButtonUp;
+        //        element.MouseMove -= Instance.MouseMove;
+        //    }
+        //}
+
+        //protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        //{
+        //    base.OnPropertyChanged(e);
+        //}
+
+        protected override void OnDetaching()
+        {
+            base.OnDetaching();
+            this.AssociatedObject.PreviewMouseLeftButtonDown -= MouseLeftButtonDown;
+            this.AssociatedObject.PreviewMouseLeftButtonUp -= MouseLeftButtonUp;
+            this.AssociatedObject.PreviewMouseMove -= MouseMove;
         }
 
 
@@ -62,17 +129,20 @@ namespace ChessProject.Behaviors
             //Point point = args.GetPosition(parent);
             //_mouseStartPosition = args.GetPosition(parent);
             //((UIElement)sender).CaptureMouse();
-            var grid = sender as Grid;
-            var command = GetCommandProperty(grid);
-             if(command != null)
+             
+            if(this.DragOverCommand != null)
             {
-                command.Execute(null);
+                var grid = sender as Grid;
+
+                
             }
+           
+
 
 
         }
 
-        private void MouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        public void MouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             ((UIElement)sender).ReleaseMouseCapture();
             FrameworkElement element = sender as FrameworkElement;
@@ -94,7 +164,7 @@ namespace ChessProject.Behaviors
             _elementStartPosition.Y = Transform.Y;
         }
 
-        private void MouseMove(object sender, MouseEventArgs mouseEventArgs)
+        public void MouseMove(object sender, MouseEventArgs mouseEventArgs)
         {
             FrameworkElement element = sender as FrameworkElement;
             Grid parent = element.FindAncestor<Grid>();

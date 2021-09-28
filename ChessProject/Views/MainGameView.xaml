@@ -54,7 +54,7 @@
                               
                               >
                             <i:Interaction.Behaviors>
-                                <behaviors:DragBehavior DragOverC="{Binding DragOverCommand}"/>
+                                <behaviors:DragBehavior DragOverCommand="{Binding DragBehaviorCommand, Mode=TwoWay}" />
                             </i:Interaction.Behaviors>
                             <Image Width="65" 
                                    Height="65"

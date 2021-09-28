@@ -16,11 +16,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+//using static ChessProject.Behaviors.DragBehavior;
 
 namespace ChessProject.ViewModels
 {
     public class MainGameViewModel : BaseViewModel,IDragBehavior
     {
+        public delegate void DragDelegate(bool isValid);
+
+
         public Rook TestRook { get; set; }
 
         public ObservableCollection<BasePiece> _pieceCollection;
@@ -40,6 +44,9 @@ namespace ChessProject.ViewModels
         //public RelayCommand<DragBehavior> _dragBehaviorCommand;
         //public RelayCommand<DragBehavior> DragBehaviorCommand { get { return _dragBehaviorCommand; } set { SetProperty(ref _dragBehaviorCommand, value); } }
 
+        //public ICommand _dragOverCommand;
+        //public ICommand DragBehaviorCommand { get { return _dragOverCommand; } set { SetProperty(ref _dragOverCommand, value); } }
+
         public ICommand _dragOverCommand;
         public ICommand DragBehaviorCommand { get { return _dragOverCommand; } set { SetProperty(ref _dragOverCommand, value); } }
 
@@ -53,7 +60,6 @@ namespace ChessProject.ViewModels
             //DragBehaviorCommand = new RelayCommand<DragBehavior>(DoDrag, DragBehaviorCanExecute);
             //Cmm = new ICommand(DragBehaviorCanExecute, DoDrag);
             DragBehaviorCommand = new RelayCommand<DragBehavior>(DoDrag, DragBehaviorCanExecute);
-
             PieceCollection = new ObservableCollection<BasePiece>();
             //ColorSide color = SelectColorSide();
             ColorSide color = ColorSide.Black;
@@ -64,6 +70,14 @@ namespace ChessProject.ViewModels
             Attack = new Attack(Scan, PopCount, UpdateBitBoards);
             InitAllPieces(color, Scan, Movements, Attack);
         }
+
+        //public delegate void DragDelegate(bool isValid);
+        //public DragDelegate DragHandler { get { return (isValid) => OnDrag(isValid); } }
+
+        //private void OnDrag(bool isValid)
+        //{
+        //    Console.WriteLine("Success");
+        //}
 
         public bool DragBehaviorCanExecute(object obj)
         {
