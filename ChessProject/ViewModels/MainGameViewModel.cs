@@ -11,16 +11,21 @@ using ChessProject.Models.Enums;
 using ChessProject.Models.ObserverRelated;
 using ChessProject.Models.Pieces;
 using ChessProject.Utils.CloneCollections;
+using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 //using static ChessProject.Behaviors.DragBehavior;
 
 namespace ChessProject.ViewModels
 {
-    public class MainGameViewModel : BaseViewModel,IDragBehavior
+    public class MainGameViewModel : BaseViewModel, IDropTarget
     {
         public delegate void DragDelegate(bool isValid);
 
@@ -39,27 +44,12 @@ namespace ChessProject.ViewModels
         public ILongMovements Movements { get; set; }
         public IPopulationCount PopCount { get; set; }
         public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
-
-
-        //public RelayCommand<DragBehavior> _dragBehaviorCommand;
-        //public RelayCommand<DragBehavior> DragBehaviorCommand { get { return _dragBehaviorCommand; } set { SetProperty(ref _dragBehaviorCommand, value); } }
-
-        //public ICommand _dragOverCommand;
-        //public ICommand DragBehaviorCommand { get { return _dragOverCommand; } set { SetProperty(ref _dragOverCommand, value); } }
-
-        public ICommand _dragOverCommand;
-        public ICommand DragBehaviorCommand { get { return _dragOverCommand; } set { SetProperty(ref _dragOverCommand, value); } }
-
-        public ICommand _dropCommand;
-        public ICommand DropCommand { get { return _dropCommand; } set { SetProperty(ref _dropCommand, value); } }
-
-
+        
+        public UniformGrid BoardUniformGrid { get; set; }
 
         public MainGameViewModel()
         {
-            //DragBehaviorCommand = new RelayCommand<DragBehavior>(DoDrag, DragBehaviorCanExecute);
-            //Cmm = new ICommand(DragBehaviorCanExecute, DoDrag);
-            DragBehaviorCommand = new RelayCommand<DragBehavior>(DoDrag, DragBehaviorCanExecute);
+
             PieceCollection = new ObservableCollection<BasePiece>();
             //ColorSide color = SelectColorSide();
             ColorSide color = ColorSide.Black;
@@ -71,23 +61,7 @@ namespace ChessProject.ViewModels
             InitAllPieces(color, Scan, Movements, Attack);
         }
 
-        //public delegate void DragDelegate(bool isValid);
-        //public DragDelegate DragHandler { get { return (isValid) => OnDrag(isValid); } }
-
-        //private void OnDrag(bool isValid)
-        //{
-        //    Console.WriteLine("Success");
-        //}
-
-        public bool DragBehaviorCanExecute(object obj)
-        {
-            return true;
-        }
-
-        public void DoDrag(object obj)
-        {
-
-        }
+       
  
         public ColorSide SelectColorSide()
         {
@@ -416,9 +390,31 @@ namespace ChessProject.ViewModels
             }
         }
 
-        public void OnDrag(int col, int row)
+        public BasePiece GetPieceByRowAndColDef(int col, int row)
         {
-            Console.WriteLine("Working");
+            BasePiece piece = (BasePiece)PieceCollection.Where(x => x.Column == col && x.Row == row);
+            if (piece is null) return null;
+            return piece;
+        }
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            BasePiece piece = dropInfo.Data as BasePiece;
+            if(piece != null)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            Point point = new Point { X = dropInfo.DropPosition.X, Y = dropInfo.DropPosition.Y };
+            (int col, int row) = Utils.RowAndColumnCalculator.GetRowColumn(BoardUniformGrid, point);
+            BasePiece piece = dropInfo.Data as BasePiece;
+            piece.Column = col;
+            piece.Row = row;
+            CollectionViewSource.GetDefaultView(PieceCollection).Refresh();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ChessProject.Models.Pieces;
 using ChessProject.Utils;
+using ChessProject.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,7 @@ using static ChessProject.ViewModels.MainGameViewModel;
 
 namespace ChessProject.Behaviors
 {
-    public class DragBehavior : Behavior<Grid>
+    public class DragBehavior :Behavior<Grid>
     {
         public readonly TranslateTransform Transform = new TranslateTransform();
         private static DragBehavior _instance = new DragBehavior();
@@ -46,19 +47,19 @@ namespace ChessProject.Behaviors
         //}
 
         public ICommand DragOverCommand { get { return (ICommand)GetValue(DragOverCommandProperty); } set { SetValue(DragOverCommandProperty, value); } }
-        public static readonly DependencyProperty DragOverCommandProperty = DependencyProperty.Register("DragOverCommand", typeof(ICommand), typeof(DragBehavior), new PropertyMetadata(null, DragChanged));
+        public static readonly DependencyProperty DragOverCommandProperty = DependencyProperty.Register("DragOverCommand", typeof(ICommand), typeof(DragBehavior), new PropertyMetadata(DragChanged));
 
         //public ICommand DropCommand { get { return (ICommand)GetValue(DropCommandProperty); } set { SetValue(DropCommandProperty, value); } }
         //public static readonly DependencyProperty DropCommandProperty = DependencyProperty.Register("DropCommand", typeof(ICommand), typeof(DragBehavior), new PropertyMetadata(null));
 
-        protected override void OnAttached()
-        {
-            base.OnAttached();
-            this.AssociatedObject.AllowDrop = true;
-            this.AssociatedObject.PreviewMouseLeftButtonDown += MouseLeftButtonDown;
-            this.AssociatedObject.PreviewMouseLeftButtonUp += MouseLeftButtonUp;
-            this.AssociatedObject.PreviewMouseMove += MouseMove;
-        }
+        //protected override void OnAttached()
+        //{
+        //    base.OnAttached();
+        //    this.AssociatedObject.AllowDrop = true;
+        //    this.AssociatedObject.PreviewMouseLeftButtonDown += MouseLeftButtonDown;
+        //    this.AssociatedObject.PreviewMouseLeftButtonUp += MouseLeftButtonUp;
+        //    this.AssociatedObject.PreviewMouseMove += MouseMove;
+        //}
 
         private static void DragChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -110,13 +111,13 @@ namespace ChessProject.Behaviors
         //    base.OnPropertyChanged(e);
         //}
 
-        protected override void OnDetaching()
-        {
-            base.OnDetaching();
-            this.AssociatedObject.PreviewMouseLeftButtonDown -= MouseLeftButtonDown;
-            this.AssociatedObject.PreviewMouseLeftButtonUp -= MouseLeftButtonUp;
-            this.AssociatedObject.PreviewMouseMove -= MouseMove;
-        }
+        //protected override void OnDetaching()
+        //{
+        //    base.OnDetaching();
+        //    this.AssociatedObject.PreviewMouseLeftButtonDown -= MouseLeftButtonDown;
+        //    this.AssociatedObject.PreviewMouseLeftButtonUp -= MouseLeftButtonUp;
+        //    this.AssociatedObject.PreviewMouseMove -= MouseMove;
+        //}
 
 
         public void MouseLeftButtonDown(object sender, MouseButtonEventArgs args)
@@ -129,12 +130,10 @@ namespace ChessProject.Behaviors
             //Point point = args.GetPosition(parent);
             //_mouseStartPosition = args.GetPosition(parent);
             //((UIElement)sender).CaptureMouse();
-             
+           
             if(this.DragOverCommand != null)
             {
                 var grid = sender as Grid;
-
-                
             }
            
 
@@ -149,7 +148,7 @@ namespace ChessProject.Behaviors
             if (element is null) return;
             Grid parent = element.FindAncestor<Grid>();
             Point pos = mouseButtonEventArgs.GetPosition(parent);
-            (int col, int row) = RowAndColumnCalculator.GetRowColumn(parent, pos);
+            //(int col, int row) = RowAndColumnCalculator.GetRowColumn(parent, pos);
 
 
             //Object target = element.GetValue(DragTargetProperty);
@@ -166,6 +165,7 @@ namespace ChessProject.Behaviors
 
         public void MouseMove(object sender, MouseEventArgs mouseEventArgs)
         {
+
             FrameworkElement element = sender as FrameworkElement;
             Grid parent = element.FindAncestor<Grid>();
             var mousePos = mouseEventArgs.GetPosition(parent);

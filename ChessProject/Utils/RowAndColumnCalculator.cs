@@ -3,28 +3,29 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace ChessProject.Utils
 {
-    public class RowAndColumnCalculator
+    public static class RowAndColumnCalculator
     {
-        public static (int, int) GetRowColumn(Grid grid, Point position)
+        public static (int, int) GetRowColumn(UniformGrid grid, Point position)
         {
             int column = -1;
             double total = 0;
-            foreach(ColumnDefinition clm in grid.ColumnDefinitions)
+            for(int c = 0;c < grid.Columns;c ++)
             {
                 if(position.X < total)
                 {
                     break;
                 }
                 column++;
-                total += clm.ActualWidth;
+                total += grid.ActualWidth / 8;
             }
 
             int row = -1;
             total = 0;
-            foreach(RowDefinition rowDef in grid.RowDefinitions)
+            for (int c = 0; c < grid.Columns; c++)
             {
                 if(position.Y < total)
                 {
@@ -32,7 +33,7 @@ namespace ChessProject.Utils
                 }
 
                 row++;
-                total += rowDef.ActualHeight;
+                total += grid.ActualHeight / 8;
             }
             return (column, row);
         }

@@ -19,6 +19,7 @@ namespace ChessProject.Views
             _vm = new MainGameViewModel();
             this.DataContext = _vm;
             InitializeChessBoardGrid();
+            _vm.BoardUniformGrid = BoardGrid;
         }
 
         public void InitializeChessBoardGrid()

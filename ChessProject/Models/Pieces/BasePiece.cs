@@ -83,6 +83,7 @@ namespace ChessProject.Models.Pieces
             CheckForThreeFoldRepetition();
         }
 
+
         public void UpdatePositionWhenBeingAttacked()
         {
             Position = 0;

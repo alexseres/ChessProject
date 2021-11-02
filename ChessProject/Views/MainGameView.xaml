@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:behaviors="clr-namespace:ChessProject.Behaviors"
+        xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:local="clr-namesace:ChessProject.Views"
         mc:Ignorable="d"
         Title="MainGameView" Height="600" Width="850">
@@ -18,12 +19,16 @@
             <ColumnDefinition Width="600"/>
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0" Background="AliceBlue">
-            <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid"/>
-            <ItemsControl ItemsSource="{Binding PieceCollection}">
+        <Grid Grid.Column="0" Background="AliceBlue"  dd:DragDrop.IsDragSource="True"
+                              dd:DragDrop.IsDropTarget="True"
+                              dd:DragDrop.DropHandler="{Binding}">
+            <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid" />
+            <ItemsControl ItemsSource="{Binding PieceCollection}" dd:DragDrop.IsDragSource="True" x:Name="GridControl"
+                              dd:DragDrop.IsDropTarget="True"
+                              dd:DragDrop.DropHandler="{Binding}" >
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Grid IsItemsHost="True">
+                        <Grid IsItemsHost="True" >
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
@@ -53,9 +58,6 @@
                               Height="75"
                               
                               >
-                            <i:Interaction.Behaviors>
-                                <behaviors:DragBehavior DragOverCommand="{Binding DragBehaviorCommand, Mode=TwoWay}" />
-                            </i:Interaction.Behaviors>
                             <Image Width="65" 
                                    Height="65"
                                    Source="{Binding ImagePath}"/>
