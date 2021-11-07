@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -50,21 +51,35 @@ namespace ChessProject.ViewModels
         private bool IsPlayer1AtTurn { get; set; }
         private Player NextPlayer { get; set; }
 
+        private Player CurrentPlayer { get; set; }
+
 
         public MainGameViewModel()
         {
             PieceCollection = new ObservableCollection<BasePiece>();
             //ColorSide color = SelectColorSide();
             ColorSide color = ColorSide.Black;
-            IsPlayer1AtTurn = true;
             UpdateBitBoards = new UpdateBitBoards();
             Scan = new BitScan();
             Movements = new LongMovements();
             PopCount = new PopulationCount();
             Attack = new Attack(Scan, PopCount, UpdateBitBoards);
             InitAllPieces(color, Scan, Movements, Attack);
+            SelectPlayerWhoStarts(Player1, Player2);
+
         }
 
+        public void SelectPlayerWhoStarts(Player player1, Player player2)
+        {
+            if(player1.Color == ColorSide.White)
+            {
+                NextPlayer = player1;
+            }
+            else
+            {
+                NextPlayer = player2;
+            }
+        }
        
  
         public ColorSide SelectColorSide()
@@ -213,48 +228,40 @@ namespace ChessProject.ViewModels
             Player2.OpponentPiecesList = Player1.PiecesList;
             Player1.OpponentPiecesList = Player2.PiecesList;
         }
-  
-        //public bool CheckIfPlayer1IsWhite()
-        //{
-        //    return Player1.Color == ColorSide.White ? true : false;
-        //}
 
-        public void PlayGame(Player player, BasePiece piece)
+        public bool CheckIfPlayer1IsWhite()
         {
- 
-            if (IsPlayer1AtTurn)
-            {
-                Player opponent = OpponentCreater(Player1);
-                if (!(ColorCheck(Player1, true, opponent)))
-                {
-                    NextPlayer = Player1;
-                    return;
-                }
-                IsPlayerInCheckAndCheckmateChecker(Player1,opponent);
-                GetMoves(Player1, )
-                NextPlayer = Player2;
-            }
-            else
-            {
-                Player opponent = OpponentCreater(Player2);
-                if (!(ColorCheck(Player2, true, opponent)))
-                {
-                    NextPlayer = Player2;
-                    return;
-                }
-                IsPlayerInCheckAndCheckmateChecker(Player2, opponent);
-                NextPlayer = Player1;
-            }
+            return Player1.Color == ColorSide.White ? true : false;
+        }
 
-            if (Player1.IsThreeFold == true || Player2.IsThreeFold == true)
+        public bool CheckOrder(Player player, BasePiece piece)
+        {
+            Player opponent = OpponentCreater(player);
+            if (!(ColorCheck(player, opponent)))
             {
-                Console.WriteLine("Its a draw because of TreeFold");
-                
+                NextPlayer = player;
+                return false;
             }
-            if (Player1.IsFiftyMoveWIthoutCaptureOrPawnMove == true || Player2.IsFiftyMoveWIthoutCaptureOrPawnMove == true)
+            IsPlayerInCheckAndCheckmateChecker(player,opponent);
+            player.RecentOpportunities = piece.Search(piece.Position, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
+            if (player.RecentOpportunities <= 0)
+            {
+                Console.WriteLine("you cannot move with this piece, choose another one");
+                player.RecentOpportunities = 0;
+                NextPlayer = player;
+                return false;
+            }
+            
+            if (player.IsThreeFold == true || opponent.IsThreeFold == true)
+            {
+                Console.WriteLine("Its a draw because of TreeFold");   
+            }
+            if (player.IsFiftyMoveWIthoutCaptureOrPawnMove == true || opponent.IsFiftyMoveWIthoutCaptureOrPawnMove == true)
             {
                 Console.WriteLine("Its draw because of 50 move rule");
             }
+
+            return true;
             
         }
 
@@ -276,99 +283,72 @@ namespace ChessProject.ViewModels
             }
         }
 
-        public bool ColorCheck(Player actualPlayer, bool isPlayer1, Player opponent)
+        public bool ColorCheck(Player actualPlayer, Player opponent)
         {
             if(actualPlayer.Color == opponent.Color)
             {
                 Console.WriteLine($"Choose piece is not {actualPlayer.Color} piece");
-                if (isPlayer1)
-                {
-                    IsPlayer1AtTurn = true;
-                    return false;
-                }
-                else
-                {
-                    IsPlayer1AtTurn = false;
-                    return false;
-                }
+                return false;
             }
             return true;
             
         }
 
-        public void PlayerTurn(Player actualPlayer, bool isPlayer1)
+        //public void PlayerTurn(Player actualPlayer, bool isPlayer1)
+        //{
+        //    //ulong choosenPos = UserInput(From);
+        //    ulong choosenPos = 1;
+        //    BasePiece choosenPiece = actualPlayer.GrabAndExtractPiece(choosenPos);
+        //    if(choosenPiece is null || choosenPiece.Color != actualPlayer.Color)
+        //    {
+        //        Console.WriteLine($"Choose piece is not {actualPlayer.Color} piece");
+        //        if (isPlayer1)
+        //        {
+        //            IsPlayer1AtTurn = true;
+        //        }
+        //        else
+        //        {
+        //            IsPlayer1AtTurn = false;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        bool response = Process(actualPlayer, choosenPiece, choosenPos);
+        //        if (response == true)
+        //        {
+        //            if (isPlayer1)
+        //            {
+
+        //                IsPlayer1AtTurn = false;
+        //            }
+        //            else
+        //            {
+        //                IsPlayer1AtTurn = true;
+        //            }
+
+        //        }
+        //        else
+        //        {
+        //            if (isPlayer1)
+        //            {
+        //                IsPlayer1AtTurn = true;
+        //            }
+        //            else
+        //            {
+        //                IsPlayer1AtTurn = false;
+        //            }
+        //        }
+        //    }
+        //}
+
+        public bool CheckOrder2(Player player, BasePiece piece, ulong currentPiecePosition, ulong opportunities, ulong choosenPositionToMove)
         {
-            //ulong choosenPos = UserInput(From);
-            ulong choosenPos = 1;
-            BasePiece choosenPiece = actualPlayer.GrabAndExtractPiece(choosenPos);
-            if(choosenPiece is null || choosenPiece.Color != actualPlayer.Color)
-            {
-                Console.WriteLine($"Choose piece is not {actualPlayer.Color} piece");
-                if (isPlayer1)
-                {
-                    IsPlayer1AtTurn = true;
-                }
-                else
-                {
-                    IsPlayer1AtTurn = false;
-                }
-            }
-            else
-            {
-                bool response = Process(actualPlayer, choosenPiece, choosenPos);
-                if (response == true)
-                {
-                    if (isPlayer1)
-                    {
-
-                        IsPlayer1AtTurn = false;
-                    }
-                    else
-                    {
-                        IsPlayer1AtTurn = true;
-                    }
-
-                }
-                else
-                {
-                    if (isPlayer1)
-                    {
-                        IsPlayer1AtTurn = true;
-                    }
-                    else
-                    {
-                        IsPlayer1AtTurn = false;
-                    }
-                }
-            }
-        }
-
-        public ulong GetMoves(Player player, BasePiece piece, ulong currentPosition, Player opponent)
-        {
-            ulong opportunities = piece.Search(currentPosition, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
-            if (opportunities <= 0)
-            {
-                Console.WriteLine("you cannot move with this piece, choose another one");
-                return 0;
-            }
-            return opportunities;
-        }
-        
-
-        public bool Process(Player player, BasePiece piece, ulong currentPiecePosition, Player opponent)
-        {
-            ulong opportunities = piece.Search(currentPiecePosition, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
-            if (opportunities <= 0)
-            {
-                Console.WriteLine("you cannot move with this piece, choose another one");
-                return false;
-            }
-
-            //ulong choosenPositionToMove = UserInput(To);
-            ulong choosenPositionToMove = 2;
+            Player opponent = OpponentCreater(player);
             if ((choosenPositionToMove & opportunities) <= 0)
             {
                 Console.WriteLine("You cannot move there because there is no opportunity there");
+                player.RecentOpportunities = 0;
+                NextPlayer = player;
                 return false;
             }
 
@@ -376,10 +356,13 @@ namespace ChessProject.ViewModels
 
             if (!CheckProcess(player, currentPiecePosition, opponent, piece, attacked, choosenPositionToMove))
             {
+                NextPlayer = player;
+                player.RecentOpportunities = 0;
                 return false;
             }
 
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
+            NextPlayer = opponent;
             return true;
         }
 
@@ -406,7 +389,10 @@ namespace ChessProject.ViewModels
         {
             BasePiece piece = dropInfo.Data as BasePiece;
             if(piece is null) return;
-            if (!(piece.Creator == NextPlayer)) return;
+            if (NextPlayer.Color != piece.Creator.Color) return;
+            bool pieceCanGo = CheckOrder(piece.Creator, piece);
+            if (!pieceCanGo) return;
+
             
             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
             dropInfo.Effects = DragDropEffects.Copy;
@@ -417,10 +403,31 @@ namespace ChessProject.ViewModels
             Point point = new Point { X = dropInfo.DropPosition.X, Y = dropInfo.DropPosition.Y };
             (int col, int row) = Utils.RowAndColumnCalculator.GetRowColumn(BoardUniformGrid, point);
             BasePiece piece = dropInfo.Data as BasePiece;
-            piece.Column = col;
-            piece.Row = row;
-            CollectionViewSource.GetDefaultView(PieceCollection).Refresh();
+            Player player = piece.Creator;
+            ulong move = Utils.RowAndColumnCalculator.UlongCalculator(col, row);
+            //string str = Convert.ToString((long)move, toBase: 2).PadLeft(64, '0');
+            bool changeHappened = CheckOrder2(player, piece,piece.Position,player.RecentOpportunities, move);
+            if(changeHappened)CollectionViewSource.GetDefaultView(PieceCollection).Refresh();
         }
+
+        public void Printboard(string board)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < board.Length; i++)
+            {
+                if (i % 8 == 0 && i != 0)
+                {
+                    string row = new string(sb.ToString());
+                    Console.WriteLine(row);
+                    sb.Clear();
+                }
+                sb.Append(board[i]);
+            }
+            var finalrow = new string(sb.ToString());
+            Console.WriteLine(finalrow);
+
+        }
+
 
         public bool CheckProcess(Player player, ulong currentPiecePosition, Player opponent, BasePiece piece, bool attacked, ulong choosenPositionToMove)
         {

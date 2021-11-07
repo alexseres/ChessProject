@@ -9,6 +9,23 @@ namespace ChessProject.Utils
 {
     public static class RowAndColumnCalculator
     {
+        public static ulong UlongCalculator(int col, int row)
+        {
+            var move = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            for (int r = 0;r < 8; r++)
+            {
+                for(int c = 0;c < 8; c++)
+                {
+                    if(c == col && r == row)
+                    {
+                        return move;
+                    }
+                    move >>= 1;
+                }
+            }
+            return 0;
+        }
+
         public static (int, int) GetRowColumn(UniformGrid grid, Point position)
         {
             int column = -1;
