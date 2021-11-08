@@ -9,6 +9,25 @@ namespace ChessProject.Utils
 {
     public static class RowAndColumnCalculator
     {
+
+        public static List<(int,int)> GetPositionsOfRowsAndColumns(ulong moves)
+        {
+            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            List<(int, int)> Positions = new List<(int, int)>();
+            for (int r = 0;r < 8;r++)
+            {
+                for(int c = 0;c < 8; c++)
+                {
+                    if ((mask & moves) >= 0)
+                    {
+                        Positions.Add((c, r));
+                    }
+                    mask >>= 1;
+                }
+            }
+            return Positions;
+        }
+
         public static ulong UlongCalculator(int col, int row)
         {
             var move = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;

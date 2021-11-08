@@ -234,7 +234,7 @@ namespace ChessProject.ViewModels
             return Player1.Color == ColorSide.White ? true : false;
         }
 
-        public bool CheckOrder(Player player, BasePiece piece)
+        public bool ProcessOfMakingSurePlayerCanChooseSpecificPiece(Player player, BasePiece piece)
         {
             Player opponent = OpponentCreater(player);
             if (!(ColorCheck(player, opponent)))
@@ -290,58 +290,10 @@ namespace ChessProject.ViewModels
                 Console.WriteLine($"Choose piece is not {actualPlayer.Color} piece");
                 return false;
             }
-            return true;
-            
+            return true;   
         }
 
-        //public void PlayerTurn(Player actualPlayer, bool isPlayer1)
-        //{
-        //    //ulong choosenPos = UserInput(From);
-        //    ulong choosenPos = 1;
-        //    BasePiece choosenPiece = actualPlayer.GrabAndExtractPiece(choosenPos);
-        //    if(choosenPiece is null || choosenPiece.Color != actualPlayer.Color)
-        //    {
-        //        Console.WriteLine($"Choose piece is not {actualPlayer.Color} piece");
-        //        if (isPlayer1)
-        //        {
-        //            IsPlayer1AtTurn = true;
-        //        }
-        //        else
-        //        {
-        //            IsPlayer1AtTurn = false;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        bool response = Process(actualPlayer, choosenPiece, choosenPos);
-        //        if (response == true)
-        //        {
-        //            if (isPlayer1)
-        //            {
-
-        //                IsPlayer1AtTurn = false;
-        //            }
-        //            else
-        //            {
-        //                IsPlayer1AtTurn = true;
-        //            }
-
-        //        }
-        //        else
-        //        {
-        //            if (isPlayer1)
-        //            {
-        //                IsPlayer1AtTurn = true;
-        //            }
-        //            else
-        //            {
-        //                IsPlayer1AtTurn = false;
-        //            }
-        //        }
-        //    }
-        //}
-
-        public bool CheckOrder2(Player player, BasePiece piece, ulong currentPiecePosition, ulong opportunities, ulong choosenPositionToMove)
+        public bool ProcessOfMakingSurePlayerCanDropSpecificPiece(Player player, BasePiece piece, ulong currentPiecePosition, ulong opportunities, ulong choosenPositionToMove)
         {
             Player opponent = OpponentCreater(player);
             if ((choosenPositionToMove & opportunities) <= 0)
@@ -378,22 +330,21 @@ namespace ChessProject.ViewModels
             }
         }
 
-        //public BasePiece GetPieceByRowAndColDef(int col, int row)
-        //{
-        //    BasePiece piece = (BasePiece)PieceCollection.Where(x => x.Column == col && x.Row == row);
-        //    if (piece is null) return null;
-        //    return piece;
-        //}
+        public List<(int,int)> GetPositionsOfOpportunitiesInRowAndColumn(Player player)
+        {
+            if(player.RecentOpportunities <= 0) return null;
+            
+        }
 
         public void DragOver(IDropInfo dropInfo)
         {
             BasePiece piece = dropInfo.Data as BasePiece;
             if(piece is null) return;
             if (NextPlayer.Color != piece.Creator.Color) return;
-            bool pieceCanGo = CheckOrder(piece.Creator, piece);
+            bool pieceCanGo = ProcessOfMakingSurePlayerCanChooseSpecificPiece(piece.Creator, piece);
             if (!pieceCanGo) return;
 
-            
+
             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
             dropInfo.Effects = DragDropEffects.Copy;
         }
@@ -405,8 +356,7 @@ namespace ChessProject.ViewModels
             BasePiece piece = dropInfo.Data as BasePiece;
             Player player = piece.Creator;
             ulong move = Utils.RowAndColumnCalculator.UlongCalculator(col, row);
-            //string str = Convert.ToString((long)move, toBase: 2).PadLeft(64, '0');
-            bool changeHappened = CheckOrder2(player, piece,piece.Position,player.RecentOpportunities, move);
+            bool changeHappened = ProcessOfMakingSurePlayerCanDropSpecificPiece(player, piece,piece.Position,player.RecentOpportunities, move);
             if(changeHappened)CollectionViewSource.GetDefaultView(PieceCollection).Refresh();
         }
 
