@@ -22,6 +22,7 @@ namespace ChessProject.Models
         public bool IsFiftyMoveWIthoutCaptureOrPawnMove { get; set; } = false;
         public int FiftyMoveWithoutCaptureAndPawnMove { get; set; } = 0;
         public ulong RecentOpportunities { get; set; }
+        public List<(int, int)> PositionsOfOpportunities { get; set; }
 
         public bool PlayerInCheck { get; set; }
 

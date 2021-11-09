@@ -18,7 +18,9 @@ namespace ChessProject.Utils
             {
                 for(int c = 0;c < 8; c++)
                 {
-                    if ((mask & moves) >= 0)
+                    string str = Convert.ToString((long)moves, toBase: 2).PadLeft(64, '0');
+                    string str2 = Convert.ToString((long)mask, toBase: 2).PadLeft(64, '0');
+                    if ((mask & moves) > 0)
                     {
                         Positions.Add((c, r));
                     }

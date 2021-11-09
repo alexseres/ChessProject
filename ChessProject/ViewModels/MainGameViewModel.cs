@@ -22,6 +22,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Shapes;
 //using static ChessProject.Behaviors.DragBehavior;
 
 namespace ChessProject.ViewModels
@@ -251,6 +253,7 @@ namespace ChessProject.ViewModels
                 NextPlayer = player;
                 return false;
             }
+            player.PositionsOfOpportunities = Utils.RowAndColumnCalculator.GetPositionsOfRowsAndColumns(piece.Creator.RecentOpportunities);
             
             if (player.IsThreeFold == true || opponent.IsThreeFold == true)
             {
@@ -300,6 +303,7 @@ namespace ChessProject.ViewModels
             {
                 Console.WriteLine("You cannot move there because there is no opportunity there");
                 player.RecentOpportunities = 0;
+                player.PositionsOfOpportunities.Clear();
                 NextPlayer = player;
                 return false;
             }
@@ -310,10 +314,12 @@ namespace ChessProject.ViewModels
             {
                 NextPlayer = player;
                 player.RecentOpportunities = 0;
+                player.PositionsOfOpportunities.Clear();
                 return false;
             }
 
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
+            player.PositionsOfOpportunities.Clear();
             NextPlayer = opponent;
             return true;
         }
@@ -330,10 +336,15 @@ namespace ChessProject.ViewModels
             }
         }
 
-        public List<(int,int)> GetPositionsOfOpportunitiesInRowAndColumn(Player player)
+
+        public void ColoringCellsAsOpportunitiesOfPiece()
         {
-            if(player.RecentOpportunities <= 0) return null;
-            
+            foreach(Rectangle rect in BoardUniformGrid.Children)
+            {
+                //var cell = BoardUniformGrid.Children[0] as Rectangle;
+                //cell.Fill = Brushes.AliceBlue;
+                rect.Fill = Brushes.Purple;
+            }
         }
 
         public void DragOver(IDropInfo dropInfo)
@@ -344,10 +355,14 @@ namespace ChessProject.ViewModels
             bool pieceCanGo = ProcessOfMakingSurePlayerCanChooseSpecificPiece(piece.Creator, piece);
             if (!pieceCanGo) return;
 
+            ColoringCellsAsOpportunitiesOfPiece();
 
             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
             dropInfo.Effects = DragDropEffects.Copy;
         }
+
+
+
 
         public void Drop(IDropInfo dropInfo)
         {
