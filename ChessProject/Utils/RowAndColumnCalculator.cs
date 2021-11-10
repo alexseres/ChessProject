@@ -10,10 +10,11 @@ namespace ChessProject.Utils
     public static class RowAndColumnCalculator
     {
 
-        public static List<(int,int)> GetPositionsOfRowsAndColumns(ulong moves)
+        public static Dictionary<int, (int,int)> GetPositionsOfRowsAndColumns(ulong moves)
         {
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-            List<(int, int)> Positions = new List<(int, int)>();
+            Dictionary<int, (int, int)> Positions = new Dictionary<int, (int, int)>();
+            int counter = 0;
             for (int r = 0;r < 8;r++)
             {
                 for(int c = 0;c < 8; c++)
@@ -22,8 +23,9 @@ namespace ChessProject.Utils
                     string str2 = Convert.ToString((long)mask, toBase: 2).PadLeft(64, '0');
                     if ((mask & moves) > 0)
                     {
-                        Positions.Add((c, r));
+                        Positions[counter] = (c, r);
                     }
+                    counter++;
                     mask >>= 1;
                 }
             }

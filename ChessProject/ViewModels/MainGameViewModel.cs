@@ -49,11 +49,9 @@ namespace ChessProject.ViewModels
         public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
         
         public UniformGrid BoardUniformGrid { get; set; }
-
-        private bool IsPlayer1AtTurn { get; set; }
         private Player NextPlayer { get; set; }
 
-        private Player CurrentPlayer { get; set; }
+        private Dictionary<int, Rectangle> CellsWherePlayerHasOpportunities { get; set; } = new Dictionary<int, Rectangle>();
 
 
         public MainGameViewModel()
@@ -337,14 +335,40 @@ namespace ChessProject.ViewModels
         }
 
 
-        public void ColoringCellsAsOpportunitiesOfPiece()
+        public void ColoringCellsAsOpportunitiesOfPiece(Dictionary<int, (int, int)> positions)
         {
-            foreach(Rectangle rect in BoardUniformGrid.Children)
+            for(int i =0;i < BoardUniformGrid.Children.Count;i++)
             {
-                //var cell = BoardUniformGrid.Children[0] as Rectangle;
-                //cell.Fill = Brushes.AliceBlue;
-                rect.Fill = Brushes.Purple;
+                if (positions.ContainsKey(i))
+                {
+                    CellsWherePlayerHasOpportunities[i] = BoardUniformGrid.Children[i] as Rectangle;
+                    (BoardUniformGrid.Children[i] as Rectangle).Fill = Brushes.Lime;
+                }
             }
+        }
+
+        public void MakeCellsOfOpportunitiesDisappear()
+        {
+            int counter = 0;
+            for (int row = 0; row < 8; row++)
+            {
+                for (int col = 0; col < 8; col++)
+                {
+                    if (CellsWherePlayerHasOpportunities.ContainsKey(counter))
+                    {
+                        if ((row + col) % 2 == 0)
+                        {
+                            (BoardUniformGrid.Children[counter] as Rectangle).Fill = Brushes.SaddleBrown;
+                        }
+                        else
+                        {
+                            (BoardUniformGrid.Children[counter] as Rectangle).Fill = Brushes.PaleGoldenrod;
+                        }
+                    }
+                    counter++;
+                }
+            }
+            CellsWherePlayerHasOpportunities.Clear();
         }
 
         public void DragOver(IDropInfo dropInfo)
@@ -355,7 +379,7 @@ namespace ChessProject.ViewModels
             bool pieceCanGo = ProcessOfMakingSurePlayerCanChooseSpecificPiece(piece.Creator, piece);
             if (!pieceCanGo) return;
 
-            ColoringCellsAsOpportunitiesOfPiece();
+            ColoringCellsAsOpportunitiesOfPiece(piece.Creator.PositionsOfOpportunities);
 
             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
             dropInfo.Effects = DragDropEffects.Copy;
@@ -371,6 +395,7 @@ namespace ChessProject.ViewModels
             BasePiece piece = dropInfo.Data as BasePiece;
             Player player = piece.Creator;
             ulong move = Utils.RowAndColumnCalculator.UlongCalculator(col, row);
+            MakeCellsOfOpportunitiesDisappear();
             bool changeHappened = ProcessOfMakingSurePlayerCanDropSpecificPiece(player, piece,piece.Position,player.RecentOpportunities, move);
             if(changeHappened)CollectionViewSource.GetDefaultView(PieceCollection).Refresh();
         }

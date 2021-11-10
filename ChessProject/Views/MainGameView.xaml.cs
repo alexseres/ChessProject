@@ -36,11 +36,11 @@ namespace ChessProject.Views
                     Grid.SetRow(square[row, col], row);
                     if ((row + col) % 2 == 0)
                     {
-                        square[row, col].Fill = new SolidColorBrush(Color.FromRgb(210, 180, 140));
+                        square[row, col].Fill = Brushes.SaddleBrown;
                     }
                     else
                     {
-                        square[row, col].Fill = new SolidColorBrush(Color.FromRgb(150, 75, 0));
+                        square[row, col].Fill = Brushes.PaleGoldenrod;
                     }
                     BoardGrid.Children.Add(square[row, col]);
                 }
