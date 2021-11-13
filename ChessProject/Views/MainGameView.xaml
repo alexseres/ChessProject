@@ -8,71 +8,72 @@
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:local="clr-namesace:ChessProject.Views"
         mc:Ignorable="d"
-        Title="MainGameView" Height="600" Width="850">
+        Title="MainGameView" Height="650" Width="850">
     <Window.Resources>
 
 
     </Window.Resources>
+    <WrapPanel Margin="50,50,50,50">
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="600"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" Background="AliceBlue"  dd:DragDrop.IsDragSource="True"
+                                  dd:DragDrop.IsDropTarget="True"
+                                  dd:DragDrop.DropHandler="{Binding}">
+                <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid" />
+                <ItemsControl ItemsSource="{Binding PieceCollection}" dd:DragDrop.IsDragSource="True" x:Name="GridControl"
+                                  dd:DragDrop.IsDropTarget="True"
+                                  dd:DragDrop.DropHandler="{Binding}" >
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="600"/>
-            <ColumnDefinition Width="250"/>
-        </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0" Background="AliceBlue"  dd:DragDrop.IsDragSource="True"
-                              dd:DragDrop.IsDropTarget="True"
-                              dd:DragDrop.DropHandler="{Binding}">
-            <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid" />
-            <ItemsControl ItemsSource="{Binding PieceCollection}" dd:DragDrop.IsDragSource="True" x:Name="GridControl"
-                              dd:DragDrop.IsDropTarget="True"
-                              dd:DragDrop.DropHandler="{Binding}" >
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Grid IsItemsHost="True" >
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                        </Grid>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Width="75"
-                              Height="75"
-                              
-                              >
-                            <Image Width="65" 
-                                   Height="65"
-                                   Source="{Binding ImagePath}"/>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemContainerStyle>
-                    <Style TargetType="ContentPresenter">
-                        <Setter Property="Grid.Column" Value="{Binding Column}"/>
-                        <Setter Property="Grid.Row" Value="{Binding Row}"/>
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-            </ItemsControl>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid IsItemsHost="True" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                            </Grid>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="75"
+                                  Height="75">
+                                <Image Width="65"
+                                       Height="65"
+                                       Source="{Binding ImagePath}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Grid.Column" Value="{Binding Column}"/>
+                            <Setter Property="Grid.Row" Value="{Binding Row}"/>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+            </Grid>
+            <Grid x:Name="ChatWindow" Grid.Column="1">
+            </Grid>
         </Grid>
-        <Grid x:Name="ChatWindow" Grid.Column="1">
-        </Grid>
-    </Grid>
+    </WrapPanel>
 </Window>

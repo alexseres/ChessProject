@@ -24,11 +24,12 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-//using static ChessProject.Behaviors.DragBehavior;
+using System.Diagnostics;
+using System.Timers;
 
 namespace ChessProject.ViewModels
 {
-    public class MainGameViewModel : BaseViewModel, IDropTarget
+    public class MainGameViewModel : BaseViewModel, IDropTarget, IDragSource
     {
         public delegate void DragDelegate(bool isValid);
 
@@ -53,6 +54,7 @@ namespace ChessProject.ViewModels
 
         private Dictionary<int, Rectangle> CellsWherePlayerHasOpportunities { get; set; } = new Dictionary<int, Rectangle>();
 
+        private int OpportunityColorRemover { get; set; }
 
         public MainGameViewModel()
         {
@@ -66,6 +68,7 @@ namespace ChessProject.ViewModels
             Attack = new Attack(Scan, PopCount, UpdateBitBoards);
             InitAllPieces(color, Scan, Movements, Attack);
             SelectPlayerWhoStarts(Player1, Player2);
+            OpportunityColorRemover = 1;
 
         }
 
@@ -371,23 +374,39 @@ namespace ChessProject.ViewModels
             CellsWherePlayerHasOpportunities.Clear();
         }
 
+        private int counter = 0;
         public void DragOver(IDropInfo dropInfo)
         {
+            //var point = Mouse.GetPosition(Application.Current.MainWindow);
+
+            //Debug.WriteLine(dropInfo.DropPosition);
+            //Debug.WriteLine($"drop pos = { dropInfo.DropPosition}");
+            //Debug.WriteLine($"point pos = { point}");
+            //if(dropInfo.DropPosition.X <= 0 || dropInfo.DropPosition.X >= BoardUniformGrid.ActualWidth)
+            //{
+            //    Console.WriteLine("ok");
+            //}
+            
+            counter++;
+            if(counter > 20)
+            {
+                Console.WriteLine("s");
+            }
             BasePiece piece = dropInfo.Data as BasePiece;
-            if(piece is null) return;
+            if(dropInfo.KeyStates != DragDropKeyStates.LeftMouseButton)
+            {
+                Console.WriteLine("s");
+            }
+            if (piece is null) return;
             if (NextPlayer.Color != piece.Creator.Color) return;
             bool pieceCanGo = ProcessOfMakingSurePlayerCanChooseSpecificPiece(piece.Creator, piece);
-            if (!pieceCanGo) return;
-
+            if(!pieceCanGo) return;
             ColoringCellsAsOpportunitiesOfPiece(piece.Creator.PositionsOfOpportunities);
-
             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
             dropInfo.Effects = DragDropEffects.Copy;
         }
 
-
-
-
+        
         public void Drop(IDropInfo dropInfo)
         {
             Point point = new Point { X = dropInfo.DropPosition.X, Y = dropInfo.DropPosition.Y };
