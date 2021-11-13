@@ -4,8 +4,6 @@ using ChessProject.ActionLogics.BitBoardsUpdater;
 using ChessProject.ActionLogics.BitScanLogic;
 using ChessProject.ActionLogics.PopulationCountLogic;
 using ChessProject.Actions.Movements;
-using ChessProject.Behaviors;
-using ChessProject.Commands;
 using ChessProject.Models;
 using ChessProject.Models.Enums;
 using ChessProject.Models.ObserverRelated;
@@ -26,10 +24,11 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Timers;
+using System.Threading.Tasks;
 
 namespace ChessProject.ViewModels
 {
-    public class MainGameViewModel : BaseViewModel, IDropTarget, IDragSource
+    public class MainGameViewModel : BaseViewModel, IDropTarget
     {
         public delegate void DragDelegate(bool isValid);
 
@@ -53,8 +52,7 @@ namespace ChessProject.ViewModels
         private Player NextPlayer { get; set; }
 
         private Dictionary<int, Rectangle> CellsWherePlayerHasOpportunities { get; set; } = new Dictionary<int, Rectangle>();
-
-        private int OpportunityColorRemover { get; set; }
+        private bool DragOn { get; set; } = false;
 
         public MainGameViewModel()
         {
@@ -68,7 +66,6 @@ namespace ChessProject.ViewModels
             Attack = new Attack(Scan, PopCount, UpdateBitBoards);
             InitAllPieces(color, Scan, Movements, Attack);
             SelectPlayerWhoStarts(Player1, Player2);
-            OpportunityColorRemover = 1;
 
         }
 
@@ -374,34 +371,28 @@ namespace ChessProject.ViewModels
             CellsWherePlayerHasOpportunities.Clear();
         }
 
-        private int counter = 0;
-        public void DragOver(IDropInfo dropInfo)
+        private async Task SwitchTimerOn()
         {
-            //var point = Mouse.GetPosition(Application.Current.MainWindow);
+            DragOn = true;
+            await Task.Delay(2000);
+            MakeCellsOfOpportunitiesDisappear();
+            DragOn = false;
+        }
 
-            //Debug.WriteLine(dropInfo.DropPosition);
-            //Debug.WriteLine($"drop pos = { dropInfo.DropPosition}");
-            //Debug.WriteLine($"point pos = { point}");
-            //if(dropInfo.DropPosition.X <= 0 || dropInfo.DropPosition.X >= BoardUniformGrid.ActualWidth)
-            //{
-            //    Console.WriteLine("ok");
-            //}
+
+        public async void DragOver(IDropInfo dropInfo)
+        {
+            if (!DragOn)
+            {
+                BasePiece piece = dropInfo.Data as BasePiece;
+                if (piece is null) return;
+                if (NextPlayer.Color != piece.Creator.Color) return;
+                bool pieceCanGo = ProcessOfMakingSurePlayerCanChooseSpecificPiece(piece.Creator, piece);
+                if (!pieceCanGo) return;
+                ColoringCellsAsOpportunitiesOfPiece(piece.Creator.PositionsOfOpportunities);
+                await SwitchTimerOn();
+            }
             
-            counter++;
-            if(counter > 20)
-            {
-                Console.WriteLine("s");
-            }
-            BasePiece piece = dropInfo.Data as BasePiece;
-            if(dropInfo.KeyStates != DragDropKeyStates.LeftMouseButton)
-            {
-                Console.WriteLine("s");
-            }
-            if (piece is null) return;
-            if (NextPlayer.Color != piece.Creator.Color) return;
-            bool pieceCanGo = ProcessOfMakingSurePlayerCanChooseSpecificPiece(piece.Creator, piece);
-            if(!pieceCanGo) return;
-            ColoringCellsAsOpportunitiesOfPiece(piece.Creator.PositionsOfOpportunities);
             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
             dropInfo.Effects = DragDropEffects.Copy;
         }
@@ -409,6 +400,7 @@ namespace ChessProject.ViewModels
         
         public void Drop(IDropInfo dropInfo)
         {
+
             Point point = new Point { X = dropInfo.DropPosition.X, Y = dropInfo.DropPosition.Y };
             (int col, int row) = Utils.RowAndColumnCalculator.GetRowColumn(BoardUniformGrid, point);
             BasePiece piece = dropInfo.Data as BasePiece;
