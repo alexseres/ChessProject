@@ -30,9 +30,6 @@ namespace ChessProject.ViewModels
 {
     public class MainGameViewModel : BaseViewModel, IDropTarget
     {
-        public delegate void DragDelegate(bool isValid);
-
-
         public Rook TestRook { get; set; }
 
         public ObservableCollection<BasePiece> _pieceCollection;
@@ -66,7 +63,6 @@ namespace ChessProject.ViewModels
             Attack = new Attack(Scan, PopCount, UpdateBitBoards);
             InitAllPieces(color, Scan, Movements, Attack);
             SelectPlayerWhoStarts(Player1, Player2);
-
         }
 
         public void SelectPlayerWhoStarts(Player player1, Player player2)
@@ -123,6 +119,9 @@ namespace ChessProject.ViewModels
                     Player1.PiecesPosition ^= mask;
                     PieceCollection.Add(rookUp);
 
+
+                    //trial
+                    Player1.KnockedPieces.Add(rookUp);
                 }
                 else if (i == 1 || i == 6 )
                 {
@@ -131,6 +130,9 @@ namespace ChessProject.ViewModels
                     Player1.PiecesList.Add(knightUp);
                     Player1.PiecesPosition ^= mask;
                     PieceCollection.Add(knightUp);
+
+                    //trial
+                    Player1.KnockedPieces.Add(knightUp);
                 }
                 else if (i == 2 || i == 5)
                 {

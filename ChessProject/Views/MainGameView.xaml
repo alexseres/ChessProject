@@ -8,23 +8,48 @@
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:local="clr-namesace:ChessProject.Views"
         mc:Ignorable="d"
-        Title="MainGameView" Height="700" Width="1000">
+        Title="MainGameView" Height="680" Width="850">
     <Window.Resources>
 
 
     </Window.Resources>
-    <Grid Width="650" Height="650" Background="SandyBrown">
+    <StackPanel Height="680" Width="850">
+
+
+        <Grid Height="30" Width="520" Background="Gray" HorizontalAlignment="Center"/>
+        <Grid Height="50" Width="520" Background="Orange" >
+            <ItemsControl ItemsSource="{Binding Player1.KnockedPieces}" AlternationCount="{Binding Player1.KnockedPieces.Count}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            
+                        </StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Width="30" Height="30">
+                            <Image Width="20"
+                                           Height="20"
+                                           Source="{Binding ImagePath}"/>
+
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+        <Grid Width="520" Height="520" Background="SandyBrown">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="25"/>
-            <ColumnDefinition Width="600"/>
-            <ColumnDefinition Width="25"/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="480"/>
+            <ColumnDefinition Width="20"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="600"/>
+            <RowDefinition Height="480"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid Grid.Column="0" Grid.Row="1" Height="600" Width="25" VerticalAlignment="Top">
+        <Grid Grid.Column="0" Grid.Row="1" Height="480" Width="20" VerticalAlignment="Top">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -60,7 +85,7 @@
                 <TextBlock Text="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20"/>
             </Grid>
         </Grid>
-        <Grid Grid.Column="2" Grid.Row="1" Height="600" Width="25">
+        <Grid Grid.Column="2" Grid.Row="1" Height="480" Width="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -96,7 +121,7 @@
                 <TextBlock Text="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20"/>
             </Grid>
         </Grid>
-        <Grid Grid.Column="1" Grid.Row="0" Height="25" Width="600">
+        <Grid Grid.Column="1" Grid.Row="0" Height="20" Width="480">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -135,7 +160,7 @@
         <Grid Grid.Column="1" Grid.Row="1" Background="Black"  dd:DragDrop.IsDragSource="True"
                                       dd:DragDrop.IsDropTarget="True"
                                       dd:DragDrop.DropHandler="{Binding}">
-            <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid" Width="600" Height="600" Grid.ColumnSpan="2"/>
+            <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid" Width="480" Height="480" Grid.ColumnSpan="2"/>
             <ItemsControl ItemsSource="{Binding PieceCollection}" dd:DragDrop.IsDragSource="True" x:Name="GridControl"
                                       dd:DragDrop.IsDropTarget="True"
                                       dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2">
@@ -167,10 +192,10 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid Width="75"
-                                      Height="75">
-                            <Image Width="60"
-                                           Height="60"
+                        <Grid Width="60"
+                                      Height="60">
+                            <Image Width="48"
+                                           Height="48"
                                            Source="{Binding ImagePath}"/>
                         </Grid>
                     </DataTemplate>
@@ -183,7 +208,7 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </Grid>
-        <Grid Grid.Column="1" Grid.Row="2" Height="23" Width="600" >
+        <Grid Grid.Column="1" Grid.Row="2" Height="20" Width="480" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -219,6 +244,8 @@
                 <TextBlock Text="H" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20"/>
             </Grid>
         </Grid>
-
     </Grid>
+        <Grid Height="50" Width="520" Background="Orange"/>
+    </StackPanel>
+    
 </Window>

@@ -31,8 +31,8 @@ namespace ChessProject.Views
                 for (int col = 0; col < 8; col++)
                 {
                     square[row, col] = new Rectangle();
-                    square[row, col].Height = 75;
-                    square[row, col].Width = 75;
+                    square[row, col].Height = 60;
+                    square[row, col].Width = 60;
                     Grid.SetColumn(square[row, col], col);
                     Grid.SetRow(square[row, col], row);
                     if ((row + col) % 2 == 0)

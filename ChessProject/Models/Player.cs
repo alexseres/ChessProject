@@ -3,6 +3,7 @@ using ChessProject.Models.ObserverRelated;
 using ChessProject.Models.Pieces;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -13,7 +14,7 @@ namespace ChessProject.Models
     {
         public ColorSide Color { get; set; }
         public ulong PiecesPosition { get; set; }
-        public List<IObserver> KnockedPieces { get; set; }
+        public ObservableCollection<IObserver> KnockedPieces { get; set; }
         public King King { get; set; }
         public List<IObserver> PiecesList { get; set; }
         public List<Pawn> OpponentPawnsList { get; set; }
@@ -29,7 +30,7 @@ namespace ChessProject.Models
         public Player(ColorSide color)
         {
             Color = color;
-            KnockedPieces = new List<IObserver>();
+            KnockedPieces = new ObservableCollection<IObserver>();
             PiecesList = new List<IObserver>();
             OpponentPawnsList = new List<Pawn>();
             RecentOpportunities = 0;
