@@ -86,7 +86,9 @@ namespace ChessProject.ViewModels
         {
             BasePiece piece = obj as BasePiece;
             if (piece is null) return;
+            PieceCollection.Remove(Player1.PawnToBeSwapped);
             Player1.SwapPawnToAnotherPiece(piece);
+            PieceCollection.Add(piece);
             IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = false;
         }
 
@@ -99,6 +101,7 @@ namespace ChessProject.ViewModels
         {
             BasePiece piece = obj as BasePiece;
             if (piece is null) return;
+            PieceCollection.Remove(Player2.PawnToBeSwapped);
             Player2.SwapPawnToAnotherPiece(piece);
             PieceCollection.Add(piece);
             IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = false;

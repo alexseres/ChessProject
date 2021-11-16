@@ -18,7 +18,11 @@ namespace ChessProject.Commands
             _canExecute = canExecute;
         }
 
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
 
         public bool CanExecute(object parameter)
         {
@@ -27,14 +31,6 @@ namespace ChessProject.Commands
 
         public void Execute(object parameter) => _execute((T)parameter);
 
-        public void RaiseWhenCanExecuteChanged()
-        {
-            var handler = CanExecuteChanged;
-            if(handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
-        }
 
 
     }
