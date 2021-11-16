@@ -4,6 +4,7 @@ using ChessProject.Models.Pieces;
 using ChessProject.Utils.CloneCollections;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace ChessProject.ActionLogics.BitBoardsUpdater

@@ -24,8 +24,9 @@ namespace ChessProject.Models
         public int FiftyMoveWithoutCaptureAndPawnMove { get; set; } = 0;
         public ulong RecentOpportunities { get; set; }
         public Dictionary<int,(int, int)> PositionsOfOpportunities { get; set; }
-
         public bool PlayerInCheck { get; set; }
+
+        public Pawn PawnToBeSwapped { get; set; }
 
         public Player(ColorSide color)
         {
@@ -81,7 +82,7 @@ namespace ChessProject.Models
             currentPiece.UpdatePositionWhenMove(currentPosition, opportunities, decidedMovePos);
             PiecesPosition = (PiecesPosition & ~currentPosition);
             PiecesPosition = PiecesPosition ^ decidedMovePos;
-            CheckIfCurrentAtLastLineAndIsPawn(decidedMovePos, currentPiece);
+            //CheckIfCurrentAtLastLineAndIsPawn(decidedMovePos, currentPiece);
             Check50MoveRule(currentPiece, weAttacked);
 
         }
@@ -169,21 +170,39 @@ namespace ChessProject.Models
             return 0;
         }
 
-        public void CheckIfCurrentAtLastLineAndIsPawn(ulong currentPosition, BasePiece currentPiece)
+
+        public void SwapPawnToAnotherPiece(BasePiece piece)
+        {
+            piece.Position = PawnToBeSwapped.Position;
+            piece.CalculateRowAndColumnPosition(PawnToBeSwapped.Position);
+
+            PawnToBeSwapped.UpdatePositionWhenBeingAttacked();
+            Detach(PawnToBeSwapped);
+            KnockedPieces.Add(PawnToBeSwapped);
+            PawnToBeSwapped = null;
+
+            Attach(piece);
+            KnockedPieces.Remove(piece);
+
+        }
+        public bool CheckIfCurrentAtLastLineAndIsPawn(ulong currentPosition, BasePiece currentPiece)
         {
             if (currentPiece is Pawn)
             {
                 Pawn pawn = currentPiece as Pawn;
                 if ((currentPosition & pawn.LastLine) > 0)
                 {
-                    if (PromptAskingWhichPieceYouWantToSwap(currentPosition))
-                    {
-                        pawn.UpdatePositionWhenBeingAttacked();
-                        Detach(pawn);
-                        KnockedPieces.Add(pawn);
-                    }
+                    PawnToBeSwapped = pawn;
+                    return true;
+                    //if (PromptAskingWhichPieceYouWantToSwap(currentPosition))
+                    //{
+                    //    pawn.UpdatePositionWhenBeingAttacked();
+                    //    Detach(pawn);
+                    //    KnockedPieces.Add(pawn);
+                    //}
                 }
             }
+            return false;
         }
 
 
@@ -194,19 +213,19 @@ namespace ChessProject.Models
             int counter = 0;
             if (answer == "yes")
             {
-                Console.WriteLine("Please select from the list");
-                foreach (BasePiece piece in KnockedPieces)
-                {
-                    Console.WriteLine(piece.PType);
-                    counter++;
+                //Console.WriteLine("Please select from the list");
+                //foreach (BasePiece piece in KnockedPieces)
+                //{
+                //    Console.WriteLine(piece.PType);
+                //    counter++;
 
-                }
+                //}
 
-                if (counter == 0)
-                {
-                    Console.WriteLine("no pieces available to swap");
-                    return false;
-                }
+                //if (counter == 0)
+                //{
+                //    Console.WriteLine("no pieces available to swap");
+                //    return false;
+                //}
                 string pieceName = Console.ReadLine();
                 foreach (BasePiece piece in KnockedPieces.ToList())
                 {

@@ -1,5 +1,9 @@
-﻿using System;
+﻿using ChessProject.Models.ObserverRelated;
+using ChessProject.Models.Pieces;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +13,16 @@ namespace ChessProject.Utils
 {
     public static class RowAndColumnCalculator
     {
+
+        public static BasePiece GetBasePieceToRemoveFromObservableCollectionByMoves(List<IObserver> lst, ulong pos)
+        {
+            foreach(IObserver observer in lst)
+            {
+                BasePiece piece = observer as BasePiece;
+                if (piece.Position == pos) return piece;
+            }
+            return null;
+        }
 
         public static Dictionary<int, (int,int)> GetPositionsOfRowsAndColumns(ulong moves)
         {

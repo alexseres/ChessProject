@@ -25,6 +25,7 @@ using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Timers;
 using System.Threading.Tasks;
+using ChessProject.Commands;
 
 namespace ChessProject.ViewModels
 {
@@ -51,9 +52,20 @@ namespace ChessProject.ViewModels
         private Dictionary<int, Rectangle> CellsWherePlayerHasOpportunities { get; set; } = new Dictionary<int, Rectangle>();
         private bool DragOn { get; set; } = false;
 
+        private bool IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 { get; set; } = false;
+        private bool IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 { get; set; } = false;
+
+        private RelayCommand<BasePiece> _pawnSwapperForPlayer1Command;
+        public RelayCommand<BasePiece> PawnSwapperForPlayer1Command { get { return _pawnSwapperForPlayer1Command; } set { SetProperty(ref _pawnSwapperForPlayer1Command, value); } }
+
+        private RelayCommand<BasePiece> _pawnSwapperForPlayer2Command;
+        public RelayCommand<BasePiece> PawnSwapperForPlayer2Command { get { return _pawnSwapperForPlayer2Command; } set { SetProperty(ref _pawnSwapperForPlayer2Command, value); } }
+
         public MainGameViewModel()
         {
             PieceCollection = new ObservableCollection<BasePiece>();
+            PawnSwapperForPlayer1Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer1, PawnSwapperForPlayer1CanExecute);
+            PawnSwapperForPlayer2Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer2, PawnSwapperForPlayer2CanExecute);
             //ColorSide color = SelectColorSide();
             ColorSide color = ColorSide.Black;
             UpdateBitBoards = new UpdateBitBoards();
@@ -63,6 +75,33 @@ namespace ChessProject.ViewModels
             Attack = new Attack(Scan, PopCount, UpdateBitBoards);
             InitAllPieces(color, Scan, Movements, Attack);
             SelectPlayerWhoStarts(Player1, Player2);
+        }
+
+        public bool PawnSwapperForPlayer1CanExecute(object obj)
+        {
+            return IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 == true ? true:false;
+        }
+
+        public void PawnSwapperForPlayer1(object obj)
+        {
+            BasePiece piece = obj as BasePiece;
+            if (piece is null) return;
+            Player1.SwapPawnToAnotherPiece(piece);
+            IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = false;
+        }
+
+        public bool PawnSwapperForPlayer2CanExecute(object obj)
+        {
+            return IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 == true ? true : false;
+        }
+
+        public void PawnSwapperForPlayer2(object obj)
+        {
+            BasePiece piece = obj as BasePiece;
+            if (piece is null) return;
+            Player2.SwapPawnToAnotherPiece(piece);
+            PieceCollection.Add(piece);
+            IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = false;
         }
 
         public void SelectPlayerWhoStarts(Player player1, Player player2)
@@ -118,10 +157,6 @@ namespace ChessProject.ViewModels
                     Player1.PiecesList.Add(rookUp);
                     Player1.PiecesPosition ^= mask;
                     PieceCollection.Add(rookUp);
-
-
-                    //trial
-                    Player1.KnockedPieces.Add(rookUp);
                 }
                 else if (i == 1 || i == 6 )
                 {
@@ -131,8 +166,6 @@ namespace ChessProject.ViewModels
                     Player1.PiecesPosition ^= mask;
                     PieceCollection.Add(knightUp);
 
-                    //trial
-                    Player1.KnockedPieces.Add(knightUp);
                 }
                 else if (i == 2 || i == 5)
                 {
@@ -317,11 +350,37 @@ namespace ChessProject.ViewModels
                 player.PositionsOfOpportunities.Clear();
                 return false;
             }
+            if(player.CheckIfCurrentAtLastLineAndIsPawn(choosenPositionToMove, piece) && player.KnockedPieces.Count != 0)
+            {
+                if(player == Player1)
+                {
+                    IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = true;
+                }
+                else
+                {
+                    IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = true;
+                }
+                //return true;
+            }
 
+            RemoveFromPieceCollectionBecauseAttacked(attacked, opponent, choosenPositionToMove);
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
             player.PositionsOfOpportunities.Clear();
             NextPlayer = opponent;
             return true;
+        }
+
+        public void RemoveFromPieceCollectionBecauseAttacked(bool isAttacked, Player opponent, ulong choosenPositionToMove)
+        {
+            if (isAttacked)
+            {
+                BasePiece pieceToBeRemoved = Utils.RowAndColumnCalculator.GetBasePieceToRemoveFromObservableCollectionByMoves(opponent.PiecesList, choosenPositionToMove);
+                if (!(pieceToBeRemoved is null))
+                {
+                    PieceCollection.Remove(pieceToBeRemoved);
+                }
+            }
+
         }
 
         public Player OpponentCreater(Player player)
@@ -384,6 +443,7 @@ namespace ChessProject.ViewModels
 
         public async void DragOver(IDropInfo dropInfo)
         {
+            if (IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 == true  || IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 == true) return;
             if (!DragOn)
             {
                 BasePiece piece = dropInfo.Data as BasePiece;

@@ -18,7 +18,7 @@
 
         <Grid Height="30" Width="520" Background="Gray" HorizontalAlignment="Center"/>
         <Grid Height="50" Width="520" Background="Orange" >
-            <ItemsControl ItemsSource="{Binding Player1.KnockedPieces}" AlternationCount="{Binding Player1.KnockedPieces.Count}">
+            <ItemsControl ItemsSource="{Binding Player1.KnockedPieces}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -28,12 +28,11 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid Width="30" Height="30">
-                            <Image Width="20"
-                                           Height="20"
-                                           Source="{Binding ImagePath}"/>
-
-                        </Grid>
+                        <Button Width="30" Height="30" Command="{Binding }">
+                            <Image Width="20" 
+                                   Height="20"
+                                   Source="{Binding ImagePath}"/>
+                        </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -245,7 +244,26 @@
             </Grid>
         </Grid>
     </Grid>
-        <Grid Height="50" Width="520" Background="Orange"/>
+        <Grid Height="50" Width="520" Background="Orange" >
+            <ItemsControl ItemsSource="{Binding Player2.KnockedPieces}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal">
+
+                        </StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Width="30" Height="30" Command="{Binding }">
+                            <Image Width="20" 
+                                   Height="20"
+                                   Source="{Binding ImagePath}"/>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
     </StackPanel>
     
 </Window>
