@@ -9,6 +9,7 @@ using System.Text;
 
 namespace ChessProject.ActionLogics.BitBoardsUpdater
 {
+    [Serializable]
     public class UpdateBitBoards : IUpdateBitBoards
     {
         public void PrintBoard(string board)

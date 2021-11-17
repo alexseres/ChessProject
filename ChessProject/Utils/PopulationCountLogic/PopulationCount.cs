@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ChessProject.ActionLogics.PopulationCountLogic
 {
+    [Serializable]
     public class  PopulationCount : IPopulationCount
     {
         public byte[] InitPopulationCount()

@@ -133,7 +133,11 @@ namespace ChessProject.ViewModels
             }
         }
        
- 
+        public async void ExceptionMessageRemover()
+        {
+            await Task.Delay(2000);
+            ExceptionMessage = "";
+        }
         public ColorSide SelectColorSide()
         {
             Console.WriteLine("Which color you want it to be up? 'white' or 'black'");
@@ -152,7 +156,6 @@ namespace ChessProject.ViewModels
             ColorSide otherColor = choosenColorToBeUp == ColorSide.White ? ColorSide.Black : ColorSide.White;
             Player1 = new Player(choosenColorToBeUp);
             Player2 = new Player(otherColor);
-
 
             //pawn properties
             ulong doubleMoveSignForUp = 0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
@@ -291,6 +294,7 @@ namespace ChessProject.ViewModels
             Player opponent = OpponentCreater(player);
             if (!(ColorCheck(player, opponent)))
             {
+                ExceptionMessage = $"Choosen piece is not {player.Color} piece"; ExceptionMessageRemover();
                 NextPlayer = player;
                 return false;
             }
@@ -298,7 +302,7 @@ namespace ChessProject.ViewModels
             player.RecentOpportunities = piece.Search(piece.Position, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
             if (player.RecentOpportunities <= 0)
             {
-                Console.WriteLine("you cannot move with this piece, choose another one");
+                ExceptionMessage = "you cannot move with this piece, choose another one"; ExceptionMessageRemover();
                 player.RecentOpportunities = 0;
                 NextPlayer = player;
                 return false;
@@ -325,12 +329,12 @@ namespace ChessProject.ViewModels
                 ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
                 if (opponentAttacks > 0)   // king in check
                 {
-                    Console.WriteLine($"Check for {actualPlayer.Color} Player");
+                    ExceptionMessage = $"Check for {actualPlayer.Color} Player"; ExceptionMessageRemover();
                     actualPlayer.PlayerInCheck = true;
                     if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
                     {
-                        Console.WriteLine("CheckMATE");
-                        //break;
+                        ExceptionMessage = $"CheckMate for {actualPlayer.Color} Player"; ExceptionMessageRemover();
+
                     }
                 }
             }
@@ -340,7 +344,8 @@ namespace ChessProject.ViewModels
         {
             if(actualPlayer.Color == opponent.Color)
             {
-                Console.WriteLine($"Choose piece is not {actualPlayer.Color} piece");
+                
+                //Console.WriteLine($"Choose piece is not {actualPlayer.Color} piece");
                 return false;
             }
             return true;   
@@ -351,7 +356,7 @@ namespace ChessProject.ViewModels
             Player opponent = OpponentCreater(player);
             if ((choosenPositionToMove & opportunities) <= 0)
             {
-                Console.WriteLine("You cannot move there because there is no opportunity there");
+                ExceptionMessage = "You cannot move there because there is no opportunity there"; ExceptionMessageRemover();
                 player.RecentOpportunities = 0;
                 player.PositionsOfOpportunities.Clear();
                 NextPlayer = player;
@@ -362,6 +367,7 @@ namespace ChessProject.ViewModels
 
             if (!CheckProcess(player, currentPiecePosition, opponent, piece, attacked, choosenPositionToMove))
             {
+                ExceptionMessage = "Choose another piece, the king is still in check, step not succeeded"; ExceptionMessageRemover();
                 NextPlayer = player;
                 player.RecentOpportunities = 0;
                 player.PositionsOfOpportunities.Clear();
@@ -373,13 +379,13 @@ namespace ChessProject.ViewModels
                 {
                     IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = true;
                     KnockedPiecesBrushOfPlayer1 = Brushes.Green;
-                    ExceptionMessage = $"Choose piece {player.Color} player";
+                    ExceptionMessage = $"Choose piece {player.Color} player"; ExceptionMessageRemover();
                 }
                 else
                 {
                     IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = true;
                     KnockedPiecesBrushOfPlayer2 = Brushes.Green;
-                    ExceptionMessage = $"Choose piece {player.Color} player";
+                    ExceptionMessage = $"Choose piece {player.Color} player";ExceptionMessageRemover();
                 }
             }
 
@@ -413,7 +419,6 @@ namespace ChessProject.ViewModels
                 return Player1;
             }
         }
-
 
         public void ColoringCellsAsOpportunitiesOfPiece(Dictionary<int, (int, int)> positions)
         {
@@ -473,7 +478,6 @@ namespace ChessProject.ViewModels
                 ColoringCellsAsOpportunitiesOfPiece(piece.Creator.PositionsOfOpportunities);
                 await SwitchTimerOn();
             }
-            
             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
             dropInfo.Effects = DragDropEffects.Copy;
         }
@@ -529,7 +533,6 @@ namespace ChessProject.ViewModels
                         BasePiece opponentPiece = observer as BasePiece;
                         if (opponentPiece.Position == choosenPositionToMove)
                         {
-
                             MockOfEnemyPiecesList.Remove(observer);
                             break;
                         }
@@ -540,7 +543,7 @@ namespace ChessProject.ViewModels
                 ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingStillInCheck(BoardWithAllMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
                 if ((opponentAttacks & mockOfKingPosition) > 0)
                 {
-                    Console.WriteLine("Choose another piece, the king is still in check, step not succeeded");
+                    
                     return false;
                 }
                 player.PlayerInCheck = false;
