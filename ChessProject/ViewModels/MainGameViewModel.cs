@@ -61,11 +61,20 @@ namespace ChessProject.ViewModels
         private RelayCommand<BasePiece> _pawnSwapperForPlayer2Command;
         public RelayCommand<BasePiece> PawnSwapperForPlayer2Command { get { return _pawnSwapperForPlayer2Command; } set { SetProperty(ref _pawnSwapperForPlayer2Command, value); } }
 
+        public SolidColorBrush _knockedPiecesBrushOfPlayer1;
+        public SolidColorBrush KnockedPiecesBrushOfPlayer1 { get { return _knockedPiecesBrushOfPlayer1; } set { SetProperty(ref _knockedPiecesBrushOfPlayer1, value); } }
+        public SolidColorBrush _knockedPiecesBrushOfPlayer2;
+        public SolidColorBrush KnockedPiecesBrushOfPlayer2 { get { return _knockedPiecesBrushOfPlayer2; } set { SetProperty(ref _knockedPiecesBrushOfPlayer2, value); } }
+
+
+
         public MainGameViewModel()
         {
             PieceCollection = new ObservableCollection<BasePiece>();
             PawnSwapperForPlayer1Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer1, PawnSwapperForPlayer1CanExecute);
             PawnSwapperForPlayer2Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer2, PawnSwapperForPlayer2CanExecute);
+            KnockedPiecesBrushOfPlayer1 = Brushes.Brown;
+            KnockedPiecesBrushOfPlayer2 = Brushes.Brown;
             //ColorSide color = SelectColorSide();
             ColorSide color = ColorSide.Black;
             UpdateBitBoards = new UpdateBitBoards();
@@ -90,6 +99,7 @@ namespace ChessProject.ViewModels
             Player1.SwapPawnToAnotherPiece(piece);
             PieceCollection.Add(piece);
             IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = false;
+            KnockedPiecesBrushOfPlayer1 = Brushes.Brown;
         }
 
         public bool PawnSwapperForPlayer2CanExecute(object obj)
@@ -105,6 +115,7 @@ namespace ChessProject.ViewModels
             Player2.SwapPawnToAnotherPiece(piece);
             PieceCollection.Add(piece);
             IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = false;
+            KnockedPiecesBrushOfPlayer2 = Brushes.Brown;
         }
 
         public void SelectPlayerWhoStarts(Player player1, Player player2)
@@ -358,12 +369,13 @@ namespace ChessProject.ViewModels
                 if(player == Player1)
                 {
                     IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = true;
+                    KnockedPiecesBrushOfPlayer1 = Brushes.Green;
                 }
                 else
                 {
                     IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = true;
+                    KnockedPiecesBrushOfPlayer2 = Brushes.Green;
                 }
-                //return true;
             }
 
             RemoveFromPieceCollectionBecauseAttacked(attacked, opponent, choosenPositionToMove);
@@ -383,7 +395,6 @@ namespace ChessProject.ViewModels
                     PieceCollection.Remove(pieceToBeRemoved);
                 }
             }
-
         }
 
         public Player OpponentCreater(Player player)
@@ -465,7 +476,6 @@ namespace ChessProject.ViewModels
         
         public void Drop(IDropInfo dropInfo)
         {
-
             Point point = new Point { X = dropInfo.DropPosition.X, Y = dropInfo.DropPosition.Y };
             (int col, int row) = Utils.RowAndColumnCalculator.GetRowColumn(BoardUniformGrid, point);
             BasePiece piece = dropInfo.Data as BasePiece;
