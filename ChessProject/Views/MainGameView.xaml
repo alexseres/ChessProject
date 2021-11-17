@@ -16,7 +16,9 @@
     <StackPanel Height="680" Width="850">
 
 
-        <Grid Height="30" Width="520" Background="Gray" HorizontalAlignment="Center"/>
+        <Grid Height="30" Width="520" Background="Gray" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding ExceptionMessage}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
         <Grid Height="50" Width="520" Background="{Binding KnockedPiecesBrushOfPlayer1}">
             <ItemsControl ItemsSource="{Binding Player1.KnockedPieces}">
                 <ItemsControl.ItemsPanel>

@@ -66,6 +66,8 @@ namespace ChessProject.ViewModels
         public SolidColorBrush _knockedPiecesBrushOfPlayer2;
         public SolidColorBrush KnockedPiecesBrushOfPlayer2 { get { return _knockedPiecesBrushOfPlayer2; } set { SetProperty(ref _knockedPiecesBrushOfPlayer2, value); } }
 
+        public String _exceptionMessage;
+        public String ExceptionMessage { get { return _exceptionMessage; } set { SetProperty(ref _exceptionMessage, value); } }
 
 
         public MainGameViewModel()
@@ -75,6 +77,7 @@ namespace ChessProject.ViewModels
             PawnSwapperForPlayer2Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer2, PawnSwapperForPlayer2CanExecute);
             KnockedPiecesBrushOfPlayer1 = Brushes.Brown;
             KnockedPiecesBrushOfPlayer2 = Brushes.Brown;
+            ExceptionMessage = "";
             //ColorSide color = SelectColorSide();
             ColorSide color = ColorSide.Black;
             UpdateBitBoards = new UpdateBitBoards();
@@ -370,11 +373,13 @@ namespace ChessProject.ViewModels
                 {
                     IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = true;
                     KnockedPiecesBrushOfPlayer1 = Brushes.Green;
+                    ExceptionMessage = $"Choose piece {player.Color} player";
                 }
                 else
                 {
                     IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = true;
                     KnockedPiecesBrushOfPlayer2 = Brushes.Green;
+                    ExceptionMessage = $"Choose piece {player.Color} player";
                 }
             }
 
