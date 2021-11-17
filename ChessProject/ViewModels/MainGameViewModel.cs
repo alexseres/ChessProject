@@ -298,7 +298,7 @@ namespace ChessProject.ViewModels
                 NextPlayer = player;
                 return false;
             }
-            IsPlayerInCheckAndCheckmateChecker(player,opponent);
+            //IsPlayerInCheckAndCheckmateChecker(player,opponent);
             player.RecentOpportunities = piece.Search(piece.Position, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
             if (player.RecentOpportunities <= 0)
             {
@@ -309,14 +309,6 @@ namespace ChessProject.ViewModels
             }
             player.PositionsOfOpportunities = Utils.RowAndColumnCalculator.GetPositionsOfRowsAndColumns(piece.Creator.RecentOpportunities);
             
-            if (player.IsThreeFold == true || opponent.IsThreeFold == true)
-            {
-                Console.WriteLine("Its a draw because of TreeFold");   
-            }
-            if (player.IsFiftyMoveWIthoutCaptureOrPawnMove == true || opponent.IsFiftyMoveWIthoutCaptureOrPawnMove == true)
-            {
-                Console.WriteLine("Its draw because of 50 move rule");
-            }
 
             return true;
             
@@ -393,6 +385,18 @@ namespace ChessProject.ViewModels
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
             player.PositionsOfOpportunities.Clear();
             NextPlayer = opponent;
+            IsPlayerInCheckAndCheckmateChecker(opponent, player);  // it is reversed in the method(normally the first argument is the acutal player), because we need to know the information to be displayed before the other player moves
+            
+            if (player.IsThreeFold == true || opponent.IsThreeFold == true)
+            {
+                ExceptionMessage = "Its a draw because of TreeFold"; ExceptionMessageRemover();
+            }
+            if (player.IsFiftyMoveWIthoutCaptureOrPawnMove == true || opponent.IsFiftyMoveWIthoutCaptureOrPawnMove == true)
+            {
+                ExceptionMessage = "Its draw because of 50 move rule"; ExceptionMessageRemover();
+            }
+
+
             return true;
         }
 
