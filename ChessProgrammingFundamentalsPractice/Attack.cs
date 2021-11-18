@@ -89,7 +89,6 @@ namespace ChessProgrammingFundamentalsPractice
                                 allAttack |= piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
                             }
                             break;
-
                         }
                     }
                 }

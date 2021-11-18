@@ -9,133 +9,47 @@ using ChessProject.Models.Enums;
 using ChessProject.Models.ObserverRelated;
 using ChessProject.Models.Pieces;
 using ChessProject.Utils.CloneCollections;
-using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using System.Diagnostics;
-using System.Timers;
 using System.Threading.Tasks;
-using ChessProject.Commands;
 
-namespace ChessProject.ViewModels
+namespace ChessProject.ServiceLayers
 {
-    public class MainGameViewModel : BaseViewModel, IDropTarget
+    public class MainGameService
     {
-
-        public ObservableCollection<BasePiece> _pieceCollection;
-        public ObservableCollection<BasePiece> PieceCollection { get { return _pieceCollection; } set { SetProperty(ref _pieceCollection, value); } }
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
-        public const string From = "Choose a piece";
-        public const string To = "Move with the piece to";
+        public Player NextPlayer { get; set; }
         public IAttack Attack { get; set; }
         public IUpdateBitBoards UpdateBitBoards { get; set; }
         public IBitScan Scan { get; set; }
         public ILongMovements Movements { get; set; }
         public IPopulationCount PopCount { get; set; }
         public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
-        
-        public UniformGrid BoardUniformGrid { get; set; }
-        public Player NextPlayer { get; set; }
+        public ObservableCollection<BasePiece> PieceCollection { get; set; }
+        public String ExceptionMessage { get; set; }
 
-        private Dictionary<int, Rectangle> CellsWherePlayerHasOpportunities { get; set; } = new Dictionary<int, Rectangle>();
-        private bool DragOn { get; set; } = false;
-
-        private bool IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 { get; set; } = false;
-        private bool IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 { get; set; } = false;
-
-        private RelayCommand<BasePiece> _pawnSwapperForPlayer1Command;
-        public RelayCommand<BasePiece> PawnSwapperForPlayer1Command { get { return _pawnSwapperForPlayer1Command; } set { SetProperty(ref _pawnSwapperForPlayer1Command, value); } }
-
-        private RelayCommand<BasePiece> _pawnSwapperForPlayer2Command;
-        public RelayCommand<BasePiece> PawnSwapperForPlayer2Command { get { return _pawnSwapperForPlayer2Command; } set { SetProperty(ref _pawnSwapperForPlayer2Command, value); } }
-
-        public SolidColorBrush _knockedPiecesBrushOfPlayer1;
-        public SolidColorBrush KnockedPiecesBrushOfPlayer1 { get { return _knockedPiecesBrushOfPlayer1; } set { SetProperty(ref _knockedPiecesBrushOfPlayer1, value); } }
-        public SolidColorBrush _knockedPiecesBrushOfPlayer2;
-        public SolidColorBrush KnockedPiecesBrushOfPlayer2 { get { return _knockedPiecesBrushOfPlayer2; } set { SetProperty(ref _knockedPiecesBrushOfPlayer2, value); } }
-
-        public String _exceptionMessage;
-        public String ExceptionMessage { get { return _exceptionMessage; } set { SetProperty(ref _exceptionMessage, value); } }
-
-
-        public MainGameViewModel()
+        public MainGameService(ObservableCollection<BasePiece> pieceCollection, ColorSide color, IUpdateBitBoards updateBitBoards, IBitScan scan,
+            ILongMovements movements, IPopulationCount popcount, IAttack attack, String exceptionMessage)
         {
-            PieceCollection = new ObservableCollection<BasePiece>();
-            PawnSwapperForPlayer1Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer1, PawnSwapperForPlayer1CanExecute);
-            PawnSwapperForPlayer2Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer2, PawnSwapperForPlayer2CanExecute);
-            KnockedPiecesBrushOfPlayer1 = Brushes.Brown;
-            KnockedPiecesBrushOfPlayer2 = Brushes.Brown;
-            ExceptionMessage = "";
-            //ColorSide color = SelectColorSide();
-            ColorSide color = ColorSide.Black;
-            UpdateBitBoards = new UpdateBitBoards();
-            Scan = new BitScan();
-            Movements = new LongMovements();
-            PopCount = new PopulationCount();
-            Attack = new Attack(Scan, PopCount, UpdateBitBoards);
+            PieceCollection = pieceCollection;
+            //ColorSide color = ColorSide.Black;
+            //UpdateBitBoards = new UpdateBitBoards();
+            //Scan = new BitScan();
+            //Movements = new LongMovements();
+            //PopCount = new PopulationCount();
+            //Attack = new Attack(Scan, PopCount, UpdateBitBoards);
+            UpdateBitBoards = updateBitBoards;
+            Scan = scan;
+            Movements = movements;
+            PopCount = popcount;
+            Attack = attack;
+            ExceptionMessage = exceptionMessage;
             InitAllPieces(color, Scan, Movements, Attack);
             SelectPlayerWhoStarts(Player1, Player2);
-        }
-
-        public bool PawnSwapperForPlayer1CanExecute(object obj)
-        {
-            return IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 == true ? true:false;
-        }
-
-        public void PawnSwapperForPlayer1(object obj)
-        {
-            BasePiece piece = obj as BasePiece;
-            if (piece is null) return;
-            PieceCollection.Remove(Player1.PawnToBeSwapped);
-            Player1.SwapPawnToAnotherPiece(piece);
-            PieceCollection.Add(piece);
-            IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = false;
-            KnockedPiecesBrushOfPlayer1 = Brushes.Brown;
-        }
-
-        public bool PawnSwapperForPlayer2CanExecute(object obj)
-        {
-            return IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 == true ? true : false;
-        }
-
-        public void PawnSwapperForPlayer2(object obj)
-        {
-            BasePiece piece = obj as BasePiece;
-            if (piece is null) return;
-            PieceCollection.Remove(Player2.PawnToBeSwapped);
-            Player2.SwapPawnToAnotherPiece(piece);
-            PieceCollection.Add(piece);
-            IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = false;
-            KnockedPiecesBrushOfPlayer2 = Brushes.Brown;
-        }
-
-        public void SelectPlayerWhoStarts(Player player1, Player player2)
-        {
-            if(player1.Color == ColorSide.White)
-            {
-                NextPlayer = player1;
-            }
-            else
-            {
-                NextPlayer = player2;
-            }
-        }
-       
-        public async void ExceptionMessageRemover()
-        {
-            await Task.Delay(2000);
-            ExceptionMessage = "";
         }
 
         public void InitAllPieces(ColorSide choosenColorToBeUp, IBitScan bitScan, ILongMovements movements, IAttack attack)
@@ -165,7 +79,7 @@ namespace ChessProject.ViewModels
                     Player1.PiecesPosition ^= mask;
                     PieceCollection.Add(rookUp);
                 }
-                else if (i == 1 || i == 6 )
+                else if (i == 1 || i == 6)
                 {
                     imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Knight.png";
                     Knight knightUp = new Knight(Player1, choosenColorToBeUp, mask, imagePath);
@@ -271,6 +185,38 @@ namespace ChessProject.ViewModels
             Player1.OpponentPiecesList = Player2.PiecesList;
         }
 
+        public void SelectPlayerWhoStarts(Player player1, Player player2)
+        {
+            if (player1.Color == ColorSide.White)
+            {
+                NextPlayer = player1;
+            }
+            else
+            {
+                NextPlayer = player2;
+            }
+        }
+
+        public Player OpponentCreater(Player player)
+        {
+            if (player == Player1)
+            {
+                return Player2;
+            }
+            else
+            {
+                return Player1;
+            }
+        }
+
+        public bool ColorCheck(Player actualPlayer, Player opponent)
+        {
+            if (actualPlayer.Color == opponent.Color)
+            {
+                return false;
+            }
+            return true;
+        }
 
         public bool ProcessOfMakingSurePlayerCanChooseSpecificPiece(Player player, BasePiece piece)
         {
@@ -291,37 +237,7 @@ namespace ChessProject.ViewModels
                 return false;
             }
             player.PositionsOfOpportunities = Utils.RowAndColumnCalculator.GetPositionsOfRowsAndColumns(piece.Creator.RecentOpportunities);
-            
-
             return true;
-            
-        }
-
-        public void IsPlayerInCheckAndCheckmateChecker(Player actualPlayer, Player opponent)
-        {
-            if (!actualPlayer.PlayerInCheck)
-            {
-                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
-                if (opponentAttacks > 0)   // king in check
-                {
-                    ExceptionMessage = $"Check for {actualPlayer.Color} Player"; ExceptionMessageRemover();
-                    actualPlayer.PlayerInCheck = true;
-                    if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
-                    {
-                        ExceptionMessage = $"CheckMate for {actualPlayer.Color} Player"; ExceptionMessageRemover();
-
-                    }
-                }
-            }
-        }
-
-        public bool ColorCheck(Player actualPlayer, Player opponent)
-        {
-            if(actualPlayer.Color == opponent.Color)
-            {
-                return false;
-            }
-            return true;   
         }
 
         public bool ProcessOfMakingSurePlayerCanDropSpecificPiece(Player player, BasePiece piece, ulong currentPiecePosition, ulong opportunities, ulong choosenPositionToMove)
@@ -346,9 +262,9 @@ namespace ChessProject.ViewModels
                 player.PositionsOfOpportunities.Clear();
                 return false;
             }
-            if(player.CheckIfCurrentAtLastLineAndIsPawn(choosenPositionToMove, piece) && player.KnockedPieces.Count != 0)
+            if (player.CheckIfCurrentAtLastLineAndIsPawn(choosenPositionToMove, piece) && player.KnockedPieces.Count != 0)
             {
-                if(player == Player1)
+                if (player == Player1)
                 {
                     IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = true;
                     KnockedPiecesBrushOfPlayer1 = Brushes.Green;
@@ -358,7 +274,7 @@ namespace ChessProject.ViewModels
                 {
                     IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = true;
                     KnockedPiecesBrushOfPlayer2 = Brushes.Green;
-                    ExceptionMessage = $"Choose piece {player.Color} player";ExceptionMessageRemover();
+                    ExceptionMessage = $"Choose piece {player.Color} player"; ExceptionMessageRemover();
                 }
             }
 
@@ -367,7 +283,7 @@ namespace ChessProject.ViewModels
             player.PositionsOfOpportunities.Clear();
             NextPlayer = opponent;
             IsPlayerInCheckAndCheckmateChecker(opponent, player);  // it is reversed in the method(normally the first argument is the acutal player), because we need to know the information to be displayed before the other player moves
-            
+
             if (player.IsThreeFold == true || opponent.IsThreeFold == true)
             {
                 ExceptionMessage = "Its a draw because of TreeFold"; ExceptionMessageRemover();
@@ -392,112 +308,6 @@ namespace ChessProject.ViewModels
                 }
             }
         }
-
-        public Player OpponentCreater(Player player)
-        {
-            if (player == Player1)
-            {
-                return Player2;
-            }
-            else
-            {
-                return Player1;
-            }
-        }
-
-        public void ColoringCellsAsOpportunitiesOfPiece(Dictionary<int, (int, int)> positions)
-        {
-            for(int i =0;i < BoardUniformGrid.Children.Count;i++)
-            {
-                if (positions.ContainsKey(i))
-                {
-                    CellsWherePlayerHasOpportunities[i] = BoardUniformGrid.Children[i] as Rectangle;
-                    (BoardUniformGrid.Children[i] as Rectangle).Fill = Brushes.Lime;
-                }
-            }
-        }
-
-        public void MakeCellsOfOpportunitiesDisappear()
-        {
-            int counter = 0;
-            for (int row = 0; row < 8; row++)
-            {
-                for (int col = 0; col < 8; col++)
-                {
-                    if (CellsWherePlayerHasOpportunities.ContainsKey(counter))
-                    {
-                        if ((row + col) % 2 == 0)
-                        {
-                            (BoardUniformGrid.Children[counter] as Rectangle).Fill = Brushes.SaddleBrown;
-                        }
-                        else
-                        {
-                            (BoardUniformGrid.Children[counter] as Rectangle).Fill = Brushes.PaleGoldenrod;
-                        }
-                    }
-                    counter++;
-                }
-            }
-            CellsWherePlayerHasOpportunities.Clear();
-        }
-
-        private async Task SwitchTimerOn()
-        {
-            DragOn = true;
-            await Task.Delay(2000);
-            MakeCellsOfOpportunitiesDisappear();
-            DragOn = false;
-        }
-
-
-        public async void DragOver(IDropInfo dropInfo)
-        {
-            if (IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 == true  || IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 == true) return;
-            if (!DragOn)
-            {
-                BasePiece piece = dropInfo.Data as BasePiece;
-                if (piece is null) return;
-                if (NextPlayer.Color != piece.Creator.Color) return;
-                bool pieceCanGo = ProcessOfMakingSurePlayerCanChooseSpecificPiece(piece.Creator, piece);
-                if (!pieceCanGo) return;
-                ColoringCellsAsOpportunitiesOfPiece(piece.Creator.PositionsOfOpportunities);
-                await SwitchTimerOn();
-            }
-            dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-            dropInfo.Effects = DragDropEffects.Copy;
-        }
-
-        
-        public void Drop(IDropInfo dropInfo)
-        {
-            Point point = new Point { X = dropInfo.DropPosition.X, Y = dropInfo.DropPosition.Y };
-            (int col, int row) = Utils.RowAndColumnCalculator.GetRowColumn(BoardUniformGrid, point);
-            BasePiece piece = dropInfo.Data as BasePiece;
-            Player player = piece.Creator;
-            ulong move = Utils.RowAndColumnCalculator.UlongCalculator(col, row);
-            MakeCellsOfOpportunitiesDisappear();
-            bool changeHappened = ProcessOfMakingSurePlayerCanDropSpecificPiece(player, piece,piece.Position,player.RecentOpportunities, move);
-            if(changeHappened)CollectionViewSource.GetDefaultView(PieceCollection).Refresh();
-        }
-
-        public void Printboard(string board)
-        {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < board.Length; i++)
-            {
-                if (i % 8 == 0 && i != 0)
-                {
-                    string row = new string(sb.ToString());
-                    Console.WriteLine(row);
-                    sb.Clear();
-                }
-                sb.Append(board[i]);
-            }
-            var finalrow = new string(sb.ToString());
-            Console.WriteLine(finalrow);
-
-        }
-
 
         public bool CheckProcess(Player player, ulong currentPiecePosition, Player opponent, BasePiece piece, bool attacked, ulong choosenPositionToMove)
         {
@@ -528,12 +338,35 @@ namespace ChessProject.ViewModels
                 ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingStillInCheck(BoardWithAllMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
                 if ((opponentAttacks & mockOfKingPosition) > 0)
                 {
-                    
+
                     return false;
                 }
                 player.PlayerInCheck = false;
             }
             return true;
+        }
+
+        public void IsPlayerInCheckAndCheckmateChecker(Player actualPlayer, Player opponent)
+        {
+            if (!actualPlayer.PlayerInCheck)
+            {
+                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
+                if (opponentAttacks > 0)   // king in check
+                {
+                    ExceptionMessage = $"Check for {actualPlayer.Color} Player"; ExceptionMessageRemover();
+                    actualPlayer.PlayerInCheck = true;
+                    if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
+                    {
+                        ExceptionMessage = $"CheckMate for {actualPlayer.Color} Player"; ExceptionMessageRemover();
+
+                    }
+                }
+            }
+        }
+        public async void ExceptionMessageRemover()
+        {
+            await Task.Delay(2000);
+            ExceptionMessage = "";
         }
 
     }
