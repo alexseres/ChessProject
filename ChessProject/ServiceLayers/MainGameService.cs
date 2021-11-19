@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -328,9 +329,12 @@ namespace ChessProject.ServiceLayers
             if (player.PlayerInCheck)
             {
                 ulong MockOfourPiecesPosition = player.PiecesPosition & ~currentPiecePosition;
+                PrintBoard(Convert.ToString((long)MockOfourPiecesPosition, toBase: 2).PadLeft(64, '0'));
                 ulong MockOfOpponentPiecesPosition = opponent.PiecesPosition;
+                PrintBoard(Convert.ToString((long)MockOfOpponentPiecesPosition, toBase: 2).PadLeft(64, '0'));
                 List<IObserver> MockOfEnemyPiecesList = Clone.DeepCopyItem(opponent.PiecesList);
                 ulong mockOfKingPosition = player.King.Position;
+                PrintBoard(Convert.ToString((long)mockOfKingPosition, toBase: 2).PadLeft(64, '0'));
                 if (piece is King)
                 {
                     mockOfKingPosition = choosenPositionToMove;
@@ -347,9 +351,13 @@ namespace ChessProject.ServiceLayers
                         }
                     }
                     MockOfOpponentPiecesPosition = MockOfOpponentPiecesPosition & ~choosenPositionToMove;
+                    PrintBoard(Convert.ToString((long)MockOfOpponentPiecesPosition, toBase: 2).PadLeft(64, '0'));
                 }
                 MockOfourPiecesPosition |= choosenPositionToMove;
-                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingStillInCheck(BoardWithAllMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
+                PrintBoard(Convert.ToString((long)MockOfourPiecesPosition, toBase: 2).PadLeft(64, '0'));
+                PrintBoard(Convert.ToString((long)BoardWithAllMember, toBase: 2).PadLeft(64, '0'));
+                ulong mockAllBoardMember = MockOfOpponentPiecesPosition | MockOfourPiecesPosition;
+                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingStillInCheck(mockAllBoardMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
                 if ((opponentAttacks & mockOfKingPosition) > 0)
                 {
 
@@ -358,6 +366,25 @@ namespace ChessProject.ServiceLayers
                 player.PlayerInCheck = false;
             }
             return true;
+        }
+
+        public void PrintBoard(string board)
+        {
+            Debug.WriteLine("Bishop");
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < board.Length; i++)
+            {
+                if (i % 8 == 0 && i != 0)
+                {
+                    string row = new string(sb.ToString());
+                    Debug.WriteLine(row);
+                    sb.Clear();
+                }
+                sb.Append(board[i]);
+            }
+            var finalRow = new string(sb.ToString());
+            Debug.WriteLine(finalRow);
+            Debug.WriteLine(" ");
         }
 
         public string IsPlayerInCheckAndCheckmateChecker(Player actualPlayer, Player opponent)

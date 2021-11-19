@@ -80,9 +80,9 @@ namespace ChessProject.ActionLogics
         public ulong GetAllOpponentAttackToCheckIfKingStillInCheck(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> pieceListOfOpponent)
         {
 
-            Printboard(Convert.ToString((long)allPiecePositions, toBase: 2).PadLeft(64, '0'));
-            Printboard(Convert.ToString((long)opponentPositions, toBase: 2).PadLeft(64, '0'));
-            Printboard(Convert.ToString((long)ourPositions, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)allPiecePositions, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)opponentPositions, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)ourPositions, toBase: 2).PadLeft(64, '0'));
 
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             ulong allAttack = 0;
@@ -103,7 +103,7 @@ namespace ChessProject.ActionLogics
                             }
                             else
                             {
-                                Printboard(Convert.ToString((long)piece.Position, toBase: 2).PadLeft(64, '0'));
+                                //Printboard(Convert.ToString((long)piece.Position, toBase: 2).PadLeft(64, '0'));
                                 allAttack |= piece.Search(mask, allPiecePositions, ourPositions, opponentPositions);  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
                             }
                             break;
@@ -113,7 +113,7 @@ namespace ChessProject.ActionLogics
                 }
                 mask = mask >> 1;
             }
-            Printboard(Convert.ToString((long)allAttack, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)allAttack, toBase: 2).PadLeft(64, '0'));
             return allAttack;
         }
 
@@ -164,7 +164,7 @@ namespace ChessProject.ActionLogics
                 }
                 mask = mask >> 1;
             }
-            Printboard(Convert.ToString((long)allAttacks, toBase: 2).PadLeft(64, '0'));
+            //Printboard(Convert.ToString((long)allAttacks, toBase: 2).PadLeft(64, '0'));
             return 0;
         }
 
@@ -173,13 +173,14 @@ namespace ChessProject.ActionLogics
         public ulong GetRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int, ulong> rayAttack, Func<ulong, int> bitScan, int direction)
         {
             ulong attacks = rayAttack(square);
-            //Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
+            Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
 
             ulong blocker = attacks & allPositionAtBoard;
-            //Printboard(Convert.ToString((long)blocker, toBase: 2).PadLeft(64, '0'));
+            Printboard(Convert.ToString((long)blocker, toBase: 2).PadLeft(64, '0'));
             if (blocker > 0)
             {
                 square = bitScan(blocker);
+                Printboard(Convert.ToString((long)square, toBase: 2).PadLeft(64, '0'));
                 ulong squarePosition = ((ulong)1 << square);
                 if ((opponent & squarePosition) > 0)
                 {
@@ -188,7 +189,9 @@ namespace ChessProject.ActionLogics
                 else if (((allPositionAtBoard & ~opponent) & squarePosition) > 0)
                 {
                     square += SetBitScanSubtracter(direction);
+                    Printboard(Convert.ToString((long)square, toBase: 2).PadLeft(64, '0'));
                 }
+                Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
                 attacks = (attacks & ~rayAttack(square));
             }
             return attacks;
