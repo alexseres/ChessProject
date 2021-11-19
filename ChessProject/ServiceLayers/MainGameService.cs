@@ -1,63 +1,87 @@
 ﻿using ChessProject.ActionLogics;
 using ChessProject.ActionLogics.Attacks;
 using ChessProject.ActionLogics.BitBoardsUpdater;
-using ChessProject.ActionLogics.BitScanLogic;
-using ChessProject.ActionLogics.PopulationCountLogic;
 using ChessProject.Actions.Movements;
 using ChessProject.Models;
 using ChessProject.Models.Enums;
 using ChessProject.Models.ObserverRelated;
 using ChessProject.Models.Pieces;
+using ChessProject.Utils.BitScanLogic;
 using ChessProject.Utils.CloneCollections;
+using ChessProject.Utils.PopulationCountLogic;
+using ChessProject.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace ChessProject.ServiceLayers
 {
-    public class MainGameService
+    public class MainGameService :BaseViewModel, IMainGameService
     {
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
         public Player NextPlayer { get; set; }
+
         public IAttack Attack { get; set; }
         public IUpdateBitBoards UpdateBitBoards { get; set; }
         public IBitScan Scan { get; set; }
         public ILongMovements Movements { get; set; }
         public IPopulationCount PopCount { get; set; }
+        
         public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
-        public ObservableCollection<BasePiece> PieceCollection { get; set; }
-        public String ExceptionMessage { get; set; }
+        public ObservableCollection<BasePiece> _pieceCollection;
+        public ObservableCollection<BasePiece> PieceCollection{ get {return _pieceCollection;} set{SetProperty(ref _pieceCollection, value);}}
 
-        public MainGameService(ObservableCollection<BasePiece> pieceCollection, ColorSide color, IUpdateBitBoards updateBitBoards, IBitScan scan,
-            ILongMovements movements, IPopulationCount popcount, IAttack attack, String exceptionMessage)
+        public string _exceptionMessage;
+        public string ExceptionMessage { get { return _exceptionMessage; } set { SetProperty(ref _exceptionMessage, value); } }
+
+        public SolidColorBrush _knockedPiecesBrushOfPlayer1;
+        public SolidColorBrush KnockedPiecesBrushOfPlayer1 { get { return _knockedPiecesBrushOfPlayer1; } set { SetProperty(ref _knockedPiecesBrushOfPlayer1, value); } }
+        
+        public SolidColorBrush _knockedPiecesBrushOfPlayer2;
+        public SolidColorBrush KnockedPiecesBrushOfPlayer2 { get { return _knockedPiecesBrushOfPlayer2; } set { SetProperty(ref _knockedPiecesBrushOfPlayer2, value); } }
+
+        public MainGameService(Player player1, Player player2, ObservableCollection<BasePiece> pieceCollection, IUpdateBitBoards updateBitBoards, IBitScan scan,
+            ILongMovements movements, IPopulationCount popcount, IAttack attack, string exceptionMessage, SolidColorBrush brushPlayer1,SolidColorBrush brushPlayer2)
         {
+            Player1 = player1;
+            Player2 = player2;
+            KnockedPiecesBrushOfPlayer1 = brushPlayer1;
+            KnockedPiecesBrushOfPlayer2 = brushPlayer2;
             PieceCollection = pieceCollection;
-            //ColorSide color = ColorSide.Black;
-            //UpdateBitBoards = new UpdateBitBoards();
-            //Scan = new BitScan();
-            //Movements = new LongMovements();
-            //PopCount = new PopulationCount();
-            //Attack = new Attack(Scan, PopCount, UpdateBitBoards);
             UpdateBitBoards = updateBitBoards;
             Scan = scan;
             Movements = movements;
             PopCount = popcount;
             Attack = attack;
             ExceptionMessage = exceptionMessage;
-            InitAllPieces(color, Scan, Movements, Attack);
+            InitAllPieces(Player1.Color, Player2.Color,Scan, Movements, Attack);
             SelectPlayerWhoStarts(Player1, Player2);
         }
 
-        public void InitAllPieces(ColorSide choosenColorToBeUp, IBitScan bitScan, ILongMovements movements, IAttack attack)
+        public void PawnSwapperLogicForPlayer1(BasePiece piece)
         {
-            ColorSide otherColor = choosenColorToBeUp == ColorSide.White ? ColorSide.Black : ColorSide.White;
-            Player1 = new Player(choosenColorToBeUp);
-            Player2 = new Player(otherColor);
+            PieceCollection.Remove(Player1.PawnToBeSwapped);
+            Player1.SwapPawnToAnotherPiece(piece);
+            PieceCollection.Add(piece);
+            piece.Creator.IsWaitedForPawnToBeSwappedToAnotherPiece = false;
+        }
 
+        public void PawnSwapperLogicForPlayer2(BasePiece piece)
+        {
+            PieceCollection.Remove(Player2.PawnToBeSwapped);
+            Player2.SwapPawnToAnotherPiece(piece);
+            PieceCollection.Add(piece);
+            piece.Creator.IsWaitedForPawnToBeSwappedToAnotherPiece = false;
+        }
+
+        public void InitAllPieces(ColorSide player1Color,ColorSide player2Color, IBitScan bitScan, ILongMovements movements, IAttack attack)
+        {
             //pawn properties
             ulong doubleMoveSignForUp = 0b_0000_0000_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             ulong doubleMoveSignForDown = 0b_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_0000_0000;
@@ -73,16 +97,16 @@ namespace ChessProject.ServiceLayers
                 string imagePath = "";
                 if (i == 0 || i == 7)
                 {
-                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Rook.png";
-                    Rook rookUp = new Rook(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player1Color}Rook.png";
+                    Rook rookUp = new Rook(Player1, player1Color, mask, bitScan, movements, attack, imagePath);
                     Player1.PiecesList.Add(rookUp);
                     Player1.PiecesPosition ^= mask;
                     PieceCollection.Add(rookUp);
                 }
                 else if (i == 1 || i == 6)
                 {
-                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Knight.png";
-                    Knight knightUp = new Knight(Player1, choosenColorToBeUp, mask, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player1Color}Knight.png";
+                    Knight knightUp = new Knight(Player1, player1Color, mask, imagePath);
                     Player1.PiecesList.Add(knightUp);
                     Player1.PiecesPosition ^= mask;
                     PieceCollection.Add(knightUp);
@@ -90,16 +114,16 @@ namespace ChessProject.ServiceLayers
                 }
                 else if (i == 2 || i == 5)
                 {
-                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Bishop.png";
-                    Bishop bishopUp = new Bishop(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player1Color}Bishop.png";
+                    Bishop bishopUp = new Bishop(Player1, player1Color, mask, bitScan, movements, attack, imagePath);
                     Player1.PiecesList.Add(bishopUp);
                     Player1.PiecesPosition ^= mask;
                     PieceCollection.Add(bishopUp);
                 }
                 else if (i == 3)
                 {
-                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}King.png";
-                    King kingUp = new King(Player1, choosenColorToBeUp, mask, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player1Color}King.png";
+                    King kingUp = new King(Player1, player1Color, mask, imagePath);
                     Player1.PiecesList.Add(kingUp);
                     Player1.King = kingUp;
                     Player1.PiecesPosition ^= mask;
@@ -107,16 +131,16 @@ namespace ChessProject.ServiceLayers
                 }
                 else if (i == 4)
                 {
-                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Queen.png";
-                    Queen queenUp = new Queen(Player1, choosenColorToBeUp, mask, bitScan, movements, attack, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player1Color}Queen.png";
+                    Queen queenUp = new Queen(Player1, player1Color, mask, bitScan, movements, attack, imagePath);
                     Player1.PiecesList.Add(queenUp);
                     Player1.PiecesPosition ^= mask;
                     PieceCollection.Add(queenUp);
                 }
                 else if (i >= 8 && i <= 15)
                 {
-                    imagePath = $"../ChessPiecePictures/{choosenColorToBeUp}Pawn.png";
-                    Pawn pawnUp = new Pawn(Player1, choosenColorToBeUp, mask, imagePath, lastLineForSwapForUp, doubleMoveSignForUp, fifthLineOfEnPassantForUp);
+                    imagePath = $"../ChessPiecePictures/{player1Color}Pawn.png";
+                    Pawn pawnUp = new Pawn(Player1, player1Color, mask, imagePath, lastLineForSwapForUp, doubleMoveSignForUp, fifthLineOfEnPassantForUp);
                     Player1.PiecesList.Add(pawnUp);
                     Player1.PiecesPosition ^= mask;
                     Player2.OpponentPawnsList.Add(pawnUp);
@@ -124,8 +148,8 @@ namespace ChessProject.ServiceLayers
                 }
                 else if (i > 47 && i < 56)
                 {
-                    imagePath = $"../ChessPiecePictures/{otherColor}Pawn.png";
-                    Pawn pawnDown = new Pawn(Player2, otherColor, mask, imagePath, lastLineForSwapToDown, doubleMoveSignForDown, fifthLineOfEnPassantForDown);
+                    imagePath = $"../ChessPiecePictures/{player2Color}Pawn.png";
+                    Pawn pawnDown = new Pawn(Player2, player2Color, mask, imagePath, lastLineForSwapToDown, doubleMoveSignForDown, fifthLineOfEnPassantForDown);
                     Player2.PiecesList.Add(pawnDown);
                     Player2.PiecesPosition ^= mask;
                     Player1.OpponentPawnsList.Add(pawnDown);
@@ -133,40 +157,40 @@ namespace ChessProject.ServiceLayers
                 }
                 else if (i == 56 || i == 63)
                 {
-                    imagePath = $"../ChessPiecePictures/{otherColor}Rook.png";
-                    Rook rookDown = new Rook(Player2, otherColor, mask, bitScan, movements, attack, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player2Color}Rook.png";
+                    Rook rookDown = new Rook(Player2, player2Color, mask, bitScan, movements, attack, imagePath);
                     Player2.PiecesList.Add(rookDown);
                     Player2.PiecesPosition ^= mask;
                     PieceCollection.Add(rookDown);
                 }
                 else if (i == 57 || i == 61)
                 {
-                    imagePath = $"../ChessPiecePictures/{otherColor}Bishop.png";
-                    Bishop bishopDown = new Bishop(Player2, otherColor, mask, bitScan, movements, attack, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player2Color}Bishop.png";
+                    Bishop bishopDown = new Bishop(Player2, player2Color, mask, bitScan, movements, attack, imagePath);
                     Player2.PiecesList.Add(bishopDown);
                     Player2.PiecesPosition ^= mask;
                     PieceCollection.Add(bishopDown);
                 }
                 else if (i == 58 || i == 62)
                 {
-                    imagePath = $"../ChessPiecePictures/{otherColor}Knight.png";
-                    Knight knightDown = new Knight(Player2, otherColor, mask, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player2Color}Knight.png";
+                    Knight knightDown = new Knight(Player2, player2Color, mask, imagePath);
                     Player2.PiecesList.Add(knightDown);
                     Player2.PiecesPosition ^= mask;
                     PieceCollection.Add(knightDown);
                 }
                 else if (i == 59)
                 {
-                    imagePath = $"../ChessPiecePictures/{otherColor}Queen.png";
-                    Queen queenDown = new Queen(Player2, otherColor, mask, bitScan, movements, attack, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player2Color}Queen.png";
+                    Queen queenDown = new Queen(Player2, player2Color, mask, bitScan, movements, attack, imagePath);
                     Player2.PiecesList.Add(queenDown);
                     Player2.PiecesPosition ^= mask;
                     PieceCollection.Add(queenDown);
                 }
                 else if (i == 60)
                 {
-                    imagePath = $"../ChessPiecePictures/{otherColor}King.png";
-                    King kingDown = new King(Player2, otherColor, mask, imagePath);
+                    imagePath = $"../ChessPiecePictures/{player2Color}King.png";
+                    King kingDown = new King(Player2, player2Color, mask, imagePath);
                     Player2.PiecesList.Add(kingDown);
                     Player2.PiecesPosition ^= mask;
                     Player2.King = kingDown;
@@ -209,92 +233,82 @@ namespace ChessProject.ServiceLayers
             }
         }
 
-        public bool ColorCheck(Player actualPlayer, Player opponent)
-        {
-            if (actualPlayer.Color == opponent.Color)
-            {
-                return false;
-            }
-            return true;
-        }
 
-        public bool ProcessOfMakingSurePlayerCanChooseSpecificPiece(Player player, BasePiece piece)
+
+        public (bool,string) ProcessOfMakingSurePlayerCanChooseSpecificPiece(Player player, BasePiece piece)
         {
+            string message = "";
             Player opponent = OpponentCreater(player);
-            if (!(ColorCheck(player, opponent)))
-            {
-                ExceptionMessage = $"Choosen piece is not {player.Color} piece"; ExceptionMessageRemover();
-                NextPlayer = player;
-                return false;
-            }
+
             //IsPlayerInCheckAndCheckmateChecker(player,opponent);
             player.RecentOpportunities = piece.Search(piece.Position, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
             if (player.RecentOpportunities <= 0)
             {
-                ExceptionMessage = "you cannot move with this piece, choose another one"; ExceptionMessageRemover();
+                message = "you cannot move with this piece, choose another one"; ExceptionMessageRemover();
                 player.RecentOpportunities = 0;
                 NextPlayer = player;
-                return false;
+                return (false,message);
             }
             player.PositionsOfOpportunities = Utils.RowAndColumnCalculator.GetPositionsOfRowsAndColumns(piece.Creator.RecentOpportunities);
-            return true;
+            return (true,message);
         }
 
-        public bool ProcessOfMakingSurePlayerCanDropSpecificPiece(Player player, BasePiece piece, ulong currentPiecePosition, ulong opportunities, ulong choosenPositionToMove)
+        public (bool,string) ProcessOfMakingSurePlayerCanDropSpecificPiece(Player player, BasePiece piece, ulong currentPiecePosition, ulong opportunities, ulong choosenPositionToMove)
         {
+            string message = "";
             Player opponent = OpponentCreater(player);
+
             if ((choosenPositionToMove & opportunities) <= 0)
             {
-                ExceptionMessage = "You cannot move there because there is no opportunity there"; ExceptionMessageRemover();
+                message = "You cannot move there because there is no opportunity there"; ExceptionMessageRemover();
                 player.RecentOpportunities = 0;
                 player.PositionsOfOpportunities.Clear();
                 NextPlayer = player;
-                return false;
+                return (false,message);
             }
 
             bool attacked = Attack.HasAttacked(choosenPositionToMove, opponent.PiecesPosition);
 
             if (!CheckProcess(player, currentPiecePosition, opponent, piece, attacked, choosenPositionToMove))
             {
-                ExceptionMessage = "Choose another piece, the king is still in check, step not succeeded"; ExceptionMessageRemover();
+                message = "Choose another piece, the king is still in check, step not succeeded"; ExceptionMessageRemover();
                 NextPlayer = player;
                 player.RecentOpportunities = 0;
                 player.PositionsOfOpportunities.Clear();
-                return false;
+                return (false,message);
             }
+
+            //check that line in maingameviewmodel 
             if (player.CheckIfCurrentAtLastLineAndIsPawn(choosenPositionToMove, piece) && player.KnockedPieces.Count != 0)
             {
-                if (player == Player1)
-                {
-                    IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = true;
-                    KnockedPiecesBrushOfPlayer1 = Brushes.Green;
-                    ExceptionMessage = $"Choose piece {player.Color} player"; ExceptionMessageRemover();
-                }
-                else
-                {
-                    IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = true;
-                    KnockedPiecesBrushOfPlayer2 = Brushes.Green;
-                    ExceptionMessage = $"Choose piece {player.Color} player"; ExceptionMessageRemover();
-                }
+                player.IsWaitedForPawnToBeSwappedToAnotherPiece= true;
+                message = $"Choose piece {player.Color} player"; ExceptionMessageRemover();
             }
 
             RemoveFromPieceCollectionBecauseAttacked(attacked, opponent, choosenPositionToMove);
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
             player.PositionsOfOpportunities.Clear();
             NextPlayer = opponent;
-            IsPlayerInCheckAndCheckmateChecker(opponent, player);  // it is reversed in the method(normally the first argument is the acutal player), because we need to know the information to be displayed before the other player moves
+            message = IsPlayerInCheckAndCheckmateChecker(opponent, player);  // it is reversed in the method(normally the first argument is the acutal player), because we need to know the information to be displayed before the other player moves
+            return (true,message);
+        }
 
+        public (bool,string) CheckIfIsThreeFoldOrFiftyMove(Player player)
+        {
+            string message = "";
+            Player opponent = OpponentCreater(player);
             if (player.IsThreeFold == true || opponent.IsThreeFold == true)
             {
-                ExceptionMessage = "Its a draw because of TreeFold"; ExceptionMessageRemover();
+                message = "Its a draw because of TreeFold"; ExceptionMessageRemover();
+                return (true,message);
             }
             if (player.IsFiftyMoveWIthoutCaptureOrPawnMove == true || opponent.IsFiftyMoveWIthoutCaptureOrPawnMove == true)
             {
-                ExceptionMessage = "Its draw because of 50 move rule"; ExceptionMessageRemover();
+                message = "Its draw because of 50 move rule"; ExceptionMessageRemover();
+                return (true, message);
             }
+            return (false, message);
 
-
-            return true;
         }
 
         public void RemoveFromPieceCollectionBecauseAttacked(bool isAttacked, Player opponent, ulong choosenPositionToMove)
@@ -346,22 +360,23 @@ namespace ChessProject.ServiceLayers
             return true;
         }
 
-        public void IsPlayerInCheckAndCheckmateChecker(Player actualPlayer, Player opponent)
+        public string IsPlayerInCheckAndCheckmateChecker(Player actualPlayer, Player opponent)
         {
+            string message = "";
             if (!actualPlayer.PlayerInCheck)
             {
                 ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
                 if (opponentAttacks > 0)   // king in check
                 {
-                    ExceptionMessage = $"Check for {actualPlayer.Color} Player"; ExceptionMessageRemover();
+                    message = $"Check for {actualPlayer.Color} Player"; ExceptionMessageRemover();
                     actualPlayer.PlayerInCheck = true;
                     if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
                     {
-                        ExceptionMessage = $"CheckMate for {actualPlayer.Color} Player"; ExceptionMessageRemover();
-
+                        message = $"CheckMate for {actualPlayer.Color} Player"; ExceptionMessageRemover();
                     }
                 }
             }
+            return message;
         }
         public async void ExceptionMessageRemover()
         {

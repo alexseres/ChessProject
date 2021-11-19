@@ -1,7 +1,7 @@
 ﻿using ChessProject.ActionLogics.Attacks;
-using ChessProject.ActionLogics.BitScanLogic;
 using ChessProject.Actions.Movements;
 using ChessProject.Models.Enums;
+using ChessProject.Utils.BitScanLogic;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,12 +1,14 @@
 ﻿
 using ChessProject.ActionLogics.Attacks;
 using ChessProject.ActionLogics.BitBoardsUpdater;
-using ChessProject.ActionLogics.BitScanLogic;
-using ChessProject.ActionLogics.PopulationCountLogic;
+
 using ChessProject.Models.ObserverRelated;
 using ChessProject.Models.Pieces;
+using ChessProject.Utils.BitScanLogic;
+using ChessProject.Utils.PopulationCountLogic;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ChessProject.ActionLogics
@@ -118,6 +120,7 @@ namespace ChessProject.ActionLogics
 
         public ulong GetAllOpponentAttackToCheckIfKingInCheck(ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> pieceListOfOpponent)
         {
+            ulong allAttacks = 0;
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             for (int i = 0; i < 64; i++)
             {
@@ -132,6 +135,7 @@ namespace ChessProject.ActionLogics
                             {
                                 Pawn pawn = piece as Pawn;
                                 ulong newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, kingPosition) | mask; // we add mask because if we do a counter attack we must know the enemyposition too
+                                allAttacks = allAttacks | newAttack;
                                 if ((newAttack & kingPosition) > 0)
                                 {
                                     return newAttack;
@@ -140,8 +144,14 @@ namespace ChessProject.ActionLogics
                             }
                             else
                             {
-                                Printboard(Convert.ToString((long)piece.Position, toBase: 2).PadLeft(64, '0'));
+                                //Printboard(Convert.ToString((long)piece.Position, toBase: 2).PadLeft(64, '0'));
                                 ulong newAttack = piece.GetSpecificAttackFromSearch(mask, allPiecePositions, ourPositions, opponentPositions, kingPosition) | mask;  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
+                                if(piece is Bishop)
+                                {
+                                    Debug.WriteLine("a");
+                                }
+                                Printboard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
+                                allAttacks = allAttacks | newAttack;
                                 if ((newAttack & kingPosition) > 0)
                                 {
                                     return newAttack;
@@ -154,6 +164,7 @@ namespace ChessProject.ActionLogics
                 }
                 mask = mask >> 1;
             }
+            Printboard(Convert.ToString((long)allAttacks, toBase: 2).PadLeft(64, '0'));
             return 0;
         }
 
@@ -196,13 +207,13 @@ namespace ChessProject.ActionLogics
                 if (i % 8 == 0 && i != 0)
                 {
                     string row = new string(sb.ToString());
-                    Console.WriteLine(row);
+                    Debug.WriteLine(row);
                     sb.Clear();
                 }
                 sb.Append(board[i]);
             }
             var finalrow = new string(sb.ToString());
-            Console.WriteLine(finalrow);
+            Debug.WriteLine(finalrow);
 
         }
 

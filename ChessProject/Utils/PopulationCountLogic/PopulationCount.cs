@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChessProject.ActionLogics.PopulationCountLogic
+namespace ChessProject.Utils.PopulationCountLogic
 {
     [Serializable]
     public class  PopulationCount : IPopulationCount

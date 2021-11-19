@@ -17,7 +17,7 @@
 
 
         <Grid Height="30" Width="520" Background="Gray" HorizontalAlignment="Center">
-            <TextBlock Text="{Binding ExceptionMessage}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Red"/>
+            <TextBlock Text="{Binding ExceptionMessage, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Red"/>
         </Grid>
         <Grid Height="50" Width="520" Background="{Binding KnockedPiecesBrushOfPlayer1}">
             <ItemsControl ItemsSource="{Binding Player1.KnockedPieces}">
@@ -162,7 +162,7 @@
                                       dd:DragDrop.IsDropTarget="True"
                                       dd:DragDrop.DropHandler="{Binding}">
             <UniformGrid Rows="8" Columns="8" x:Name="BoardGrid" Width="480" Height="480" Grid.ColumnSpan="2"/>
-            <ItemsControl ItemsSource="{Binding PieceCollection}" dd:DragDrop.IsDragSource="True" x:Name="GridControl"
+            <ItemsControl ItemsSource="{Binding PieceCollection ,Mode=TwoWay}" dd:DragDrop.IsDragSource="True" x:Name="GridControl"
                                       dd:DragDrop.IsDropTarget="True"
                                       dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2">
                 <ItemsControl.ItemsPanel>

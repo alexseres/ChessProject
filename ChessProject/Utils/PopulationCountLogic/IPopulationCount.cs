@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChessProject.ActionLogics
+namespace ChessProject.Utils.PopulationCountLogic
 {
     public interface IPopulationCount
     {

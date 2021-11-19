@@ -1,10 +1,11 @@
 ﻿using ChessProject.ActionLogics.Attacks;
-using ChessProject.ActionLogics.BitScanLogic;
+using ChessProject.Utils.BitScanLogic;
 using ChessProject.Actions.Movements;
 using ChessProject.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace ChessProject.Models.Pieces
 {
@@ -50,18 +51,28 @@ namespace ChessProject.Models.Pieces
 
         public override ulong GetSpecificAttackFromSearch(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
         {
-            ulong[] allMoves = new ulong[8];
+            ulong[] allMoves = new ulong[4];
             int square = BitScan.bitScanForwardLS1B(currentPosition);
             ulong eastNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastNorth, BitScan.bitScanForwardLS1B, EastNorthDirection);
             ulong westNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestNorth, BitScan.bitScanForwardLS1B, WestNorthDirection);
             ulong eastSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastSouth, BitScan.bitScanReverseMS1B, EastSouthDirection);
             ulong westSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestSouth, BitScan.bitScanReverseMS1B, WestSouthDirection);
-            allMoves[4] = eastNorthAttack;
-            allMoves[5] = westNorthAttack;
-            allMoves[6] = eastNorthAttack;
-            allMoves[7] = westSouthAttack;
+            //Debug.WriteLine("actual pos");
+            //PrintBoard(Convert.ToString((long)currentPosition, toBase: 2).PadLeft(64, '0'));
+            //PrintBoard(Convert.ToString((long)eastNorthAttack, toBase: 2).PadLeft(64, '0'));
+            //PrintBoard(Convert.ToString((long)westNorthAttack, toBase: 2).PadLeft(64, '0'));
+            //PrintBoard(Convert.ToString((long)eastSouthAttack, toBase: 2).PadLeft(64, '0'));
+            //PrintBoard(Convert.ToString((long)westSouthAttack, toBase: 2).PadLeft(64, '0'));
+            //PrintBoard(Convert.ToString((long)opponentPositionAtBoard, toBase: 2).PadLeft(64, '0'));
+            //PrintBoard(Convert.ToString((long)opponentPiecePosition, toBase: 2).PadLeft(64, '0'));
+            allMoves[0] = eastNorthAttack;
+            allMoves[1] = westNorthAttack;
+            allMoves[2] = eastSouthAttack;
+            allMoves[3] = westSouthAttack;
+
             foreach (ulong moves in allMoves)
             {
+                PrintBoard(Convert.ToString((long)moves, toBase: 2).PadLeft(64, '0'));
                 if ((moves & opponentPiecePosition) > 0)
                 {
                     return moves;
@@ -72,19 +83,21 @@ namespace ChessProject.Models.Pieces
 
         public void PrintBoard(string board)
         {
+            Debug.WriteLine("Bishop");
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < board.Length; i++)
             {
                 if (i % 8 == 0 && i != 0)
                 {
                     string row = new string(sb.ToString());
-                    Console.WriteLine(row);
+                    Debug.WriteLine(row);
                     sb.Clear();
                 }
                 sb.Append(board[i]);
             }
             var finalRow = new string(sb.ToString());
-            Console.WriteLine(finalRow);
+            Debug.WriteLine(finalRow);
+            Debug.WriteLine(" ");
         }
     }
 }

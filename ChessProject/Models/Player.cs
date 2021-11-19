@@ -19,6 +19,7 @@ namespace ChessProject.Models
         public List<IObserver> PiecesList { get; set; }
         public List<Pawn> OpponentPawnsList { get; set; }
         public List<IObserver> OpponentPiecesList { get; set; }
+        public bool IsWaitedForPawnToBeSwappedToAnotherPiece { get; set; }
         public bool IsThreeFold { get; set; } = false;
         public bool IsFiftyMoveWIthoutCaptureOrPawnMove { get; set; } = false;
         public int FiftyMoveWithoutCaptureAndPawnMove { get; set; } = 0;
@@ -35,11 +36,11 @@ namespace ChessProject.Models
             PiecesList = new List<IObserver>();
             OpponentPawnsList = new List<Pawn>();
             RecentOpportunities = 0;
+            IsWaitedForPawnToBeSwappedToAnotherPiece = false;
         }
 
         public void Attach(IObserver observer)
         {
-            Console.WriteLine("attached an observer");
             this.PiecesList.Add(observer);
         }
 
