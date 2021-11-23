@@ -35,32 +35,21 @@ namespace ChessProject.ServiceLayers
         public IPopulationCount PopCount { get; set; }
         
         public ulong BoardWithAllMember = 0b_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_1111_1111_1111_1111;
+
         public ObservableCollection<BasePiece> _pieceCollection;
         public ObservableCollection<BasePiece> PieceCollection{ get {return _pieceCollection;} set{SetProperty(ref _pieceCollection, value);}}
 
-        public string _exceptionMessage;
-        public string ExceptionMessage { get { return _exceptionMessage; } set { SetProperty(ref _exceptionMessage, value); } }
-
-        public SolidColorBrush _knockedPiecesBrushOfPlayer1;
-        public SolidColorBrush KnockedPiecesBrushOfPlayer1 { get { return _knockedPiecesBrushOfPlayer1; } set { SetProperty(ref _knockedPiecesBrushOfPlayer1, value); } }
-        
-        public SolidColorBrush _knockedPiecesBrushOfPlayer2;
-        public SolidColorBrush KnockedPiecesBrushOfPlayer2 { get { return _knockedPiecesBrushOfPlayer2; } set { SetProperty(ref _knockedPiecesBrushOfPlayer2, value); } }
-
         public MainGameService(Player player1, Player player2, ObservableCollection<BasePiece> pieceCollection, IUpdateBitBoards updateBitBoards, IBitScan scan,
-            ILongMovements movements, IPopulationCount popcount, IAttack attack, string exceptionMessage, SolidColorBrush brushPlayer1,SolidColorBrush brushPlayer2)
+            ILongMovements movements, IPopulationCount popcount, IAttack attack)
         {
             Player1 = player1;
             Player2 = player2;
-            KnockedPiecesBrushOfPlayer1 = brushPlayer1;
-            KnockedPiecesBrushOfPlayer2 = brushPlayer2;
             PieceCollection = pieceCollection;
             UpdateBitBoards = updateBitBoards;
             Scan = scan;
             Movements = movements;
             PopCount = popcount;
             Attack = attack;
-            ExceptionMessage = exceptionMessage;
             InitAllPieces(Player1.Color, Player2.Color,Scan, Movements, Attack);
             SelectPlayerWhoStarts(Player1, Player2);
         }
@@ -234,8 +223,6 @@ namespace ChessProject.ServiceLayers
             }
         }
 
-
-
         public (bool,string) ProcessOfMakingSurePlayerCanChooseSpecificPiece(Player player, BasePiece piece)
         {
             string message = "";
@@ -245,7 +232,7 @@ namespace ChessProject.ServiceLayers
             player.RecentOpportunities = piece.Search(piece.Position, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
             if (player.RecentOpportunities <= 0)
             {
-                message = "you cannot move with this piece, choose another one"; ExceptionMessageRemover();
+                message = "you cannot move with this piece, choose another one"; 
                 player.RecentOpportunities = 0;
                 NextPlayer = player;
                 return (false,message);
@@ -261,7 +248,7 @@ namespace ChessProject.ServiceLayers
 
             if ((choosenPositionToMove & opportunities) <= 0)
             {
-                message = "You cannot move there because there is no opportunity there"; ExceptionMessageRemover();
+                message = "You cannot move there because there is no opportunity there";
                 player.RecentOpportunities = 0;
                 player.PositionsOfOpportunities.Clear();
                 NextPlayer = player;
@@ -272,18 +259,17 @@ namespace ChessProject.ServiceLayers
 
             if (!CheckProcess(player, currentPiecePosition, opponent, piece, attacked, choosenPositionToMove))
             {
-                message = "Choose another piece, the king is still in check, step not succeeded"; ExceptionMessageRemover();
+                message = "Choose another piece, the king is still in check, step not succeeded";
                 NextPlayer = player;
                 player.RecentOpportunities = 0;
                 player.PositionsOfOpportunities.Clear();
                 return (false,message);
             }
 
-            //check that line in maingameviewmodel 
             if (player.CheckIfCurrentAtLastLineAndIsPawn(choosenPositionToMove, piece) && player.KnockedPieces.Count != 0)
             {
                 player.IsWaitedForPawnToBeSwappedToAnotherPiece= true;
-                message = $"Choose piece {player.Color} player"; ExceptionMessageRemover();
+                message = $"Choose piece {player.Color} player"; 
             }
 
             RemoveFromPieceCollectionBecauseAttacked(attacked, opponent, choosenPositionToMove);
@@ -300,12 +286,12 @@ namespace ChessProject.ServiceLayers
             Player opponent = OpponentCreater(player);
             if (player.IsThreeFold == true || opponent.IsThreeFold == true)
             {
-                message = "Its a draw because of TreeFold"; ExceptionMessageRemover();
+                message = "Its a draw because of TreeFold"; 
                 return (true,message);
             }
             if (player.IsFiftyMoveWIthoutCaptureOrPawnMove == true || opponent.IsFiftyMoveWIthoutCaptureOrPawnMove == true)
             {
-                message = "Its draw because of 50 move rule"; ExceptionMessageRemover();
+                message = "Its draw because of 50 move rule";
                 return (true, message);
             }
             return (false, message);
@@ -326,45 +312,37 @@ namespace ChessProject.ServiceLayers
 
         public bool CheckProcess(Player player, ulong currentPiecePosition, Player opponent, BasePiece piece, bool attacked, ulong choosenPositionToMove)
         {
-            if (player.PlayerInCheck)
+                
+            ulong MockOfourPiecesPosition = player.PiecesPosition & ~currentPiecePosition;
+            ulong MockOfOpponentPiecesPosition = opponent.PiecesPosition;
+            List<IObserver> MockOfEnemyPiecesList = Clone.DeepCopyItem(opponent.PiecesList);
+            ulong mockOfKingPosition = player.King.Position;
+            if (piece is King)
             {
-                ulong MockOfourPiecesPosition = player.PiecesPosition & ~currentPiecePosition;
-                PrintBoard(Convert.ToString((long)MockOfourPiecesPosition, toBase: 2).PadLeft(64, '0'));
-                ulong MockOfOpponentPiecesPosition = opponent.PiecesPosition;
-                PrintBoard(Convert.ToString((long)MockOfOpponentPiecesPosition, toBase: 2).PadLeft(64, '0'));
-                List<IObserver> MockOfEnemyPiecesList = Clone.DeepCopyItem(opponent.PiecesList);
-                ulong mockOfKingPosition = player.King.Position;
-                PrintBoard(Convert.ToString((long)mockOfKingPosition, toBase: 2).PadLeft(64, '0'));
-                if (piece is King)
-                {
-                    mockOfKingPosition = choosenPositionToMove;
-                }
-                if (attacked)
-                {
-                    foreach (IObserver observer in MockOfEnemyPiecesList.ToList())
-                    {
-                        BasePiece opponentPiece = observer as BasePiece;
-                        if (opponentPiece.Position == choosenPositionToMove)
-                        {
-                            MockOfEnemyPiecesList.Remove(observer);
-                            break;
-                        }
-                    }
-                    MockOfOpponentPiecesPosition = MockOfOpponentPiecesPosition & ~choosenPositionToMove;
-                    PrintBoard(Convert.ToString((long)MockOfOpponentPiecesPosition, toBase: 2).PadLeft(64, '0'));
-                }
-                MockOfourPiecesPosition |= choosenPositionToMove;
-                PrintBoard(Convert.ToString((long)MockOfourPiecesPosition, toBase: 2).PadLeft(64, '0'));
-                PrintBoard(Convert.ToString((long)BoardWithAllMember, toBase: 2).PadLeft(64, '0'));
-                ulong mockAllBoardMember = MockOfOpponentPiecesPosition | MockOfourPiecesPosition;
-                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingStillInCheck(mockAllBoardMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
-                if ((opponentAttacks & mockOfKingPosition) > 0)
-                {
-
-                    return false;
-                }
-                player.PlayerInCheck = false;
+                mockOfKingPosition = choosenPositionToMove;
             }
+            if (attacked)
+            {
+                foreach (IObserver observer in MockOfEnemyPiecesList.ToList())
+                {
+                    BasePiece opponentPiece = observer as BasePiece;
+                    if (opponentPiece.Position == choosenPositionToMove)
+                    {
+                        MockOfEnemyPiecesList.Remove(observer);
+                        break;
+                    }
+                }
+                MockOfOpponentPiecesPosition = MockOfOpponentPiecesPosition & ~choosenPositionToMove;
+            }
+            MockOfourPiecesPosition |= choosenPositionToMove;
+            ulong mockAllBoardMember = MockOfOpponentPiecesPosition | MockOfourPiecesPosition;
+            ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingStillInCheck(mockAllBoardMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
+            if ((opponentAttacks & mockOfKingPosition) > 0)
+            {
+
+                return false;
+            }
+            if(player.PlayerInCheck == true) player.PlayerInCheck = false;
             return true;
         }
 
@@ -395,21 +373,15 @@ namespace ChessProject.ServiceLayers
                 ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
                 if (opponentAttacks > 0)   // king in check
                 {
-                    message = $"Check for {actualPlayer.Color} Player"; ExceptionMessageRemover();
+                    message = $"Check for {actualPlayer.Color} Player"; 
                     actualPlayer.PlayerInCheck = true;
                     if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
                     {
-                        message = $"CheckMate for {actualPlayer.Color} Player"; ExceptionMessageRemover();
+                        message = $"CheckMate for {actualPlayer.Color} Player"; 
                     }
                 }
             }
             return message;
         }
-        public async void ExceptionMessageRemover()
-        {
-            await Task.Delay(2000);
-            ExceptionMessage = "";
-        }
-
     }
 }

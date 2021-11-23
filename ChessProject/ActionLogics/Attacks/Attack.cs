@@ -113,7 +113,6 @@ namespace ChessProject.ActionLogics
                 }
                 mask = mask >> 1;
             }
-            //Printboard(Convert.ToString((long)allAttack, toBase: 2).PadLeft(64, '0'));
             return allAttack;
         }
 
@@ -150,7 +149,6 @@ namespace ChessProject.ActionLogics
                                 {
                                     Debug.WriteLine("a");
                                 }
-                                Printboard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
                                 allAttacks = allAttacks | newAttack;
                                 if ((newAttack & kingPosition) > 0)
                                 {
@@ -173,14 +171,10 @@ namespace ChessProject.ActionLogics
         public ulong GetRayAttacks(ulong allPositionAtBoard, ulong opponent, int square, Func<int, ulong> rayAttack, Func<ulong, int> bitScan, int direction)
         {
             ulong attacks = rayAttack(square);
-            Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
-
             ulong blocker = attacks & allPositionAtBoard;
-            Printboard(Convert.ToString((long)blocker, toBase: 2).PadLeft(64, '0'));
             if (blocker > 0)
             {
                 square = bitScan(blocker);
-                Printboard(Convert.ToString((long)square, toBase: 2).PadLeft(64, '0'));
                 ulong squarePosition = ((ulong)1 << square);
                 if ((opponent & squarePosition) > 0)
                 {
@@ -189,9 +183,7 @@ namespace ChessProject.ActionLogics
                 else if (((allPositionAtBoard & ~opponent) & squarePosition) > 0)
                 {
                     square += SetBitScanSubtracter(direction);
-                    Printboard(Convert.ToString((long)square, toBase: 2).PadLeft(64, '0'));
                 }
-                Printboard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
                 attacks = (attacks & ~rayAttack(square));
             }
             return attacks;

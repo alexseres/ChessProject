@@ -66,7 +66,7 @@ namespace ChessProject.Models.Pieces
             allMoves[3] = westAttack;
             allMoves[4] = eastNorthAttack;
             allMoves[5] = westNorthAttack;
-            allMoves[6] = eastNorthAttack;
+            allMoves[6] = eastSouthAttack;
             allMoves[7] = westSouthAttack;
             foreach (ulong moves in allMoves)
             {

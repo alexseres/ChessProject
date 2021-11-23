@@ -60,15 +60,7 @@ namespace ChessProject.ViewModels
         public SolidColorBrush _knockedPiecesBrushOfPlayer2;
         public SolidColorBrush KnockedPiecesBrushOfPlayer2 { get { return _knockedPiecesBrushOfPlayer2; } set { SetProperty(ref _knockedPiecesBrushOfPlayer2, value); } }
 
-        private bool _isWaitedForPawnToBeSwappedToAnotherPieceForPlayer1;
-        public bool IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 { get { return _isWaitedForPawnToBeSwappedToAnotherPieceForPlayer1; } set { SetProperty(ref _isWaitedForPawnToBeSwappedToAnotherPieceForPlayer1, value); } }
-
-        private bool _isWaitedForPawnToBeSwappedToAnotherPieceForPlayer2;
-        public bool IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 { get { return _isWaitedForPawnToBeSwappedToAnotherPieceForPlayer2; } set { SetProperty(ref _isWaitedForPawnToBeSwappedToAnotherPieceForPlayer2, value); } }
-
         public string _exceptionMessage;
-
-
         public string ExceptionMessage { get { return _exceptionMessage; } set { SetProperty(ref _exceptionMessage, value); } }
 
         IMainGameService Servicer { get; set; }
@@ -82,8 +74,6 @@ namespace ChessProject.ViewModels
             Player2 = new Player(ColorSide.White);
             PawnSwapperForPlayer1Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer1, PawnSwapperForPlayer1CanExecute);
             PawnSwapperForPlayer2Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer2, PawnSwapperForPlayer2CanExecute);
-            IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer1 = false;
-            IsWaitedForPawnToBeSwappedToAnotherPieceForPlayer2 = false;
             KnockedPiecesBrushOfPlayer1 = Brushes.Brown;
             KnockedPiecesBrushOfPlayer2 = Brushes.Brown;
             ExceptionMessage = "";
@@ -92,8 +82,7 @@ namespace ChessProject.ViewModels
             Movements = new LongMovements();
             PopCount = new PopulationCount();
             Attack = new Attack(Scan, PopCount, UpdateBitBoards);
-            Servicer = new MainGameService(Player1, Player2,PieceCollection, UpdateBitBoards, Scan, Movements, PopCount, Attack,ExceptionMessage,
-                KnockedPiecesBrushOfPlayer1, KnockedPiecesBrushOfPlayer2);
+            Servicer = new MainGameService(Player1, Player2,PieceCollection, UpdateBitBoards, Scan, Movements, PopCount, Attack);
 
         }
 
@@ -212,6 +201,7 @@ namespace ChessProject.ViewModels
             (bool changeHappened,string message) = Servicer.ProcessOfMakingSurePlayerCanDropSpecificPiece(player, piece,piece.Position,player.RecentOpportunities, move);
             if (changeHappened) 
             {
+                ExceptionMessage = message;ExceptionMessageRemover();
                 if (player.IsWaitedForPawnToBeSwappedToAnotherPiece)
                 {
                     if (player == Player1) KnockedPiecesBrushOfPlayer1 = Brushes.Green; else KnockedPiecesBrushOfPlayer2 = Brushes.Green;
