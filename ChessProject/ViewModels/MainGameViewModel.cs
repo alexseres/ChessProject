@@ -189,6 +189,19 @@ namespace ChessProject.ViewModels
 
         }
 
+        public async void WinnerMaker(Player winner)
+        {
+            await Task.Delay(2000);
+            ExceptionMessage = $"The Winner is {winner.Color} Player. Congratulations.";
+            await Task.Delay(2000);
+            ExceptionMessage = "";
+            foreach(Window item in Application.Current.Windows)
+            {
+                if (item.DataContext == this) item.Close();
+            }
+            Application.Current.MainWindow.Show();
+        }
+
         
         public void Drop(IDropInfo dropInfo)
         {
@@ -208,6 +221,11 @@ namespace ChessProject.ViewModels
                 }
                 Servicer.CheckIfIsThreeFoldOrFiftyMove(player);
                 CollectionViewSource.GetDefaultView(PieceCollection).Refresh();
+                if(Player1.HasWon == true || Player2.HasWon == true)
+                {
+                    Player winner = Player1.HasWon == true ? Player1 : Player2;
+                    WinnerMaker(winner);
+                }
                 
             }
             else

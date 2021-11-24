@@ -26,8 +26,9 @@ namespace ChessProject.Models
         public ulong RecentOpportunities { get; set; }
         public Dictionary<int,(int, int)> PositionsOfOpportunities { get; set; }
         public bool PlayerInCheck { get; set; }
-
         public Pawn PawnToBeSwapped { get; set; }
+
+        public bool HasWon { get; set; } = false;
 
         public Player(ColorSide color)
         {

@@ -25,6 +25,7 @@ namespace ChessProject.Views
             InitializeComponent();
             _vm = new MainMenuViewModel();
             DataContext = _vm;
+            Application.Current.MainWindow = this;
         }
     }
 }

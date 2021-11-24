@@ -3,6 +3,7 @@ using ChessProject.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace ChessProject.ViewModels
 {
@@ -25,11 +26,10 @@ namespace ChessProject.ViewModels
 
         public void OpenMainGame(object obj)
         {
-            
             MainGameViewProperty = new MainGameView();
             MainGameViewProperty.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             MainGameViewProperty.Show();
-
+            Application.Current.MainWindow.Hide();
         }
     }
 }

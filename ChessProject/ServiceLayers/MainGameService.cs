@@ -377,6 +377,7 @@ namespace ChessProject.ServiceLayers
                     actualPlayer.PlayerInCheck = true;
                     if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
                     {
+                        opponent.HasWon = true;
                         message = $"CheckMate for {actualPlayer.Color} Player"; 
                     }
                 }
