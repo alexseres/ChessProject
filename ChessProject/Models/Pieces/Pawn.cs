@@ -20,7 +20,6 @@ namespace ChessProject.Models.Pieces
 
         //this mask checks if pawns at the starting position, and if they are, they got the chance to move 2 square
         public readonly ulong MaskOfDoubleMove;
-
         public Pawn(Player player, ColorSide color, ulong position, string imagePath, ulong lastline, ulong maskOfDoubleMove, ulong fifthLineOfEnPassant) : base(player, color, position, imagePath)
         {
             PType = PieceType.Pawn;
@@ -73,33 +72,23 @@ namespace ChessProject.Models.Pieces
 
         public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
-            if (this.Color == ColorSide.Black)
-            {
-                ulong enpassant = DoEnPassant(currentPosition, opponentPositionAtBoard, ourPositions);
-                ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);
-                //this one checks if we want to move double square and noone is in front of us
-                ulong movedFirstPositions = (((MaskOfDoubleMove & currentPosition) >> 8) & ~allPositionAtBoard) >> 8;
-                ulong movedPositions = (currentPosition >> MovingDirection) | movedFirstPositions;
-                ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
-                opportunities = opportunities | enpassant;
-                return opportunities;
-            }
-            else
-            {
-                ulong enpassant = DoEnPassant(currentPosition, opponentPositionAtBoard, ourPositions);
-                ulong attackPositions = ((currentPosition << AttacksDirection[0]) & maskNotAColumn) ^ ((currentPosition << AttacksDirection[1]) & maskNotHColumn);
-                //this one checks if we want to move double square and noone is in front of us
-                ulong movedFirstPositions = (((MaskOfDoubleMove & currentPosition) << 8) & ~allPositionAtBoard) << 8;
-                ulong movedPositions = (currentPosition << MovingDirection) | movedFirstPositions;
-                ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
-                opportunities = opportunities | enpassant;
-                return opportunities;
-            }
+            
+            ulong enpassant = DoEnPassant(currentPosition, opponentPositionAtBoard, ourPositions);
+            //ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);
+            //ulong movedFirstPositions = (((MaskOfDoubleMove & currentPosition) >> 8) & ~allPositionAtBoard) >> 8;
+            //ulong movedPositions = (currentPosition >> MovingDirection) | movedFirstPositions;
+            ulong attackPositions = ((Creator.PawnBitwiseOperator(currentPosition, Creator.PawnAttackDirection[1], maskNotAColumn)) ^ ((Creator.PawnBitwiseOperator(currentPosition, Creator.PawnAttackDirection[1], maskNotAColumn))));
+            ulong movedFirstPositions = ((Creator.PawnBitwiseOperatorMovedFirstPositions(MaskOfDoubleMove, currentPosition, allPositionAtBoard)));
+            ulong movedPositions = Creator.PawnBitwiseOperatorMovedPositions(currentPosition, MovingDirection, movedFirstPositions);
+            ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
+            opportunities = opportunities | enpassant;
+            return opportunities;
+
         }
 
-        public ulong SearchForOnlyAttack(ColorSide color, ulong currentPosition, ulong ourPositions, ulong opponentPiecePosition)
+        public ulong SearchForOnlyAttack(ulong currentPosition, ulong ourPositions, ulong opponentPiecePosition)
         {
-            if (color == ColorSide.Black)
+            if (this.Creator.PlayerNum == PlayerType.Player1)
             {
                 ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);
                 ulong opportunities = (~ourPositions & attackPositions) & opponentPiecePosition;

@@ -72,7 +72,6 @@ namespace ChessProject.Models.Pieces
 
             foreach (ulong moves in allMoves)
             {
-                PrintBoard(Convert.ToString((long)moves, toBase: 2).PadLeft(64, '0'));
                 if ((moves & opponentPiecePosition) > 0)
                 {
                     return moves;

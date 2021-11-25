@@ -37,7 +37,6 @@ namespace ChessProject.Utils.BitScanLogic
         {
             if (bitBoard == 0)
             {
-                Console.WriteLine("cannot be zero");
                 return 0;
             };
             bitBoard |= bitBoard >> 1;

@@ -70,8 +70,8 @@ namespace ChessProject.ViewModels
         {
             
             PieceCollection = new ObservableCollection<BasePiece>();
-            Player1 = new Player(ColorSide.Black);
-            Player2 = new Player(ColorSide.White);
+            Player1 = new Player(PlayerType.Player1,ColorSide.Black);
+            Player2 = new Player(PlayerType.Player2,ColorSide.White);
             PawnSwapperForPlayer1Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer1, PawnSwapperForPlayer1CanExecute);
             PawnSwapperForPlayer2Command = new RelayCommand<BasePiece>(PawnSwapperForPlayer2, PawnSwapperForPlayer2CanExecute);
             KnockedPiecesBrushOfPlayer1 = Brushes.Brown;
@@ -217,7 +217,7 @@ namespace ChessProject.ViewModels
                 ExceptionMessage = message;ExceptionMessageRemover();
                 if (player.IsWaitedForPawnToBeSwappedToAnotherPiece)
                 {
-                    if (player == Player1) KnockedPiecesBrushOfPlayer1 = Brushes.Green; else KnockedPiecesBrushOfPlayer2 = Brushes.Green;
+                    if (player.PlayerNum == PlayerType.Player1) KnockedPiecesBrushOfPlayer1 = Brushes.Green; else KnockedPiecesBrushOfPlayer2 = Brushes.Green;
                 }
                 Servicer.CheckIfIsThreeFoldOrFiftyMove(player);
                 CollectionViewSource.GetDefaultView(PieceCollection).Refresh();

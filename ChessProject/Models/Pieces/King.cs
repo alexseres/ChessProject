@@ -2,6 +2,7 @@
 using ChessProject.Models.ObserverRelated;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ChessProject.Models.Pieces
@@ -101,6 +102,8 @@ namespace ChessProject.Models.Pieces
         {
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             ulong attacks = 0;
+            ulong allPawnAttacks = 0;
+            int counter = 0;
             for (int i = 0; i < 64; i++)
             {
                 if ((opponentPositions & mask) > 0)
@@ -111,13 +114,42 @@ namespace ChessProject.Models.Pieces
                         if (((piece.Position & mask) > 0) && !(piece is King))
                         {
                             ulong newAttack = piece.Search(mask, allPiecePositions, opponentPositions, ourPositions);
+                            if(piece is Pawn)
+                            {
+                                Pawn pawn = piece as Pawn;
+                                newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, ourPositions, opponentPositions);
+                                //PrintBoard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
+                                allPawnAttacks |= newAttack;
+                            }
                             attacks |= newAttack;
                         }
                     }
                 }
                 mask = mask >> 1;
             }
+            PrintBoard(Convert.ToString((long)allPawnAttacks, toBase: 2).PadLeft(64, '0'));
+            PrintBoard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
             return attacks;
         }
+
+        public void PrintBoard(string board)
+        {
+            Debug.WriteLine("Bishop");
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < board.Length; i++)
+            {
+                if (i % 8 == 0 && i != 0)
+                {
+                    string row = new string(sb.ToString());
+                    Debug.WriteLine(row);
+                    sb.Clear();
+                }
+                sb.Append(board[i]);
+            }
+            var finalRow = new string(sb.ToString());
+            Debug.WriteLine(finalRow);
+            Debug.WriteLine(" ");
+        }
+
     }
 }

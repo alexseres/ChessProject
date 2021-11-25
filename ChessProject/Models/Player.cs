@@ -12,6 +12,7 @@ namespace ChessProject.Models
     [Serializable]
     public class Player : ISubject
     {
+        public PlayerType PlayerNum { get; set; }
         public ColorSide Color { get; set; }
         public ulong PiecesPosition { get; set; }
         public ObservableCollection<IObserver> KnockedPieces { get; set; }
@@ -24,14 +25,22 @@ namespace ChessProject.Models
         public bool IsFiftyMoveWIthoutCaptureOrPawnMove { get; set; } = false;
         public int FiftyMoveWithoutCaptureAndPawnMove { get; set; } = 0;
         public ulong RecentOpportunities { get; set; }
-        public Dictionary<int,(int, int)> PositionsOfOpportunities { get; set; }
+        public Dictionary<int, (int, int)> PositionsOfOpportunities { get; set; }
         public bool PlayerInCheck { get; set; }
         public Pawn PawnToBeSwapped { get; set; }
+        public Func<ulong, int, ulong, ulong> PawnBitwiseOperator { get; set; }
+        public Func<ulong, ulong, ulong, ulong> PawnBitwiseOperatorMovedFirstPositions { get; set; }
+        public Func<ulong, int, ulong, ulong> PawnBitwiseOperatorMovedPositions { get; set; }
+        public int[] PawnAttackDirection new int
+        // do the pawndirection for each player because is different
+
+        public int[] PawnAttackDirection = new int[2] { 7, 9 };
 
         public bool HasWon { get; set; } = false;
 
-        public Player(ColorSide color)
+        public Player(PlayerType type,ColorSide color)
         {
+            PlayerNum = type;
             Color = color;
             KnockedPieces = new ObservableCollection<IObserver>();
             PiecesList = new List<IObserver>();
