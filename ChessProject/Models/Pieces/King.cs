@@ -103,7 +103,6 @@ namespace ChessProject.Models.Pieces
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             ulong attacks = 0;
             ulong allPawnAttacks = 0;
-            int counter = 0;
             for (int i = 0; i < 64; i++)
             {
                 if ((opponentPositions & mask) > 0)
@@ -117,7 +116,7 @@ namespace ChessProject.Models.Pieces
                             if(piece is Pawn)
                             {
                                 Pawn pawn = piece as Pawn;
-                                newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, ourPositions, opponentPositions);
+                                newAttack = pawn.SearchForOnlyAttack(mask, ourPositions, opponentPositions);
                                 //PrintBoard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
                                 allPawnAttacks |= newAttack;
                             }

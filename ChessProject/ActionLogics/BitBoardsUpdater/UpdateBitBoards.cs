@@ -49,12 +49,11 @@ namespace ChessProject.ActionLogics.BitBoardsUpdater
             return positions;
         }
 
-        public List<IObserver> SeparateUpdatePieceList(List<IObserver> opponentList, ulong occupiedPos)
+        public List<BasePiece> SeparateUpdatePieceList(List<IObserver> opponentList, ulong occupiedPos)
         {
-            List<IObserver> copyOfOpponentList = Clone.DeepCopyItem(opponentList);
-            foreach (IObserver observer in copyOfOpponentList)
+            List<BasePiece> copyOfOpponentList = Clone.ClonePieces(opponentList);
+            foreach (BasePiece piece in copyOfOpponentList)
             {
-                BasePiece piece = observer as BasePiece;
                 if ((piece.Position & occupiedPos) > 0)
                 {
                     piece.Position = (piece.Position & ~occupiedPos);

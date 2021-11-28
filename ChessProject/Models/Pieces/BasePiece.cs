@@ -23,7 +23,6 @@ namespace ChessProject.Models.Pieces
         //      from    to
         public (ulong, ulong) LatestMove { get; set; }
 
-
         public BasePiece(Player player, ColorSide color, ulong position, string imagePath)
         {
             Creator = player;

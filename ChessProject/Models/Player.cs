@@ -28,13 +28,11 @@ namespace ChessProject.Models
         public Dictionary<int, (int, int)> PositionsOfOpportunities { get; set; }
         public bool PlayerInCheck { get; set; }
         public Pawn PawnToBeSwapped { get; set; }
+        
         public Func<ulong, int, ulong, ulong> PawnBitwiseOperator { get; set; }
         public Func<ulong, ulong, ulong, ulong> PawnBitwiseOperatorMovedFirstPositions { get; set; }
         public Func<ulong, int, ulong, ulong> PawnBitwiseOperatorMovedPositions { get; set; }
-        public int[] PawnAttackDirection new int
-        // do the pawndirection for each player because is different
-
-        public int[] PawnAttackDirection = new int[2] { 7, 9 };
+        public int[] PawnAttackDirection = new int[2];
 
         public bool HasWon { get; set; } = false;
 

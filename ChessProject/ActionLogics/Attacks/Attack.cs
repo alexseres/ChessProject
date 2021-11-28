@@ -36,7 +36,7 @@ namespace ChessProject.ActionLogics
             {
                 int pos = Scan.bitScanForwardLS1B(union);
                 ulong movedPos = ((ulong)1 << pos);
-                List<IObserver> mighChangedOpponentPieceList = BitBoardsUpdater.SeparateUpdatePieceList(opponentPieceList, movedPos);
+                List<BasePiece> mighChangedOpponentPieceList = BitBoardsUpdater.SeparateUpdatePieceList(opponentPieceList, movedPos);
                 ulong[] changedPositions = BitBoardsUpdater.SeparateUpdateBitBoardsToEvadeCheck(movedPos, oldPosOfDefenderPiece, defenderPieceRoute, allPiecePositions, ourPositions, opponentPositions);
                 ulong IsKingStillInCheck = GetAllOpponentAttackToCheckIfKingInCheck(kingPosition, changedPositions[0], changedPositions[1], changedPositions[2], mighChangedOpponentPieceList);
                 if (IsKingStillInCheck == 0)
@@ -77,7 +77,7 @@ namespace ChessProject.ActionLogics
             return true;
         }
 
-        public ulong GetAllOpponentAttackToCheckIfKingStillInCheck(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> pieceListOfOpponent)
+        public ulong GetAllOpponentAttackToCheckIfKingStillInCheck(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<BasePiece> pieceListOfOpponent)
         {
 
             //Printboard(Convert.ToString((long)allPiecePositions, toBase: 2).PadLeft(64, '0'));
@@ -90,16 +90,15 @@ namespace ChessProject.ActionLogics
             {
                 if ((opponentPositions & mask) > 0)
                 {
-                    foreach (IObserver observer in pieceListOfOpponent)
+                    foreach (BasePiece piece in pieceListOfOpponent)
                     {
-                        BasePiece piece = observer as BasePiece;
                         if ((piece.Position & mask) > 0)
                         {
 
                             if (piece is Pawn)
                             {
                                 Pawn pawn = piece as Pawn;
-                                allAttack |= pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, ourPositions); // we add mask because if we do a counter attack we must know the enemyposition too
+                                allAttack |= pawn.SearchForOnlyAttack(mask, opponentPositions, ourPositions); // we add mask because if we do a counter attack we must know the enemyposition too
                             }
                             else
                             {
@@ -117,7 +116,7 @@ namespace ChessProject.ActionLogics
         }
 
 
-        public ulong GetAllOpponentAttackToCheckIfKingInCheck(ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> pieceListOfOpponent)
+        public ulong GetAllOpponentAttackToCheckIfKingInCheck(ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<BasePiece> pieceListOfOpponent)
         {
             ulong allAttacks = 0;
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
@@ -125,15 +124,14 @@ namespace ChessProject.ActionLogics
             {
                 if ((opponentPositions & mask) > 0)
                 {
-                    foreach (IObserver observer in pieceListOfOpponent)
+                    foreach (BasePiece piece in pieceListOfOpponent)
                     {
-                        BasePiece piece = observer as BasePiece;
                         if ((piece.Position & mask) > 0)
                         {
                             if (piece is Pawn)
                             {
                                 Pawn pawn = piece as Pawn;
-                                ulong newAttack = pawn.SearchForOnlyAttack(pawn.Color, mask, opponentPositions, kingPosition) | mask; // we add mask because if we do a counter attack we must know the enemyposition too
+                                ulong newAttack = pawn.SearchForOnlyAttack(mask, opponentPositions, kingPosition) | mask; // we add mask because if we do a counter attack we must know the enemyposition too
                                 allAttacks = allAttacks | newAttack;
                                 if ((newAttack & kingPosition) > 0)
                                 {

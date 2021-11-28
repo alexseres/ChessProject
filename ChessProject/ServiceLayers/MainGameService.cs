@@ -197,6 +197,18 @@ namespace ChessProject.ServiceLayers
             Player1.King.OpponentKing = Player2.King;
             Player2.OpponentPiecesList = Player1.PiecesList;
             Player1.OpponentPiecesList = Player2.PiecesList;
+
+            #region important InitPawnDelegatesAndFields
+            Player1.PawnAttackDirection[0] = 9; Player1.PawnAttackDirection[1] =7;
+            Player1.PawnBitwiseOperator = (currentPosition,attackDirection,maskNotInColumn) => ((currentPosition >> attackDirection) & maskNotInColumn) ;
+            Player1.PawnBitwiseOperatorMovedFirstPositions = (MaskOfDoubleMove, currentPosition, allPositionAtBoard) => (((MaskOfDoubleMove & currentPosition) >> 8) & ~allPositionAtBoard) >> 8;
+            Player1.PawnBitwiseOperatorMovedPositions = (currentPosition, MovingDirection, movedFirstPositions) => (currentPosition >> MovingDirection) | movedFirstPositions;
+
+            Player2.PawnAttackDirection[0] = 7; Player2.PawnAttackDirection[1] = 9;
+            Player2.PawnBitwiseOperator = (currentPosition,attackDirection,maskNotInColumn) => ((currentPosition << attackDirection) & maskNotInColumn);
+            Player2.PawnBitwiseOperatorMovedFirstPositions = (MaskOfDoubleMove, currentPosition, allPositionAtBoard) => (((MaskOfDoubleMove & currentPosition) << 8) & ~allPositionAtBoard) << 8;
+            Player2.PawnBitwiseOperatorMovedPositions = (currentPosition, MovingDirection, movedFirstPositions) => (currentPosition << MovingDirection) | movedFirstPositions;
+            #endregion
         }
 
         public void SelectPlayerWhoStarts(Player player1, Player player2)
@@ -315,7 +327,8 @@ namespace ChessProject.ServiceLayers
                 
             ulong MockOfourPiecesPosition = player.PiecesPosition & ~currentPiecePosition;
             ulong MockOfOpponentPiecesPosition = opponent.PiecesPosition;
-            List<IObserver> MockOfEnemyPiecesList = Clone.DeepCopyItem(opponent.PiecesList);
+            //List<IObserver> MockOfEnemyPiecesList = Clone.DeepCopyItem(opponent.PiecesList);
+            List<BasePiece> MockOfEnemyPiecesList = Clone.ClonePieces(opponent.PiecesList);
             ulong mockOfKingPosition = player.King.Position;
             if (piece is King)
             {
@@ -323,12 +336,11 @@ namespace ChessProject.ServiceLayers
             }
             if (attacked)
             {
-                foreach (IObserver observer in MockOfEnemyPiecesList.ToList())
+                foreach (BasePiece opponentPiece in MockOfEnemyPiecesList.ToList())
                 {
-                    BasePiece opponentPiece = observer as BasePiece;
                     if (opponentPiece.Position == choosenPositionToMove)
                     {
-                        MockOfEnemyPiecesList.Remove(observer);
+                        MockOfEnemyPiecesList.Remove(opponentPiece);
                         break;
                     }
                 }
@@ -370,7 +382,7 @@ namespace ChessProject.ServiceLayers
             string message = "";
             if (!actualPlayer.PlayerInCheck)
             {
-                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponent.PiecesList);
+                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, Clone.ConvertIObserverToBasePieceList(opponent.PiecesList));
                 if (opponentAttacks > 0)   // king in check
                 {
                     message = $"Check for {actualPlayer.Color} Player"; 
