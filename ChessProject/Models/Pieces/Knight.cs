@@ -5,7 +5,6 @@ using System.Text;
 
 namespace ChessProject.Models.Pieces
 {
-    [Serializable]
     public class Knight : BasePiece
     {
         private ulong MaskNotInAFile = 0b_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111_0111_1111;

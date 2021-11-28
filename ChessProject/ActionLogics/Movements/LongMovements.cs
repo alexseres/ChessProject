@@ -96,7 +96,7 @@ namespace ChessProject.Actions.Movements
                 return 0;
             }
 
-            for (int i = square - 9; i > 0; i -= 9)
+            for (int i = square - 9; i >= 0; i -= 9)
             {
                 if ((pos & maskNotHColumn) > 0)
                 {
@@ -117,7 +117,7 @@ namespace ChessProject.Actions.Movements
                 return 0;
             }
 
-            for (int i = square - 7; i > 0; i -= 9)
+            for (int i = square - 7; i > 0; i -= 7)
             {
                 if ((pos & maskNotAColumn) > 0)
                 {

@@ -9,7 +9,6 @@ using System.Text;
 
 namespace ChessProject.Models
 {
-    [Serializable]
     public class Player : ISubject
     {
         public PlayerType PlayerNum { get; set; }

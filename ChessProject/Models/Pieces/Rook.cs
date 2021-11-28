@@ -8,7 +8,6 @@ using System.Text;
 
 namespace ChessProject.Models.Pieces
 {
-    [Serializable]
     public class Rook : BasePiece
     {
         public IBitScan BitScan { get; set; }

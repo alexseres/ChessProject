@@ -5,7 +5,6 @@ using System.Text;
 
 namespace ChessProject.Models.Pieces
 {
-    [Serializable]
     public class Pawn : BasePiece
     {
         public const int MovingDirection = 8;

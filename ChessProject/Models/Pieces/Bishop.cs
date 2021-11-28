@@ -9,7 +9,6 @@ using System.Diagnostics;
 
 namespace ChessProject.Models.Pieces
 {
-    [Serializable]
     public class Bishop : BasePiece
     {
         public readonly string Image;

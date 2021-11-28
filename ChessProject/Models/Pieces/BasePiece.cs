@@ -8,7 +8,6 @@ using System.Text;
 
 namespace ChessProject.Models.Pieces
 {
-    [Serializable]
     public abstract class BasePiece : IObserver
     {
         public Player Creator { get; set; }
