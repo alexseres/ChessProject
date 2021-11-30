@@ -9,6 +9,7 @@ using ChessProject.Utils.PopulationCountLogic;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace ChessProject.ActionLogics
@@ -38,7 +39,7 @@ namespace ChessProject.ActionLogics
                 ulong movedPos = ((ulong)1 << pos);
                 List<BasePiece> mighChangedOpponentPieceList = BitBoardsUpdater.SeparateUpdatePieceList(opponentPieceList, movedPos);
                 ulong[] changedPositions = BitBoardsUpdater.SeparateUpdateBitBoardsToEvadeCheck(movedPos, oldPosOfDefenderPiece, defenderPieceRoute, allPiecePositions, ourPositions, opponentPositions);
-                ulong IsKingStillInCheck = GetAllOpponentAttackToCheckIfKingInCheck(kingPosition, changedPositions[0], changedPositions[1], changedPositions[2], mighChangedOpponentPieceList);
+                ulong IsKingStillInCheck = GetOpponentAttackToCheckIfKingInCheckIfThereIs(kingPosition, changedPositions[0], changedPositions[1], changedPositions[2], mighChangedOpponentPieceList);
                 if (IsKingStillInCheck == 0)
                 {
                     return false;
@@ -50,7 +51,8 @@ namespace ChessProject.ActionLogics
         public bool GetCounterAttackToChekIfSomePieceCouldEvadeAttack(ulong attackerPositionAndAttackVektor, ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> ourPieceList, List<IObserver> opponentPieceList)
         {
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
-            ulong attacks = 0;
+            Debug.WriteLine("Attaker pos and vector");
+            Printboard(Convert.ToString((long)attackerPositionAndAttackVektor, toBase: 2).PadLeft(64, '0'));
             for (int i = 0; i < 64; i++)
             {
                 if ((ourPositions & mask) > 0)
@@ -61,6 +63,7 @@ namespace ChessProject.ActionLogics
                         if ((piece.Position & mask) > 0)   //it can defend it
                         {
                             ulong counterAttack = piece.Search(mask, allPiecePositions, opponentPositions, ourPositions);  // here we replaced two arguments(our <-> opp)
+                            Printboard(Convert.ToString((long)counterAttack, toBase: 2).PadLeft(64, '0'));
                             if ((counterAttack & attackerPositionAndAttackVektor) > 0)
                             {
                                 bool IsKingStilInCheck = CheckMateChecker(attackerPositionAndAttackVektor, mask, counterAttack, kingPosition, allPiecePositions, opponentPositions, ourPositions, opponentPieceList);
@@ -77,7 +80,7 @@ namespace ChessProject.ActionLogics
             return true;
         }
 
-        public ulong GetAllOpponentAttackToCheckIfKingStillInCheck(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<BasePiece> pieceListOfOpponent)
+        public ulong GetAllOpponentAttack(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<BasePiece> pieceListOfOpponent)
         {
 
             //Printboard(Convert.ToString((long)allPiecePositions, toBase: 2).PadLeft(64, '0'));
@@ -116,7 +119,7 @@ namespace ChessProject.ActionLogics
         }
 
 
-        public ulong GetAllOpponentAttackToCheckIfKingInCheck(ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<BasePiece> pieceListOfOpponent)
+        public ulong GetOpponentAttackToCheckIfKingInCheckIfThereIs(ulong kingPosition, ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<BasePiece> pieceListOfOpponent)
         {
             ulong allAttacks = 0;
             ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
@@ -143,10 +146,6 @@ namespace ChessProject.ActionLogics
                             {
                                 //Printboard(Convert.ToString((long)piece.Position, toBase: 2).PadLeft(64, '0'));
                                 ulong newAttack = piece.GetSpecificAttackFromSearch(mask, allPiecePositions, ourPositions, opponentPositions, kingPosition) | mask;  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
-                                if(piece is Bishop)
-                                {
-                                    Debug.WriteLine("a");
-                                }
                                 allAttacks = allAttacks | newAttack;
                                 if ((newAttack & kingPosition) > 0)
                                 {
@@ -187,6 +186,12 @@ namespace ChessProject.ActionLogics
             return attacks;
         }
 
+        public ulong GetAttackerPos(ulong attackerAttackVectorAndCurrentPos, List<BasePiece> pieceListOfOpponent)
+        {
+            return pieceListOfOpponent.Where(x => ((x.Position & attackerAttackVectorAndCurrentPos) > 0)).First().Position;
+        }
+
+
         public bool HasAttacked(ulong pos, ulong opponentPositions)
         {
             return (pos & opponentPositions) > 0 ? true : false;
@@ -207,6 +212,7 @@ namespace ChessProject.ActionLogics
             }
             var finalrow = new string(sb.ToString());
             Debug.WriteLine(finalrow);
+            Debug.WriteLine(" ");
 
         }
 

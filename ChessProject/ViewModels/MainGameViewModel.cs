@@ -193,7 +193,7 @@ namespace ChessProject.ViewModels
         {
             await Task.Delay(2000);
             ExceptionMessage = $"The Winner is {winner.Color} Player. Congratulations.";
-            await Task.Delay(200000);
+            await Task.Delay(20000);
             ExceptionMessage = "";
             foreach(Window item in Application.Current.Windows)
             {

@@ -147,10 +147,10 @@ namespace ChessProject.Models
                             kingOpportunities |= newKingPos;
                             PiecesPosition = PiecesPosition & ~king.Position;
                             PiecesPosition = PiecesPosition & ~rook.Position;
-                            king.UpdatePositionWhenMove(currentPosition, kingOpportunities, newKingPos);
+                            piece.UpdatePositionWhenMove(currentPosition, kingOpportunities, newKingPos);
                             rook.UpdatePositionWhenMove(rook.Position, newRookPos, newRookPos);
-                            PiecesPosition = PiecesPosition ^ king.Position;
-                            PiecesPosition = PiecesPosition ^ rook.Position;
+                            PiecesPosition = PiecesPosition | king.Position;
+                            PiecesPosition = PiecesPosition | rook.Position;
                             return true;
                         }
                     }

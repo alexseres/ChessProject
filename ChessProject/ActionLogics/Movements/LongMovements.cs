@@ -43,7 +43,7 @@ namespace ChessProject.Actions.Movements
 
             //Printboard(Convert.ToString((long)pos, toBase: 2).PadLeft(64, '0'));
             //Console.WriteLine(" ");
-            for (int i = square + 9; i < 64; i += 9)
+            for (int i = square + 9; i <= 64; i += 9)
             {
                 if ((pos & maskNotAColumn) > 0)
                 {
@@ -144,7 +144,6 @@ namespace ChessProject.Actions.Movements
             }
             var finalrow = new string(sb.ToString());
             //Console.WriteLine(finalrow);
-
         }
 
     }

@@ -46,6 +46,16 @@ namespace ChessProject.Models.Pieces
             return northAttack ^ northEastAttack ^ northWestAttack ^ westAttack ^ eastAttack ^ southEastAttack ^ southWestAttack ^ southAttack;
         }
 
+        public bool CanKingGetAwayFromCheck(ulong allOpponentAttacks,ulong attackerPos,ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
+        {
+            //PrintBoard(Convert.ToString((long)allOpponentAttacks, toBase: 2).PadLeft(64, '0'));
+            ulong moves = Search(Position, allPositionAtBoard, opponentPositionAtBoard, ourPositions);
+            //PrintBoard(Convert.ToString((long)moves, toBase: 2).PadLeft(64, '0'));
+            //Debug.WriteLine(" ");
+            //PrintBoard(Convert.ToString((long)attackerPositionAndAttackVektor, toBase: 2).PadLeft(64, '0'));
+            if (((moves & ~allOpponentAttacks) > 0) || (moves & attackerPos) > 0) return true; else return false;
+        }
+
         public ulong CheckForCastling(ulong allPiecePositions)
         {
             if (this.LatestMove == (0, 0))
@@ -77,7 +87,7 @@ namespace ChessProject.Models.Pieces
                             }
                             else
                             {
-                                for (ulong k = this.Position >> 1; k < rook.Position; k >>= 1)
+                                for (ulong k = this.Position << 1; k < rook.Position; k <<= 1)
                                 {
                                     if ((k & (allPiecePositions)) > 0)
                                     {

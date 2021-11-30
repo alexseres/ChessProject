@@ -24,6 +24,7 @@ namespace ChessProject.Utils.CloneCollections
                 {
                     King king = piece as King;
                     King finaKing = new King(piece.Creator, piece.Creator.Color, piece.Position, piece.ImagePath);
+                    finaKing.LatestMove = king.LatestMove;
                     finaKing.OpponentKing = king.OpponentKing;
                     enemyClonePiecesList.Add(finaKing);
                 }
@@ -31,30 +32,35 @@ namespace ChessProject.Utils.CloneCollections
                 {
                     Pawn pawn = piece as Pawn;
                     Pawn finalPawn = new Pawn(pawn.Creator, pawn.Creator.Color, pawn.Position, pawn.ImagePath, pawn.LastLine, pawn.MaskOfDoubleMove, pawn.FifthLineOfEnPassant);
+                    finalPawn.LatestMove = pawn.LatestMove;
                     enemyClonePiecesList.Add(finalPawn);
                 }
                 if(piece is Knight)
                 {
                     Knight knight = piece as Knight;
                     Knight finalKnight = new Knight(knight.Creator, knight.Creator.Color, knight.Position, knight.ImagePath);
+                    finalKnight.LatestMove = knight.LatestMove;
                     enemyClonePiecesList.Add(finalKnight);
                 }
                 if(piece is Bishop)
                 {
                     Bishop bishop = piece as Bishop;
                     Bishop finalBishop = new Bishop(bishop.Creator, bishop.Creator.Color, bishop.Position, bishop.BitScan, bishop.Movements, bishop.Attack, bishop.ImagePath);
+                    finalBishop.LatestMove = bishop.LatestMove;
                     enemyClonePiecesList.Add(finalBishop);
                 }
                 if(piece is Rook)
                 {
                     Rook rook = piece as Rook;
                     Rook finalRook = new Rook(rook.Creator, rook.Creator.Color, rook.Position, rook.BitScan, rook.Movements, rook.Attack, rook.ImagePath);
+                    finalRook.LatestMove = rook.LatestMove;
                     enemyClonePiecesList.Add(finalRook);
                 }
                 if(piece is Queen)
                 {
                     Queen queen = piece as Queen;
                     Queen finalQueen = new Queen(queen.Creator, queen.Creator.Color, queen.Position, queen.BitScan, queen.Movements, queen.Attack, queen.ImagePath);
+                    finalQueen.LatestMove = queen.LatestMove;
                     enemyClonePiecesList.Add(finalQueen);
                 }
             }

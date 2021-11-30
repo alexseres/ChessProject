@@ -348,7 +348,7 @@ namespace ChessProject.ServiceLayers
             }
             MockOfourPiecesPosition |= choosenPositionToMove;
             ulong mockAllBoardMember = MockOfOpponentPiecesPosition | MockOfourPiecesPosition;
-            ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingStillInCheck(mockAllBoardMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList);
+            ulong opponentAttacks = Attack.GetAllOpponentAttack(mockAllBoardMember, MockOfOpponentPiecesPosition, MockOfourPiecesPosition, MockOfEnemyPiecesList); //check if king still in check
             if ((opponentAttacks & mockOfKingPosition) > 0)
             {
 
@@ -382,12 +382,19 @@ namespace ChessProject.ServiceLayers
             string message = "";
             if (!actualPlayer.PlayerInCheck)
             {
-                ulong opponentAttacks = Attack.GetAllOpponentAttackToCheckIfKingInCheck(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, Clone.ConvertIObserverToBasePieceList(opponent.PiecesList));
-                if (opponentAttacks > 0)   // king in check
+                ulong opponentAttack = Attack.GetOpponentAttackToCheckIfKingInCheckIfThereIs(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, Clone.ConvertIObserverToBasePieceList(opponent.PiecesList));
+                if (opponentAttack > 0)   // king in check
                 {
                     message = $"Check for {actualPlayer.Color} Player"; 
                     actualPlayer.PlayerInCheck = true;
-                    if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttacks, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
+                    List<BasePiece> opponentPieces = Clone.ConvertIObserverToBasePieceList(opponent.PiecesList);
+                    ulong allOpponentAttacks = Attack.GetAllOpponentAttack(BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, opponentPieces);
+                    ulong attackerPos = Attack.GetAttackerPos(opponentAttack, opponentPieces);
+                    if (actualPlayer.King.CanKingGetAwayFromCheck(allOpponentAttacks, attackerPos, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition))
+                    {
+                        return message;
+                    }
+                    if (Attack.GetCounterAttackToChekIfSomePieceCouldEvadeAttack(opponentAttack, actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, actualPlayer.PiecesList, opponent.PiecesList))
                     {
                         opponent.HasWon = true;
                         message = $"CheckMate for {actualPlayer.Color} Player"; 
