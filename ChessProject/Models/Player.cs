@@ -202,56 +202,10 @@ namespace ChessProject.Models
                 {
                     PawnToBeSwapped = pawn;
                     return true;
-                    //if (PromptAskingWhichPieceYouWantToSwap(currentPosition))
-                    //{
-                    //    pawn.UpdatePositionWhenBeingAttacked();
-                    //    Detach(pawn);
-                    //    KnockedPieces.Add(pawn);
-                    //}
                 }
             }
             return false;
         }
-
-
-        public bool PromptAskingWhichPieceYouWantToSwap(ulong currentPosition)
-        {
-            Console.WriteLine("Do you want to swap?  'yes'  or 'no'");
-            string answer = Console.ReadLine();
-            int counter = 0;
-            if (answer == "yes")
-            {
-                //Console.WriteLine("Please select from the list");
-                //foreach (BasePiece piece in KnockedPieces)
-                //{
-                //    Console.WriteLine(piece.PType);
-                //    counter++;
-
-                //}
-
-                //if (counter == 0)
-                //{
-                //    Console.WriteLine("no pieces available to swap");
-                //    return false;
-                //}
-                string pieceName = Console.ReadLine();
-                foreach (BasePiece piece in KnockedPieces.ToList())
-                {
-                    if (pieceName == piece.ImagePath)
-                    {
-                        piece.Position = currentPosition;
-                        piece.CalculateRowAndColumnPosition(currentPosition);
-                        Attach(piece);
-                        KnockedPieces.Remove(piece);
-                        return true;
-                    }
-                }
-                Console.WriteLine("Wrong name you have given");
-            }
-            return false;
-        }
-
-        
 
         //indexer of the class
         //public BasePiece this[int index]

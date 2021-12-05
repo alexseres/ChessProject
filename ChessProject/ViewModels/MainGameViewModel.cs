@@ -65,10 +65,8 @@ namespace ChessProject.ViewModels
 
         IMainGameService Servicer { get; set; }
         private bool DragOn { get; set; } = false;
-
         public MainGameViewModel()
         {
-            
             PieceCollection = new ObservableCollection<BasePiece>();
             Player1 = new Player(PlayerType.Player1,ColorSide.Black);
             Player2 = new Player(PlayerType.Player2,ColorSide.White);
@@ -189,6 +187,20 @@ namespace ChessProject.ViewModels
 
         }
 
+
+        public async void Draw(string message)
+        {
+            await Task.Delay(2000);
+            ExceptionMessage = $"Its draw because of {message}";
+            await Task.Delay(2000);
+            ExceptionMessage = "";
+            foreach (Window item in Application.Current.Windows)
+            {
+                if (item.DataContext == this) item.Close();
+            }
+            Application.Current.MainWindow.Show();
+        }
+
         public async void WinnerMaker(Player winner)
         {
             await Task.Delay(2000);
@@ -212,14 +224,16 @@ namespace ChessProject.ViewModels
             ulong move = Utils.RowAndColumnCalculator.UlongCalculator(col, row);
             MakeCellsOfOpportunitiesDisappear();
             (bool changeHappened,string message) = Servicer.ProcessOfMakingSurePlayerCanDropSpecificPiece(player, piece,piece.Position,player.RecentOpportunities, move);
-            if (changeHappened) 
+            if (changeHappened)
             {
                 ExceptionMessage = message;ExceptionMessageRemover();
                 if (player.IsWaitedForPawnToBeSwappedToAnotherPiece)
                 {
                     if (player.PlayerNum == PlayerType.Player1) KnockedPiecesBrushOfPlayer1 = Brushes.Green; else KnockedPiecesBrushOfPlayer2 = Brushes.Green;
                 }
-                Servicer.CheckIfIsThreeFoldOrFiftyMove(player);
+                (bool drawChecker, string drawMessage) = Servicer.CheckIfIsThreeFoldOrFiftyMove(player);
+                if (drawChecker) Draw(drawMessage);
+
                 CollectionViewSource.GetDefaultView(PieceCollection).Refresh();
                 if(Player1.HasWon == true || Player2.HasWon == true)
                 {

@@ -28,42 +28,28 @@ namespace ChessProject.Models.Pieces
             BitScan = bitScan;
             Attack = attack;
         }
-        public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
+
+        public override ulong Search(ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
-            int square = BitScan.bitScanForwardLS1B(currentPosition);
+            int square = BitScan.bitScanForwardLS1B(this.Position);
             ulong eastNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastNorth, BitScan.bitScanForwardLS1B, EastNorthDirection);
-            //Console.WriteLine(" ");
-            //PrintBoard(Convert.ToString((long)eastNorthAttack, toBase: 2).PadLeft(64, '0'));
-            //Console.WriteLine(" ");
             ulong westNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestNorth, BitScan.bitScanForwardLS1B, WestNorthDirection);
-            //PrintBoard(Convert.ToString((long)westNorthAttack, toBase: 2).PadLeft(64, '0'));
-            //Console.WriteLine(" ");
             ulong eastSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastSouth, BitScan.bitScanReverseMS1B, EastSouthDirection);
-
-            //PrintBoard(Convert.ToString((long)eastSouthAttack, toBase: 2).PadLeft(64, '0'));
-            //Console.WriteLine(" ");
             ulong westSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestSouth, BitScan.bitScanReverseMS1B, WestSouthDirection);
-            //PrintBoard(Convert.ToString((long)westSouthAttack, toBase: 2).PadLeft(64, '0'));
-
             return eastNorthAttack ^ westNorthAttack ^ eastSouthAttack ^ westSouthAttack;
         }
 
-        public override ulong GetSpecificAttackFromSearch(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
+
+       
+
+        public override ulong GetSpecificAttackFromSearch(ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
         {
             ulong[] allMoves = new ulong[4];
-            int square = BitScan.bitScanForwardLS1B(currentPosition);
+            int square = BitScan.bitScanForwardLS1B(this.Position);
             ulong eastNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastNorth, BitScan.bitScanForwardLS1B, EastNorthDirection);
             ulong westNorthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestNorth, BitScan.bitScanForwardLS1B, WestNorthDirection);
             ulong eastSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetEastSouth, BitScan.bitScanReverseMS1B, EastSouthDirection);
             ulong westSouthAttack = Attack.GetRayAttacks(allPositionAtBoard, opponentPositionAtBoard, square, Movements.GetWestSouth, BitScan.bitScanReverseMS1B, WestSouthDirection);
-            //Debug.WriteLine("actual pos");
-            //PrintBoard(Convert.ToString((long)currentPosition, toBase: 2).PadLeft(64, '0'));
-            //PrintBoard(Convert.ToString((long)eastNorthAttack, toBase: 2).PadLeft(64, '0'));
-            //PrintBoard(Convert.ToString((long)westNorthAttack, toBase: 2).PadLeft(64, '0'));
-            //PrintBoard(Convert.ToString((long)eastSouthAttack, toBase: 2).PadLeft(64, '0'));
-            //PrintBoard(Convert.ToString((long)westSouthAttack, toBase: 2).PadLeft(64, '0'));
-            //PrintBoard(Convert.ToString((long)opponentPositionAtBoard, toBase: 2).PadLeft(64, '0'));
-            //PrintBoard(Convert.ToString((long)opponentPiecePosition, toBase: 2).PadLeft(64, '0'));
             allMoves[0] = eastNorthAttack;
             allMoves[1] = westNorthAttack;
             allMoves[2] = eastSouthAttack;
@@ -78,6 +64,7 @@ namespace ChessProject.Models.Pieces
             }
             return 0;
         }
+
 
         public void PrintBoard(string board)
         {

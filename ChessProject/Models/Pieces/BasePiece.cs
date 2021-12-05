@@ -33,9 +33,10 @@ namespace ChessProject.Models.Pieces
             AllMovesHasTaken = new List<ulong>();
         }
 
-        public abstract ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions);
+        public abstract ulong Search(ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions);
 
-        public virtual ulong GetSpecificAttackFromSearch(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
+
+        public virtual ulong GetSpecificAttackFromSearch(ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
         {
             return 0;
         }

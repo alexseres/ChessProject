@@ -1,6 +1,7 @@
 ﻿using ChessProject.Models.Enums;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ChessProject.Models.Pieces
@@ -69,26 +70,20 @@ namespace ChessProject.Models.Pieces
             return 0;
         }
 
-        public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
+        public override ulong Search(ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
-            ulong enpassant = DoEnPassant(currentPosition, opponentPositionAtBoard, ourPositions);
-            //ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);
-            //ulong movedFirstPositions = (((MaskOfDoubleMove & currentPosition) >> 8) & ~allPositionAtBoard) >> 8;
-            //ulong movedPositions = (currentPosition >> MovingDirection) | movedFirstPositions;
-            ulong attackPositions = ((Creator.PawnBitwiseOperator(currentPosition, Creator.PawnAttackDirection[0], maskNotAColumn)) ^ ((Creator.PawnBitwiseOperator(currentPosition, Creator.PawnAttackDirection[1], maskNotAColumn))));
-            ulong movedFirstPositions = ((Creator.PawnBitwiseOperatorMovedFirstPositions(MaskOfDoubleMove, currentPosition, allPositionAtBoard)));
-            ulong movedPositions = Creator.PawnBitwiseOperatorMovedPositions(currentPosition,MovingDirection,movedFirstPositions);
-
+            ulong enpassant = DoEnPassant(this.Position, opponentPositionAtBoard, ourPositions);
+            ulong attackPositions = ((Creator.PawnBitwiseOperator(this.Position, Creator.PawnAttackDirection[0], maskNotAColumn)) ^ ((Creator.PawnBitwiseOperator(this.Position, Creator.PawnAttackDirection[1], maskNotAColumn))));
+            ulong movedFirstPositions = ((Creator.PawnBitwiseOperatorMovedFirstPositions(MaskOfDoubleMove, this.Position, allPositionAtBoard)));
+            ulong movedPositions = Creator.PawnBitwiseOperatorMovedPositions(this.Position, MovingDirection, movedFirstPositions);
             ulong opportunities = (~allPositionAtBoard & movedPositions) | ((~ourPositions & attackPositions) & opponentPositionAtBoard);
             opportunities = opportunities | enpassant;
             return opportunities;
         }
 
-        public ulong SearchForOnlyAttack(ulong currentPosition, ulong ourPositions, ulong opponentPiecePosition)
+        public ulong SearchForOnlyAttack(ulong ourPositions, ulong opponentPiecePosition)
         {
-
-            //ulong attackPositions = ((currentPosition >> AttacksDirection[1]) & maskNotAColumn) ^ ((currentPosition >> AttacksDirection[0]) & maskNotHColumn);
-            ulong attackPositions = ((Creator.PawnBitwiseOperator(currentPosition, Creator.PawnAttackDirection[0], maskNotAColumn)) ^ ((Creator.PawnBitwiseOperator(currentPosition, Creator.PawnAttackDirection[1], maskNotAColumn))));
+            ulong attackPositions = ((Creator.PawnBitwiseOperator(this.Position, Creator.PawnAttackDirection[0], maskNotAColumn)) ^ ((Creator.PawnBitwiseOperator(this.Position, Creator.PawnAttackDirection[1], maskNotAColumn))));
             ulong opportunities = (~ourPositions & attackPositions) & opponentPiecePosition;
             return opportunities;
         }

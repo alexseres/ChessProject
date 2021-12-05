@@ -241,7 +241,7 @@ namespace ChessProject.ServiceLayers
             Player opponent = OpponentCreater(player);
 
             //IsPlayerInCheckAndCheckmateChecker(player,opponent);
-            player.RecentOpportunities = piece.Search(piece.Position, BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
+            player.RecentOpportunities = piece.Search(BoardWithAllMember, opponent.PiecesPosition, player.PiecesPosition);
             if (player.RecentOpportunities <= 0)
             {
                 message = "you cannot move with this piece, choose another one"; 

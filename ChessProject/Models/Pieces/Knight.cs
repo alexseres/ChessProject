@@ -17,33 +17,33 @@ namespace ChessProject.Models.Pieces
             PType = PieceType.Knight;
         }
 
-
-        public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
+        public override ulong Search(ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
-            ulong northNorthEast = (currentPosition & MaskNotInHFile) << 15;
-            ulong northEastEast = (currentPosition & MaskNotInGHFile) << 6;
-            ulong northNorthWest = (currentPosition & MaskNotInAFile) << 17;
-            ulong northWestWest = (currentPosition & MaskNotInABFile) << 10;
-            ulong southEastEast = (currentPosition & MaskNotInGHFile) >> 10;
-            ulong southSouthEast = (currentPosition & MaskNotInHFile) >> 17;
-            ulong southSouthWest = (currentPosition & MaskNotInAFile) >> 15;
-            ulong southWestWest = (currentPosition & MaskNotInABFile) >> 6;
+            ulong northNorthEast = (this.Position & MaskNotInHFile) << 15;
+            ulong northEastEast = (this.Position & MaskNotInGHFile) << 6;
+            ulong northNorthWest = (this.Position & MaskNotInAFile) << 17;
+            ulong northWestWest = (this.Position & MaskNotInABFile) << 10;
+            ulong southEastEast = (this.Position & MaskNotInGHFile) >> 10;
+            ulong southSouthEast = (this.Position & MaskNotInHFile) >> 17;
+            ulong southSouthWest = (this.Position & MaskNotInAFile) >> 15;
+            ulong southWestWest = (this.Position & MaskNotInABFile) >> 6;
             ulong allDirection = northNorthEast ^ northEastEast ^ northNorthWest ^ northWestWest ^ southEastEast ^ southSouthEast ^ southWestWest ^ southSouthWest;
             ulong allPossibleMove = allDirection & ~ourPositions;
             return allPossibleMove;
         }
 
-        public override ulong GetSpecificAttackFromSearch(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
+       
+        public override ulong GetSpecificAttackFromSearch(ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions, ulong opponentPiecePosition)
         {
             ulong[] allMoves = new ulong[8];
-            ulong northNorthEast = (currentPosition & MaskNotInHFile) << 15;
-            ulong northEastEast = (currentPosition & MaskNotInGHFile) << 6;
-            ulong northNorthWest = (currentPosition & MaskNotInAFile) << 17;
-            ulong northWestWest = (currentPosition & MaskNotInABFile) << 10;
-            ulong southEastEast = (currentPosition & MaskNotInGHFile) >> 10;
-            ulong southSouthEast = (currentPosition & MaskNotInHFile) >> 17;
-            ulong southSouthWest = (currentPosition & MaskNotInAFile) >> 15;
-            ulong southWestWest = (currentPosition & MaskNotInABFile) >> 6;
+            ulong northNorthEast = (this.Position & MaskNotInHFile) << 15;
+            ulong northEastEast = (this.Position & MaskNotInGHFile) << 6;
+            ulong northNorthWest = (this.Position & MaskNotInAFile) << 17;
+            ulong northWestWest = (this.Position & MaskNotInABFile) << 10;
+            ulong southEastEast = (this.Position & MaskNotInGHFile) >> 10;
+            ulong southSouthEast = (this.Position & MaskNotInHFile) >> 17;
+            ulong southSouthWest = (this.Position & MaskNotInAFile) >> 15;
+            ulong southWestWest = (this.Position & MaskNotInABFile) >> 6;
             allMoves[0] = northNorthEast;
             allMoves[1] = northEastEast;
             allMoves[2] = northNorthWest;
@@ -62,5 +62,6 @@ namespace ChessProject.Models.Pieces
 
             return 0;
         }
+
     }
 }

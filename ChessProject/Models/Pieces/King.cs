@@ -18,9 +18,9 @@ namespace ChessProject.Models.Pieces
             PType = PieceType.King;
         }
 
-        public override ulong Search(ulong currentPosition, ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
+        public override ulong Search(ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
-            ulong attacks = GetAllAttacks(currentPosition);
+            ulong attacks = GetAllAttacks(this.Position);
             // so basically we need the other king position to keep 2 square distance between the kings as the rule say
             ulong opponentKingOpportunities = OpponentKing.GetAllAttacks(OpponentKing.Position);
             ulong possibleAttacks = attacks & ~opponentKingOpportunities;
@@ -49,7 +49,7 @@ namespace ChessProject.Models.Pieces
         public bool CanKingGetAwayFromCheck(ulong allOpponentAttacks,ulong attackerPos,ulong allPositionAtBoard, ulong opponentPositionAtBoard, ulong ourPositions)
         {
             //PrintBoard(Convert.ToString((long)allOpponentAttacks, toBase: 2).PadLeft(64, '0'));
-            ulong moves = Search(Position, allPositionAtBoard, opponentPositionAtBoard, ourPositions);
+            ulong moves = Search(allPositionAtBoard, opponentPositionAtBoard, ourPositions);
             //PrintBoard(Convert.ToString((long)moves, toBase: 2).PadLeft(64, '0'));
             //Debug.WriteLine(" ");
             //PrintBoard(Convert.ToString((long)attackerPositionAndAttackVektor, toBase: 2).PadLeft(64, '0'));
@@ -109,34 +109,48 @@ namespace ChessProject.Models.Pieces
 
         public ulong GetFreeSquareWHereEnemyCannotIndave(ulong allPiecePositions, ulong opponentPositions, ulong ourPositions, List<IObserver> pieceListOfOpponent)
         {
-            ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
             ulong attacks = 0;
-            ulong allPawnAttacks = 0;
-            for (int i = 0; i < 64; i++)
+
+            //ulong mask = 0b_1000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+            //ulong allPawnAttacks = 0;
+            //for (int i = 0; i < 64; i++)
+            //{
+            //    if ((opponentPositions & mask) > 0)
+            //    {
+            //        foreach (IObserver observer in pieceListOfOpponent)
+            //        {
+            //            BasePiece piece = observer as BasePiece;
+            //            if (((piece.Position & mask) > 0) && !(piece is King))
+            //            {
+            //                ulong newAttack = piece.Search(mask, allPiecePositions, opponentPositions, ourPositions);
+            //                if(piece is Pawn)
+            //                {
+            //                    Pawn pawn = piece as Pawn;
+            //                    newAttack = pawn.SearchForOnlyAttack(mask, ourPositions, opponentPositions);
+            //                    //PrintBoard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
+            //                    allPawnAttacks |= newAttack;
+            //                }
+            //                attacks |= newAttack;
+            //            }
+            //        }
+            //    }
+            //    mask = mask >> 1;
+            //}
+
+            foreach (IObserver observer in pieceListOfOpponent)
             {
-                if ((opponentPositions & mask) > 0)
+                BasePiece piece = observer as BasePiece;
+                if (!(piece is King))
                 {
-                    foreach (IObserver observer in pieceListOfOpponent)
+                    ulong newAttack = piece.Search(allPiecePositions, opponentPositions, ourPositions);
+                    if (piece is Pawn)
                     {
-                        BasePiece piece = observer as BasePiece;
-                        if (((piece.Position & mask) > 0) && !(piece is King))
-                        {
-                            ulong newAttack = piece.Search(mask, allPiecePositions, opponentPositions, ourPositions);
-                            if(piece is Pawn)
-                            {
-                                Pawn pawn = piece as Pawn;
-                                newAttack = pawn.SearchForOnlyAttack(mask, ourPositions, opponentPositions);
-                                //PrintBoard(Convert.ToString((long)newAttack, toBase: 2).PadLeft(64, '0'));
-                                allPawnAttacks |= newAttack;
-                            }
-                            attacks |= newAttack;
-                        }
+                        Pawn pawn = piece as Pawn;
+                        newAttack = pawn.SearchForOnlyAttack(ourPositions, opponentPositions);
                     }
+                    attacks |= newAttack;
                 }
-                mask = mask >> 1;
             }
-            PrintBoard(Convert.ToString((long)allPawnAttacks, toBase: 2).PadLeft(64, '0'));
-            PrintBoard(Convert.ToString((long)attacks, toBase: 2).PadLeft(64, '0'));
             return attacks;
         }
 
