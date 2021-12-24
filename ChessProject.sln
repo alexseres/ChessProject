@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessProject", "ChessProject\ChessProject.csproj", "{7D02A807-1A60-4246-BEA9-17A0C55B48DD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessProgrammingFundamentalsPractice", "ChessProgrammingFundamentalsPractice\ChessProgrammingFundamentalsPractice.csproj", "{8D360D43-C388-43BB-ADF3-6B9826387CBA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessTest", "ChessTest\ChessTest.csproj", "{9F88B774-2453-4BC6-8487-E11D01C47CFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,14 @@ Global
 		{7D02A807-1A60-4246-BEA9-17A0C55B48DD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7D02A807-1A60-4246-BEA9-17A0C55B48DD}.Release|x64.ActiveCfg = Release|x64
 		{7D02A807-1A60-4246-BEA9-17A0C55B48DD}.Release|x64.Build.0 = Release|x64
-		{8D360D43-C388-43BB-ADF3-6B9826387CBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D360D43-C388-43BB-ADF3-6B9826387CBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D360D43-C388-43BB-ADF3-6B9826387CBA}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8D360D43-C388-43BB-ADF3-6B9826387CBA}.Debug|x64.Build.0 = Debug|Any CPU
-		{8D360D43-C388-43BB-ADF3-6B9826387CBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D360D43-C388-43BB-ADF3-6B9826387CBA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D360D43-C388-43BB-ADF3-6B9826387CBA}.Release|x64.ActiveCfg = Release|Any CPU
-		{8D360D43-C388-43BB-ADF3-6B9826387CBA}.Release|x64.Build.0 = Release|Any CPU
+		{9F88B774-2453-4BC6-8487-E11D01C47CFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F88B774-2453-4BC6-8487-E11D01C47CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F88B774-2453-4BC6-8487-E11D01C47CFA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9F88B774-2453-4BC6-8487-E11D01C47CFA}.Debug|x64.Build.0 = Debug|Any CPU
+		{9F88B774-2453-4BC6-8487-E11D01C47CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F88B774-2453-4BC6-8487-E11D01C47CFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F88B774-2453-4BC6-8487-E11D01C47CFA}.Release|x64.ActiveCfg = Release|Any CPU
+		{9F88B774-2453-4BC6-8487-E11D01C47CFA}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

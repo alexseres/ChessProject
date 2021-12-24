@@ -287,8 +287,8 @@ namespace ChessProject.ServiceLayers
             RemoveFromPieceCollectionBecauseAttacked(attacked, opponent, choosenPositionToMove);
             UpdateBitBoards.UpdateAllBitBoard(attacked, player, opponent, choosenPositionToMove, opportunities, currentPiecePosition, ref BoardWithAllMember);
             player.PositionsOfOpportunities.Clear();
-            NextPlayer = opponent;
             message = IsPlayerInCheckAndCheckmateChecker(opponent, player);  // it is reversed in the method(normally the first argument is the acutal player), because we need to know the information to be displayed before the other player moves
+            NextPlayer = opponent;
             return (true,message);
         }
 
@@ -323,11 +323,9 @@ namespace ChessProject.ServiceLayers
         }
 
         public bool CheckProcess(Player player, ulong currentPiecePosition, Player opponent, BasePiece piece, bool attacked, ulong choosenPositionToMove)
-        {
-                
+        {  
             ulong MockOfourPiecesPosition = player.PiecesPosition & ~currentPiecePosition;
             ulong MockOfOpponentPiecesPosition = opponent.PiecesPosition;
-            //List<IObserver> MockOfEnemyPiecesList = Clone.DeepCopyItem(opponent.PiecesList);
             List<BasePiece> MockOfEnemyPiecesList = Clone.ClonePieces(opponent.PiecesList);
             ulong mockOfKingPosition = player.King.Position;
             if (piece is King)
@@ -382,6 +380,7 @@ namespace ChessProject.ServiceLayers
             string message = "";
             if (!actualPlayer.PlayerInCheck)
             {
+                PrintBoard(Convert.ToString((long)opponent.PiecesPosition, toBase:2).PadLeft(64, '0'));
                 ulong opponentAttack = Attack.GetOpponentAttackToCheckIfKingInCheckIfThereIs(actualPlayer.King.Position, BoardWithAllMember, opponent.PiecesPosition, actualPlayer.PiecesPosition, Clone.ConvertIObserverToBasePieceList(opponent.PiecesList));
                 if (opponentAttack > 0)   // king in check
                 {

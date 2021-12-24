@@ -158,8 +158,6 @@ namespace ChessProject.ActionLogics
             //}
 
 
-
-
             foreach (BasePiece piece in pieceListOfOpponent)
             {
                 if (piece is Pawn)
@@ -173,14 +171,12 @@ namespace ChessProject.ActionLogics
                 }
                 else
                 {
-                    //Printboard(Convert.ToString((long)piece.Position, toBase: 2).PadLeft(64, '0'));
                     ulong newAttack = piece.GetSpecificAttackFromSearch(allPiecePositions, ourPositions, opponentPositions, kingPosition) | piece.Position;  // here we replaced two arguments(our <-> opp) // here we replaced two arguments(our <-> opp)
                     if ((newAttack & kingPosition) > 0)
                     {
                         return newAttack;
                     }
                 }
-                break;
             }
             return 0;
         }

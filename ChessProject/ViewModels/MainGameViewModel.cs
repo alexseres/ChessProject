@@ -240,7 +240,6 @@ namespace ChessProject.ViewModels
                     Player winner = Player1.HasWon == true ? Player1 : Player2;
                     WinnerMaker(winner);
                 }
-                
             }
             else
             {
