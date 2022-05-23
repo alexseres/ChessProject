@@ -4,6 +4,47 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ChessPiecePictures\BlackBishop.png" />
+    <None Remove="ChessPiecePictures\BlackKing.png" />
+    <None Remove="ChessPiecePictures\BlackKnight.png" />
+    <None Remove="ChessPiecePictures\BlackPawn.png" />
+    <None Remove="ChessPiecePictures\BlackQueen.png" />
+    <None Remove="ChessPiecePictures\BlackRook.png" />
+    <None Remove="ChessPiecePictures\WhiteBishop.png" />
+    <None Remove="ChessPiecePictures\WhiteKing.png" />
+    <None Remove="ChessPiecePictures\WhiteKnight.png" />
+    <None Remove="ChessPiecePictures\WhitePawn.png" />
+    <None Remove="ChessPiecePictures\WhiteQueen.png" />
+    <None Remove="ChessPiecePictures\WhiteRook.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="gong-wpf-dragdrop" Version="2.4.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ChessPiecePictures\BlackBishop.png" />
+    <Resource Include="ChessPiecePictures\BlackKing.png" />
+    <Resource Include="ChessPiecePictures\BlackKnight.png" />
+    <Resource Include="ChessPiecePictures\BlackPawn.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ChessPiecePictures\BlackQueen.png" />
+    <Resource Include="ChessPiecePictures\BlackRook.png" />
+    <Resource Include="ChessPiecePictures\WhiteBishop.png" />
+    <Resource Include="ChessPiecePictures\WhiteKing.png" />
+    <Resource Include="ChessPiecePictures\WhiteKnight.png" />
+    <Resource Include="ChessPiecePictures\WhitePawn.png" />
+    <Resource Include="ChessPiecePictures\WhiteQueen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ChessPiecePictures\WhiteRook.png" />
+  </ItemGroup>
 
 </Project>
